@@ -16,7 +16,7 @@
 #===============================================================================
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('manageMC.extern.urls',
+urlpatterns = patterns('extern.urls',
     url(r'^(?:/)?$', 'index'),
     # Server instances
     url(r'^instances(?:/)?$', 'instances'),
