@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
     <head>
         <title>{% block title %}{{ SiteHumanName }}{% endblock %}</title>
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}extern/base.css" title="stylesheet"/>
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}/base.css" title="stylesheet"/>
         {% dajaxice_js_import %}        
         {% block imports %}{% endblock %}
         {% if gaAccount %}
