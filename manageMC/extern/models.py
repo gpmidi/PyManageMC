@@ -61,6 +61,8 @@ class News(models.Model):
                                    verbose_name = "Last Modified",
                                    help_text = "",
                                    )
+    def __str__(self):
+        return "News %r...(%s)" % (self.title[:75], self.created)
 
 class NewsAdmin(admin.ModelAdmin):
     list_filter = (
@@ -116,7 +118,10 @@ class ExtraUserEmail(models.Model):
                                 verbose_name = "Public",
                                 help_text = "Allow unauthenticated users to see this",
                                 )
-
+    
+    def __str__(self):
+        return "Email %r" % self.email
+        
 class ExtraUserEmailInline(admin.TabularInline):
     model = ExtraUserEmail
 
@@ -152,6 +157,9 @@ class MinecraftUsername(models.Model):
                                    verbose_name = "Verified",
                                    help_text = "Has this address been verified",
                                    )
+    def __str__(self):
+        return "MC %s" % self.username
+        
 class MinecraftUsernameInline(admin.TabularInline):
     model = MinecraftUsername
 
@@ -195,7 +203,9 @@ class UserPhoneNumber(models.Model):
                                 verbose_name = "Public",
                                 help_text = "Allow unauthenticated users to see this",
                                 )
-            
+    def __str__(self):
+        return "Phone Number %s" % self.phoneNumber    
+    
 class UserPhoneNumberInline(admin.TabularInline):
     model = UserPhoneNumber
 
@@ -265,6 +275,9 @@ class ServerSystemIPs(models.Model):
                                'ServerSystem',
                                verbose_name = "System",
                                )
+    def __str__(self):
+        return "System IP %s(%s)" % (self.name, self.ip)
+    
 class ServerSystemIPsInline(admin.TabularInline):
     model = ServerSystemIPs
 
@@ -356,6 +369,8 @@ class ServerInstanceExternalInfo(models.Model):
                                  verbose_name = "Server Instance",
                                  help_text = "The server instance that this access is for",
                                  )
+    def __str__(self):
+        return "ExternalInfo %s" % self.name
     
 class ServerInstanceExternalInfoInline(admin.TabularInline):
     model = ServerInstanceExternalInfo
@@ -445,6 +460,8 @@ class ServerInstance(models.Model):
                                              ],
                                )
     
+    def __str__(self):
+        return "Instance %s" % self.name
     
 class ServerInstanceAdmin(admin.ModelAdmin):
     inlines = [
