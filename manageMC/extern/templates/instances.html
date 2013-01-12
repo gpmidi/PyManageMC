@@ -40,7 +40,13 @@
 	                 </div>
 	                 <p class="News">                        
 	                     <b>Status: </b>{{ instance.get_status_display }}<br/>
-	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">{{ instance.owner.get_profile.screenname }}</a><br/>
+	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
+	                                         {% if instance.owner.get_profile.screenname %}   
+		                                         {{ instance.owner.get_profile.screenname }}
+		                                     {% else %}
+		                                         {{ instance.owner.username }}
+		                                     {% endif %}
+	                                   </a><br/>
 	                     {% if user.is_staff %}
 	                         <b>Internal IP: </b> {{ instance.internalIP }}<br/>
 	                         <b>Internal Port: </b> {{ instance.port }}<br/>
@@ -58,7 +64,13 @@
 	                     <b>Server Admins: </b>
 	                     <ul>
 	                         {% for admin in instance.admins.all %}
-	                             <li><a href="/e/users/{{ admin.pk }}/" title="User Info">{{ admin.get_profile.screenname }}</a></li>
+                                 <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
+                                     {% if admin.get_profile.screenname %}   
+                                         {{ admin.get_profile.screenname }}
+                                     {% else %}
+                                         {{ admin.username }}
+                                     {% endif %}
+                                 </a></li>
 	                         {% endfor %}
 	                     </ul>
 	                 </p>
