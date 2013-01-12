@@ -32,11 +32,9 @@ framework.
 import os, sys
 
 #Calculate the path based on the location of the WSGI script.
-apache_configuration= os.path.dirname(__file__)
-project = os.path.dirname(apache_configuration)
-#workspace = os.path.dirname(project)
+settingsdir= os.path.dirname(__file__)
+project = os.path.dirname(settingsdir)
 sys.path.append(project)
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "manageMC.settings")
 
 # This application object is used by any WSGI server configured to use this

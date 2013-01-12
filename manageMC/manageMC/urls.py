@@ -21,7 +21,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^(?:/)?$', 'manageMC.extern.urls.index'),
-    url(r'^e/', include('manageMC.extern.urls')),
+    url(r'^(?:/)?$', 'extern.views.index'),
+    url(r'^e/', include('extern.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )

@@ -157,6 +157,7 @@ class UserPhoneNumber(models.Model):
     phoneNumber = models.CharField(
                                    null = False,
                                    blank = False,
+                                   max_length = 64,
                                    verbose_name = "Phone Number",
                                    help_text = "The phone number, including area code and country code",
                                    )
@@ -220,7 +221,7 @@ class ServerInstanceExternalInfo(models.Model):
                             help_text = "The hostname or IP address used by remote users",
                             validators = [
                                           validateHostIP,
-                                          MinLengthValidator(min_length = 2),
+                                          MinLengthValidator(2),
                                           ],
                             )
     port = models.IntegerField(
@@ -255,12 +256,14 @@ class ServerSystem(models.Model):
                             )
     admins = models.ManyToManyField(
                                     User,
+                                    related_name="serveradmins",
                                     null = False,
                                     verbose_name = "Admins",
                                     help_text = "Users who have administrative access to this server",
                                     )
     owner = models.ForeignKey(
                               User,
+                              related_name="serverowners",
                               null = False,
                               blank = False,
                               verbose_name = "Owner",
@@ -304,12 +307,14 @@ class ServerInstance(models.Model):
     admins = models.ManyToManyField(
                                     User,
                                     null = False,
+                                    related_name="instanceadmins",
                                     verbose_name = "Admins",
                                     help_text = "Users who have administrative access to this server instance",
                                     )
     owner = models.ForeignKey(
                               User,
                               null = False,
+                              related_name="instanceowners",
                               blank = False,
                               verbose_name = "Owner",
                               help_text = "The user that is ultimately responsible for this server instance",

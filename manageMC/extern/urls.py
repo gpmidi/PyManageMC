@@ -16,7 +16,7 @@
 #===============================================================================
 from django.conf.urls import patterns, include, url
 
-urlpatterns = patterns('extern.urls',
+urlpatterns = patterns('extern.views',
     url(r'^(?:/)?$', 'index'),
     # Server instances
     url(r'^instances(?:/)?$', 'instances'),
