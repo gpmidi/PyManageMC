@@ -408,7 +408,7 @@ class ServerInstance(models.Model):
                                       choices = SERVER_STATUS,
                                       verbose_name = "Status",
                                       )
-    humanName = models.SlugField(
+    humanName = models.CharField(
                             null = False,
                             blank = False,
                             max_length = 255,
