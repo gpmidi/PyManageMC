@@ -47,7 +47,7 @@ def userView(req, userPK):
     return render_to_response(
                               'user.html',
                               dict(
-                                   user = user,
+                                   dUser = user,
                                    ),
                               context_instance = RequestContext(req),
                               )

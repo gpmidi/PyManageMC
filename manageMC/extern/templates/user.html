@@ -3,38 +3,38 @@
 {# User Info #}
 
 {% block title %}
-    {% cache 60 userTitle0 user.id %}
-        User: {{ user.get_profile.screenname }}
+    {% cache 60 userTitle0 dUser.id %}
+        User: {{ dUser.get_profile.screenname }}
     {% endcache %}
 {% endblock %} 
 
 {% block body %}
-    {% cache 60 userBody0 user.id %}
+    {% cache 60 userBody0 dUser.id %}
         <div class="newsbox">
             <h1>User Info</h1>
             <div class="newspost">
                 <div>
-                    <h2 class="NewsTitle">{{ user.get_profile.screenname }}</h2>
-                    <span>{{ user.get_profile.publicName }}</span>
+                    <h2 class="NewsTitle">{{ dUser.get_profile.screenname }}</h2>
+                    <span>{{ dUser.get_profile.publicName }}</span>
                 </div>
                 <p class="News">
-                    <b>Active: </b>{{ user.is_active|yesno }}<br/>
-                    <b>Staff: </b>{{ user.is_staff|yesno }}<br/>
-                    <b>Site Admin: </b>{{ user.is_superuser|yesno }}<br/>
-                    <b>Date Joined: </b>{{ user.date_joined }}<br/>
+                    <b>Active: </b>{{ dUser.is_active|yesno }}<br/>
+                    <b>Staff: </b>{{ dUser.is_staff|yesno }}<br/>
+                    <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br/>
+                    <b>Date Joined: </b>{{ dUser.date_joined }}<br/>
                     
-                    {% if user.is_staff %}                        
-                        <b>Username: </b>{{ user.username }}<br/>
-                        <b>Given Name: </b>{{ user.get_full_name }}<br/>
-                        <b>Email: </b>{{ user.email }}<br/>
-                        <b>Last Login: </b>{{ user.last_login }}<br/>
+                    {% if dUser.is_staff %}                        
+                        <b>Username: </b>{{ dUser.username }}<br/>
+                        <b>Given Name: </b>{{ dUser.get_full_name }}<br/>
+                        <b>Email: </b>{{ dUser.email }}<br/>
+                        <b>Last Login: </b>{{ dUser.last_login }}<br/>
                     {% endif %}
                     <br/>
                     
                     <b>Miscellaneous Contact Info: </b><br/>
                     <p>
-                        {% if user.get_profile.miscContactInfo %}
-                            {{ user.get_profile.miscContactInfo|linebreaks }}
+                        {% if dUser.get_profile.miscContactInfo %}
+                            {{ dUser.get_profile.miscContactInfo|linebreaks }}
                         {% else %}
                             <i>None</i>
                         {% endif %}                        
