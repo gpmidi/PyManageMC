@@ -14,10 +14,17 @@
             <h1>User Info</h1>
             <div class="newspost">
                 <div>
-                    <h2 class="NewsTitle">{{ dUser.get_profile.screenname }}</h2>
+                    <h2 class="NewsTitle">
+                        {% if instance.owner.get_profile.screenname %}   
+                            {{ instance.owner.get_profile.screenname }}
+                        {% else %}
+                            {{ instance.owner.username }}
+                        {% endif %}
+                    </h2>
                     <span>{{ dUser.get_profile.publicName }}</span>
                 </div>
                 <p class="News">
+                    <b>Site Username: </b>{{ dUser.username }}<br/>
                     <b>Active: </b>{{ dUser.is_active|yesno }}<br/>
                     <b>Staff: </b>{{ dUser.is_staff|yesno }}<br/>
                     <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br/>
