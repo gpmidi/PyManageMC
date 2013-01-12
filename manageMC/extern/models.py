@@ -334,6 +334,12 @@ class ServerInstanceExternalInfo(models.Model):
                                           MinLengthValidator(2),
                                           ],
                             )
+    ip = models.IPAddressField(
+                            null = False,
+                            blank = False,
+                            verbose_name = "IP",
+                            help_text = 'The external IP address used to access the server. If an IP is given for "Host/IP", it should match this. ',
+                            )
     port = models.IntegerField(
                                null = False,
                                default = 25565,
@@ -350,8 +356,10 @@ class ServerInstanceExternalInfo(models.Model):
                                  verbose_name = "Server Instance",
                                  help_text = "The server instance that this access is for",
                                  )
+    
 class ServerInstanceExternalInfoInline(admin.TabularInline):
     model = ServerInstanceExternalInfo
+   
    
 class ServerInstance(models.Model):
     name = models.SlugField(
