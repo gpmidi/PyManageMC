@@ -56,7 +56,7 @@ def instance(req, instanceSlug):
     return render_to_response(
                               'instance.html',
                               dict(
-                                   serverInstance = inst,
+                                   instance = inst,
                                    ),
                               context_instance = RequestContext(req),
                               )

@@ -9,7 +9,7 @@
         <ul class="nav nohover">
 		    <li>By Status Type</li>
 	        {% for sgroup in serverStatusGroups %}
-	            <li><a href="/instances/statusgroup/{{ sgroup }}/">{{ sgroup|capfirst }}</a></li>      
+	            <li><a href="/e/instances/statusgroup/{{ sgroup }}/">{{ sgroup|capfirst }}</a></li>      
             {% endfor %}
 		</ul>       
 		
@@ -17,7 +17,7 @@
         <ul class="nav nohover">
             <li>By Status</li>
 			{% for status in serverStatuses %}
-			    <li><a href="/instances/statusgroup/{{ status }}/">{{ status|capfirst }}</a></li>      
+			    <li><a href="/e/instances/statusgroup/{{ status }}/">{{ status|capfirst }}</a></li>      
 			{% endfor %}
         </ul>       
         
@@ -32,11 +32,11 @@
                 <div class="newspost">
                     <div>
                         <h2 class="NewsTitle">
-                            <a href="/instances/instance/{{ instance.name|urlencode }}/">
+                            <a href="/e/instances/instance/{{ instance.name|urlencode }}/">
                                 {{ instance.humanName }}
                             </a>
                         </h2>
-                        <span>ID <a href="/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
+                        <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
                     </div>
                     <p class="News">                        
                         <b>Status: </b> {{ instance.status }}<br/>
