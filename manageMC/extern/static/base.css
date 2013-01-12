@@ -1,0 +1,328 @@
+html {
+	height: 100%;
+}
+
+a { 
+	color: #800; 
+	text-decoration: underline;
+}
+
+body {
+	height: 100%;
+	background-image: url('/static/extern/fade2.png');
+	background-repeat: repeat-x;
+	
+	background-color: #FFE;
+	
+	font-family: Tahoma;
+	
+	color: #800;
+	
+	font-size: 11px;
+	
+	margin: 20px;
+	margin-left: 0px; 
+	margin-right: 0px;
+	padding: 0px;
+}
+
+input, table, td {
+	font-family: Tahoma;
+	
+	color: #800;
+	
+	font-size: 11px;
+}
+
+div.leftColumn {
+	width: 21%;
+	margin-right: 2%;
+	margin-left: 2%;
+	
+	float: left;
+}
+
+div.leftColumn ul.nav {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+	
+	margin-bottom: 20px;
+	
+	border: 1px solid #ddaa88;
+}
+div.leftColumn ul.nav li a:not(.list) {
+	display: block;
+}
+div.leftColumn ul.nav li {
+	padding: 6px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	
+	background-color: #fff6e0;
+}
+
+div.leftColumn ul.nav li.alt {
+	background-color: #fffcf4;
+}
+
+div.leftColumn ul[class="nav"] li:hover {	
+	background-color: #fff;
+	
+	text-decoration: underline;
+	
+	cursor: pointer;
+}
+
+
+
+div.leftColumn ul.nav li:first-child {
+	background-color: #ffccaa;
+	
+	padding: 4px;
+	font-weight: bold;
+}
+
+div.rightColumn {
+	
+	width: 72%;
+	margin-left: 1%;
+	margin-right: 2%;
+	
+	float: left;
+}
+
+div.rightColumn div.newsbox {
+	margin: 0px;
+	padding: 0px;
+	
+	margin-bottom: 20px;
+	
+	border: 1px solid #ddaa88;
+	
+	background-color: #fff;
+}
+
+div.rightColumn > h1 {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.rightColumn > p {
+	margin: 0px;
+	padding: 0px;
+	
+	padding-left: 5px;
+	padding-right: 5px;
+	
+	margin-bottom: 20px;
+	
+	font-size: 12px;
+}
+
+div.rightColumn div.newsbox div.newspost {
+	padding: 10px;
+	padding-bottom: 6px;
+}
+
+div.rightColumn div.newsbox div.newspost:last-child {
+	margin-bottom: 10px;
+}
+
+div.rightColumn div.newsbox h1 {
+	background-color: #ffccaa;
+	
+	padding: 4px;
+	margin: 0px;
+	font-weight: bold;
+	
+	font-size: 11px;
+}
+
+div.rightColumn div.newsbox div.newspost div:first-child {
+	padding: 6px;
+	
+	font-size: 11px;
+	
+	background-color: #ffffee;
+	
+	border: 1px solid #ffccaa;
+	
+	margin-bottom: 10px;
+	
+	overflow: hidden;
+}
+
+div.rightColumn div.newsbox div.newspost div:first-child h2 {
+	float: left;
+	font-size: 15px;
+	
+	margin: 0px;
+
+}
+
+div.rightColumn div.newsbox div.newspost div:first-child span {
+	
+	float: right;
+	padding-top: 2px;
+}
+
+div.rightColumn div.newsbox div.newspost p {
+	margin: 0px;
+	padding: 0px;
+	
+	padding-bottom: 10px;
+	
+	padding-left: 10px;
+	padding-right: 10px;
+	
+	/*border-bottom: 1px solid #ffccaa; */
+}
+
+div.minnewspost {
+	min-height:240px;
+}
+
+img.link_thumb {
+	width: 300px;	
+}
+
+div.link_thumb {
+	float: right;
+	clip: rect(0px, 300px, 200px, 0px);
+	overflow: hidden;
+	margin: 0px;
+	width: 300px;
+	height: 200px;
+	padding: 0px;
+	
+	padding-bottom: 10px;
+	
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+div.boardlist {
+	padding: 10px!important;
+}
+
+div.boardlist h1 {
+	margin: -10px!important;
+	margin-bottom: 10px!important;
+}
+
+table.boardlist {
+	width: 100%;
+	
+	
+	border-spacing: 1px;
+}
+
+table.boardlist tr:first-child td {
+	background-color: #ffccaa;
+	
+	font-weight: bold;
+}
+
+table.boardstatus tr:last-child td {
+	background-color: #ffccaa;
+	
+	font-weight: bold;
+}
+
+table.boardlist tr td {
+	padding: 4px;
+	
+	background-color: #fff6e0;
+}
+
+table.boardlist tr.alt td {
+	background-color: #fffcf4;
+}
+
+table.boardlist tr td:first-child {
+	text-align: center;
+}
+div.wrap {
+	min-height: 100%;
+}
+div.main {
+	overflow: auto;
+	padding-bottom: 105px;
+}
+div.footer {
+	margin-left: 1%;
+	margin-right: 1%;
+	text-align: center;
+	background-color: #fff6e0;
+	position: relative;
+	margin-top: -105px; 
+	height: 105px;
+	clear: both;
+}
+/*Opera Fix*/
+body:before {
+	content:"";
+	height:100%;
+	float:left;
+	width:0;
+	margin-top:-32767px;/
+}
+
+div.boardlst ul {
+	list-style: none;
+}	
+
+div.boardlst ul li {
+	background-color: #fff6e0;
+}
+
+div.boardlst ul li.alt {
+	background-color: #fffcf4;
+}
+
+div.boardlst ul li a {
+	display: block;
+	font-size: 20px;
+}
+
+div.indexIcon {
+	float: left;
+	margin-right: 1%;
+}
+
+div.link_image {
+	height: 800px; 
+	width: 600px;  
+	clip: rect(0px, 800px, 600px, 0px); 
+	overflow: hidden; 
+}
+
+div.link_title {
+	
+}
+
+div.link_desc {
+	
+}
+
+div.link_props {
+	
+}
+
+div.columns {
+	-moz-column-count: 3;
+	-webkit-column-count: 3;
+	-moz-column-gap: 20px;
+	-webkit-column-gap: 20px;
+}
+
+div.pagination {
+	margin: 20px;
+}
+
+div#taglist {
+	background-color: #FFFCF4;
+}
+
+
