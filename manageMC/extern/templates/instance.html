@@ -13,26 +13,26 @@
                 </div>
                 <p class="News">
                     {% if instance.description %}
-	                    <br/><b>Description: </b>
+	                    <br /><b>Description: </b>
 	                    <p>
 	                        {{ instance.description|linebreaks }}                        
 	                    </p>
 	                {% endif %}
                     
-                    <b>Status: </b> {{ instance.get_status_display }}<br/>
+                    <b>Status: </b> {{ instance.get_status_display }}<br />
                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
                                              {% if instance.owner.get_profile.screenname %}   
                                                  {{ instance.owner.get_profile.screenname }}
                                              {% else %}
                                                  {{ instance.owner.username }}
                                              {% endif %}
-                                       </a><br/>
+                                       </a><br />
                     {% if user.is_staff %}
-                        <b>Internal IP: </b> {{ instance.internalIP }}<br/>
-                        <b>Internal Port: </b> {{ instance.port }}<br/>
-                        <b>System: </b> {{ instance.system }}<br/>
+                        <b>Internal IP: </b> {{ instance.internalIP }}<br />
+                        <b>Internal Port: </b> {{ instance.port }}<br />
+                        <b>System: </b> {{ instance.system }}<br />
                     {% endif %}
-                    <br/>
+                    <br />
                     
                     <b>Connection Info</b>
                     <ul>

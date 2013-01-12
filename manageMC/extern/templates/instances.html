@@ -39,20 +39,20 @@
 	                     <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
 	                 </div>
 	                 <p class="News">                        
-	                     <b>Status: </b>{{ instance.get_status_display }}<br/>
+	                     <b>Status: </b>{{ instance.get_status_display }}<br />
 	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
 	                                         {% if instance.owner.get_profile.screenname %}   
 		                                         {{ instance.owner.get_profile.screenname }}
 		                                     {% else %}
 		                                         {{ instance.owner.username }}
 		                                     {% endif %}
-	                                   </a><br/>
+	                                   </a><br />
 	                     {% if user.is_staff %}
-	                         <b>Internal IP: </b> {{ instance.internalIP }}<br/>
-	                         <b>Internal Port: </b> {{ instance.port }}<br/>
-	                         <b>System: </b> {{ instance.system }}<br/>
+	                         <b>Internal IP: </b> {{ instance.internalIP }}<br />
+	                         <b>Internal Port: </b> {{ instance.port }}<br />
+	                         <b>System: </b> {{ instance.system }}<br />
 	                     {% endif %}
-	                     <br/>
+	                     <br />
 	                     
 	                     <b>Connection Info</b>
 	                     <ul>
@@ -60,7 +60,7 @@
 	                             <li>{{ info.host }}:{{ info.port }}</li>
 	                         {% endfor %}
 	                     </ul>
-	                     <br/>
+	                     <br />
 	                     <b>Server Admins: </b>
 	                     <ul>
 	                         {% for admin in instance.admins.all %}
@@ -73,7 +73,7 @@
                                  </a></li>
 	                         {% endfor %}
 	                     </ul>
-	                     <br/>
+	                     <br />
 	                 </p>
                  </div>
             {% endcache %}

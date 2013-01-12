@@ -24,21 +24,21 @@
                     <span>{{ dUser.get_profile.publicName }}</span>
                 </div>
                 <p class="News">
-                    <b>Site Username: </b>{{ dUser.username }}<br/>
-                    <b>Active: </b>{{ dUser.is_active|yesno }}<br/>
-                    <b>Staff: </b>{{ dUser.is_staff|yesno }}<br/>
-                    <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br/>
-                    <b>Date Joined: </b>{{ dUser.date_joined }}<br/>
+                    <b>Site Username: </b>{{ dUser.username }}<br />
+                    <b>Active: </b>{{ dUser.is_active|yesno }}<br />
+                    <b>Staff: </b>{{ dUser.is_staff|yesno }}<br />
+                    <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br />
+                    <b>Date Joined: </b>{{ dUser.date_joined }}<br />
                     
                     {% if user.is_staff %}                        
-                        <b>Username: </b>{{ dUser.username }}<br/>
-                        <b>Given Name: </b>{{ dUser.get_full_name }}<br/>
-                        <b>Email: </b>{{ dUser.email }}<br/>
-                        <b>Last Login: </b>{{ dUser.last_login }}<br/>
+                        <b>Username: </b>{{ dUser.username }}<br />
+                        <b>Given Name: </b>{{ dUser.get_full_name }}<br />
+                        <b>Email: </b>{{ dUser.email }}<br />
+                        <b>Last Login: </b>{{ dUser.last_login }}<br />
                     {% endif %}
-                    <br/>
+                    <br />
                     
-                    <b>Miscellaneous Contact Info: </b><br/>
+                    <b>Miscellaneous Contact Info: </b><br />
                     <p>
                         {% if dUser.get_profile.miscContactInfo %}
                             {{ dUser.get_profile.miscContactInfo|linebreaks }}
