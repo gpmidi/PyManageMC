@@ -30,11 +30,15 @@
                         <b>Last Login</b>{{ user.last_login }}<br/>
                     {% endif %}
                     <br/>
+                    
                     <b>Miscellaneous Contact Info: </b><br/>
                     <p>
-                        {{ user.get_profile.miscContactInfo|linebreaks }}                        
+                        {% if user.get_profile.miscContactInfo %}
+                            {{ user.get_profile.miscContactInfo|linebreaks }}
+                        {% else %}
+                            <i>None</i>
+                        {% endif %}                        
                     </p>
-                    
                 </p>
             </div>
         </div>
