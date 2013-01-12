@@ -38,7 +38,7 @@
 	                     </h2>
 	                     <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
 	                 </div>
-	                 <p class="News">                        
+	                 <div class="News">                        
 	                     <b>Status: </b>{{ instance.get_status_display }}<br />
 	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
 	                                         {% if instance.owner.get_profile.screenname %}   
@@ -74,7 +74,7 @@
 	                         {% endfor %}
 	                     </ul>
 	                     <br />
-	                 </p>
+	                 </div>
                  </div>
             {% endcache %}
         {% endfor %}

@@ -11,7 +11,7 @@
                     <h2 class="NewsTitle">{{ instance.humanName }}</h2>
                     <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
                 </div>
-                <p class="News">
+                <div class="News">
                     {% if instance.description %}
 	                    <br /><b>Description: </b>
 	                    <p>
@@ -53,7 +53,7 @@
                             </a></li>
                         {% endfor %}
                     </ul>
-                </p>
+                </div>
             </div>
         </div>
     {% endcache %}

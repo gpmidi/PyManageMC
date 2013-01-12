@@ -23,7 +23,7 @@
                     </h2>
                     <span>{{ dUser.get_profile.publicName }}</span>
                 </div>
-                <p class="News">
+                <div class="News">
                     <b>Site Username: </b>{{ dUser.username }}<br />
                     <b>Active: </b>{{ dUser.is_active|yesno }}<br />
                     <b>Staff: </b>{{ dUser.is_staff|yesno }}<br />
@@ -46,7 +46,7 @@
                             <i>None</i>
                         {% endif %}                        
                     </p>
-                </p>
+                </div>
             </div>
         </div>
     {% endcache %}
