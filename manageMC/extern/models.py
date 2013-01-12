@@ -521,7 +521,7 @@ class ServerInstance(models.Model):
                     # Element zero - The raw value stored in the DB
                     return map(lambda x: x[0], statuses)
                 else:
-                    raise ValueError("Refrence type must be Pretty or Actual, not %r" % refrenceType)
+                    raise ValueError("Reference type must be Pretty or Actual, not %r" % refrenceType)
         raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
     
     
