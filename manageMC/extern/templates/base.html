@@ -28,19 +28,8 @@
         <div class="leftColumn">
             <ul class="nav">    
                 <li>Main</li>
-                    <li><a href="/">Home</a></li>
-                    <li><a title="Displays how many images, views, and other stats for each of the channels mirrored. " href="/boardstatus/">Board Status</a></li>
-                    <li><a title="Displays a list of all tags that images have been tagged with. Clicking on a tag will display all images with that tag and give a link to an RSS/Atom feed for that tag. " href="/tag/">Tags</a></li>
-                    <li><a title="Displays all images that have been saved in a particular channel. " href="/saved/">Saved Images</a></li>
-                    <li><a title="Halp!" href="/info/">FAQ</a></li>
-                    <li><a title="Other places" href="/links/">LulzLunch Recommended Links</a></li>
-                    <li><a title="The root of all evil" onclick="_trackEvent('_trackEvent','Site', 'Exit', 'http://www.4chan.org/')" href="http://www.4chan.org/">4chan</a></li>
-                    <li><a title="A list of RSS and Atom feeds that are availiable. " href="/feeds/">RSS/Atom Feeds</a></li>
-                    <li>
-                        Images By Rating: 
-                        <a class="list" title="Display very popular images" href="/popular/4/">:-D</a> / <a class="list" title="Display popular images" href="/popular/3/">:-)</a> / <a class="list" title="Display normal images" href="/popular/2/">:-|</a> / <a class="list" title="Display unpopular images" href="/popular/1/">:-(</a> / <a class="list" title="Display very unpopular images" href="/popular/0/">:,(</a>
-                    </li>
-                    <li><a href="/web/link/" title="View all known links">User Submitted Links</a></li>                 
+                    <li><a href="/" title="Main page">Home</a></li>
+                    <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>                                     
             </ul>
             {# TODO: Check and see if using user.username forces a query #}
             {% cache 86400 usernavbar0 user.username %}

@@ -29,7 +29,7 @@ def index(req):
                                         modified__gt = datetime.datetime.now() - datetime.timedelta(days = 7),
                                         ).order_by('-created')[:3]
     return render_to_response(
-                              '',
+                              'index.html',
                               dict(
                                    news = news,
                                     ),
@@ -41,7 +41,7 @@ def instance(req, name):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = name)
     return render_to_response(
-                              '',
+                              'instance.html',
                               dict(
                                    serverInstance = inst,
                                    ),
@@ -55,7 +55,7 @@ def instances(req, statusIs = None):
     if statusIs is not None:
         inst = inst.filter(status = statusIs)
     return render_to_response(
-                              '',
+                              'instances.html',
                               dict(
                                    serverInstances = inst,
                                    ),
