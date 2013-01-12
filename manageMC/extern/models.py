@@ -407,26 +407,27 @@ class ServerInstance(models.Model):
     
     # @warning: Both the status name and the group name MUST be valid as-is in URLs
     SERVER_STATUS = (
-                       ('Active', (# 100-199
-                            (100, "Active"),
-                            (101, "On-Demand"),
+                       ('Active', (
+                            ('active', "Active"),
+                            ('ondemand', "On-Demand"),
                             )
                         ),
-                     ('Inactive', (# 0-99
-                            (0, "Created"),
-                            (1, "Archived"),
-                            (2, "Unknown"),
-                            (3, "Deleted"),
-                            (4, "On-Hold"),
+                     ('Inactive', (
+                            ('created', "Created"),
+                            ('archived', "Archived"),
+                            ('unknown', "Unknown"),
+                            ('deleted', "Deleted"),
+                            ('onhold', "On-Hold"),
                             )
                         ),
                    )
-    status = models.SmallIntegerField(
-                                      null = False,
-                                      default = "Created",
-                                      choices = SERVER_STATUS,
-                                      verbose_name = "Status",
-                                      )
+    status = models.CharField(
+                              null = False,
+                              default = "created",
+                              max_length = 32,
+                              choices = SERVER_STATUS,
+                              verbose_name = "Status",
+                              )
     humanName = models.CharField(
                             null = False,
                             blank = False,
@@ -478,15 +479,21 @@ class ServerInstance(models.Model):
     
     
     @classmethod
-    def listStatuses(cls, forceLowerCase = False):
-        """ List out all statuses """
+    def listStatuses(cls, forceLowerCase = False, retActualName = False):
+        """ List out all statuses 
+        @param forceLowerCase: All returned data should be in lowercase
+        @param retActualName: Return the name stored in the DB, not the "Pretty" name  
+        """
         ret = []
         for group, statuses in cls.SERVER_STATUS:
-            for pk, name in statuses:
-                if forceLowerCase:
-                    ret.append(name.lower())
+            for actualName, name in statuses:
+                if retActualName:
+                    value = actualName
                 else:
-                    ret.append(name)
+                    value = name
+                if forceLowerCase:
+                    value = value.lower()
+                ret.append(value)
         return ret
     
     
