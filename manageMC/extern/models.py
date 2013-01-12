@@ -498,6 +498,17 @@ class ServerInstance(models.Model):
     
     
     @classmethod
+    def listStatusFull(cls):
+        """ Return a list of all statuses as (actualName,humanName)  
+        """
+        ret = []
+        for group, statuses in cls.SERVER_STATUS:
+            for stat in statuses:
+                ret.append(stat)
+        return ret
+    
+    
+    @classmethod
     def statusGroup(cls, group, refrenceType = "Pretty", exactCase = False):
         groups = []
         for checkGroup, statuses in cls.SERVER_STATUS:
