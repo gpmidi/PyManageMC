@@ -17,8 +17,12 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
-from models import *
+from django.http import Http404
+
 import datetime
+
+from models import *
+
 
 def index(req):
     """ Main page"""
@@ -68,9 +72,12 @@ def instances(req, statusIs = None, statusIsInGroup = None):
     if statusIs is not None:
         inst = inst.filter(status = statusIs)
     if statusIsInGroup is not None:
-        inst = inst.filter(status__in = ServerInstance.statusGroup('Active', exactCase = False))
+        try:
+            inst = inst.filter(status__in = ServerInstance.statusGroup('Active', refrenceType = "Actual", exactCase = False))
+        except ValueError, e:
+            raise Http404("Invalid group %r" % statusIsInGroup)
     groups = ServerInstance.listStatusGroups(forceLowerCase = True)
-    statuses = ServerInstance.listStatuses(forceLowerCase = True)
+    statuses = ServerInstance.listStatusFull()
     return render_to_response(
                               'instances.html',
                               dict(

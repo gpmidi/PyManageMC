@@ -17,7 +17,7 @@
         <ul class="nav nohover">
             <li>By Status</li>
 			{% for status in serverStatuses %}
-			    <li><a href="/e/instances/status/{{ status }}/">{{ status|capfirst }}</a></li>      
+			    <li><a href="/e/instances/status/{{ status.0 }}/">{{ status.1 }}</a></li>      
 			{% endfor %}
         </ul>       
         
