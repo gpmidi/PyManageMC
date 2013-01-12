@@ -37,9 +37,9 @@ def index(req):
                               )
 
 
-def instance(req, name):
+def instance(req, instanceSlug):
     """ Display a server instance """
-    inst = get_object_or_404(ServerInstance, name = name)
+    inst = get_object_or_404(ServerInstance, name = instanceSlug)
     return render_to_response(
                               'instance.html',
                               dict(
@@ -49,15 +49,21 @@ def instance(req, name):
                               )
 
 
-def instances(req, statusIs = None):
+def instances(req, statusIs = None, statusIsInGroup = None):
     """ Display all server instances """
     inst = ServerInstance.objects.all()
     if statusIs is not None:
         inst = inst.filter(status = statusIs)
+    if statusIsInGroup is not None:
+        inst = inst.filter(status__in = ServerInstance.statusGroup('Active', exactCase = False))
+    groups = ServerInstance.listStatusGroups(forceLowerCase = True)
+    statuses = ServerInstance.listStatuses(forceLowerCase = True)
     return render_to_response(
                               'instances.html',
                               dict(
                                    serverInstances = inst,
+                                   serverStatusGroups = groups,
+                                   serverStatuses = statuses,
                                    ),
                               context_instance = RequestContext(req),
                               )

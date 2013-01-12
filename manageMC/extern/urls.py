@@ -19,6 +19,8 @@ from django.conf.urls import patterns, include, url
 urlpatterns = patterns('extern.views',
     url(r'^(?:/)?$', 'index'),
     # Server instances
-    url(r'^instances(?:/)?$', 'instances'),
-    url(r'^instances/([a-zA-Z0-9\-_]+)(?:/)?$', 'instance'),
+    url(r'^instances(?:/)?$', 'instances', name = "ListAllInstances"),
+    url(r'^instances/statusgroup/(?P<statusIsInGroup>active|inactive)(?:/)?$', 'instances', name = "ListInstancesOfType"),
+    url(r'^instances/status/(?P<statusIs>[^/]+)(?:/)?$', 'instances', name = "ListInstancesByStatus"),
+    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name = "InstanceObject"),
 )

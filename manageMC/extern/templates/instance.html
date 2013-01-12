@@ -4,26 +4,44 @@
 
 {% block body %}
     {% cache 60 indexbody0 %}
-        <h1 class="IntroTitle">{{ SiteHumanName }}</h1>
-        {% if IntroText %}
-            <p class="IntroText">
-                {{ IntroText|linebreaks }}
-            </p>
-        {% endif %}
-        
         <div class="newsbox">
-            <h1>News</h1>
-            {% for post in news %}
-                <div class="newspost">
-                    <div>
-                        <h2 class="NewsTitle">{{ post.title }}</h2>
-                        <span>Posted at {{ post.created }}</span>
-                    </div>
-                    {% autoescape off %}
-                        <p class="News">{{ post.body|linebreaks }}</p>
-                    {% endautoescape %}
+            <h1>Minecraft Server {{ instance.name }}</h1>
+            <div class="newspost">
+                <div>
+                    <h2 class="NewsTitle">{{ instance.humanName }}</h2>
+                    <span>ID {{ instance.name }} ({{ instance.status }})</span>
                 </div>
-            {% endfor %}
+                <p class="News">
+                    <b>Description: </b><br/>
+                    <p>
+                        {{ instance.description }}                        
+                    </p>
+                    
+                    <b>Status: </b> {{ instance.status }}<br/>
+                    
+                    <b>Connection Info</b><br/>
+                    <ul>
+                        {% for info in instance.serverinstanceexternalinfo_set.all %}
+                            <li>{{ info.host:info.port }}</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <b>Owner: </b> {{ instance.owner}}<br/>
+                    
+                    <b>Admins: </b><br/>
+                    <ul>
+                        {% for admin in instance.admins.all %}
+                            <li>{{ admin }}</li>
+                        {% endfor %}
+                    </ul>
+                    
+                    {% if user.is_staff %}
+                        <b>Internal IP: </b> {{ instance.internalIP }}<br/>
+                        <b>Internal Port: </b> {{ instance.port }}<br/>
+                        <b>System: </b> {{ instance.system }}<br/>
+                    {% endif %}
+                </p>
+            </div>
         </div>
     {% endcache %}
 {% endblock %}

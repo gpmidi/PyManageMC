@@ -402,11 +402,11 @@ class ServerInstance(models.Model):
                               help_text = "The user that is ultimately responsible for this server instance",
                               )
     
+    # @warning: Both the status name and the group name MUST be valid as-is in URLs
     SERVER_STATUS = (
                        ('Active', (# 100-199
                             (100, "Active"),
                             (101, "On-Demand"),
-                            (102, "On-Hold"),
                             )
                         ),
                      ('Inactive', (# 0-99
@@ -414,6 +414,7 @@ class ServerInstance(models.Model):
                             (1, "Archived"),
                             (2, "Unknown"),
                             (3, "Deleted"),
+                            (4, "On-Hold"),
                             )
                         ),
                    )
@@ -459,6 +460,47 @@ class ServerInstance(models.Model):
                                              MaxValueValidator(65535),
                                              ],
                                )
+    
+    
+    @classmethod
+    def listStatusGroups(cls, forceLowerCase = False):
+        """ List out all status groups """
+        groups = []
+        for group, statuses in cls.SERVER_STATUS:
+            if forceLowerCase:
+                groups.append(group.lower())
+            else:
+                groups.append(group)
+        return groups
+    
+    
+    @classmethod
+    def listStatuses(cls, forceLowerCase = False):
+        """ List out all statuses """
+        statuses = []
+        for group, statuses in cls.SERVER_STATUS:
+            for pk, name in statuses:
+                if forceLowerCase:
+                    statuses.append(name.lower())
+                else:
+                    statuses.append(name)
+        return statuses
+    
+    
+    @classmethod
+    def statusGroup(cls, group, refrenceType = "Pretty", exactCase = False):
+        groups = []
+        for checkGroup, statuses in cls.SERVER_STATUS:
+            groups.append(checkGroup)
+            if (group == checkGroup and exactCase) or (group.lower() == checkGroup.lower() and not exactCase):
+                if refrenceType == "Pretty":
+                    # Element one (the "human name") for the status
+                    return map(lambda x: x[1], statuses)
+                else:
+                    # Element zero - The raw value stored in the DB
+                    return map(lambda x: x[0], statuses)
+        raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
+    
     
     def __str__(self):
         return "Instance %s" % self.name
