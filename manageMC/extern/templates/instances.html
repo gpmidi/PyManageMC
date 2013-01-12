@@ -45,7 +45,7 @@
                         <b>Connection Info</b><br/>
                         <ul>
                             {% for info in instance.serverinstanceexternalinfo_set.all %}
-                                <li>{{ info.host:info.port }}</li>
+                                <li>{{ info.host }}:{{ info.port }}</li>
                             {% endfor %}
                         </ul>
                         
