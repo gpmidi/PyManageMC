@@ -32,7 +32,7 @@
                     <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>                                     
             </ul>
             {# TODO: Check and see if using user.username forces a query #}
-            {% cache 86400 usernavbar0 user.pk %}
+            {% cache 86400 usernavbar0 user.id %}
 	            <ul class="nav">
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
