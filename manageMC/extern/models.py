@@ -23,6 +23,8 @@ from django.contrib import admin
 
 
 class News(models.Model):
+    verbose_name = "news"
+    verbose_name_plural = "news"
     title = models.CharField(
                             null = False,
                             max_length = 1024,
