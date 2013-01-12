@@ -134,7 +134,7 @@ class MinecraftUsername(models.Model):
                                 'UserProfile',
                                 null = False,
                                 )
-    username = models.EmailField(
+    username = models.CharField(
                                  null = False,
                                  verbose_name = "Minecraft Username",
                                  max_length = 255,

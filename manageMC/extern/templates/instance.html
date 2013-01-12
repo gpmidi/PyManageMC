@@ -18,7 +18,7 @@
                     </p>
                     
                     <b>Status: </b> {{ instance.status }}<br/>
-                    <b>Owner: </b> {{ instance.owner}}<br/>
+                    <b>Owner: </b> <a href="/e/users/{{ instance.owner.pk }}/" title="User Info">{{ instance.owner.get_profile.screenname }}</a><br/>
                     {% if user.is_staff %}
                         <b>Internal IP: </b> {{ instance.internalIP }}<br/>
                         <b>Internal Port: </b> {{ instance.port }}<br/>
@@ -36,7 +36,7 @@
                     <b>Server Admins: </b>
                     <ul>
                         {% for admin in instance.admins.all %}
-                            <li>{{ admin }}</li>
+                            <li><a href="/e/users/{{ admin.pk }}/" title="User Info">{{ admin.get_profile.screenname }}</a></li>
                         {% endfor %}
                     </ul>
                 </p>
