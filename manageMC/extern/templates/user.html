@@ -3,13 +3,13 @@
 {# User Info #}
 
 {% block title %}
-    {% cache 60 userTitle0 user.pk %}
+    {% cache 60 userTitle0 user.id %}
         User: {{ user.get_profile.screenname }}
     {% endcache %}
 {% endblock %} 
 
 {% block body %}
-    {% cache 60 userBody0 user.pk %}
+    {% cache 60 userBody0 user.id %}
         <div class="newsbox">
             <h1>User Info</h1>
             <div class="newspost">
@@ -27,7 +27,7 @@
                         <b>Username: </b>{{ user.username }}<br/>
                         <b>Given Name: </b>{{ user.get_full_name }}<br/>
                         <b>Email: </b>{{ user.email }}<br/>
-                        <b>Last Login</b>{{ user.last_login }}<br/>
+                        <b>Last Login: </b>{{ user.last_login }}<br/>
                     {% endif %}
                     <br/>
                     

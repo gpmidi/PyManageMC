@@ -3,7 +3,7 @@
 {# An instance #}
 
 {% block body %}
-    {% cache 60 instanceBody0 %}
+    {% cache 60 instanceBody1 user.is_staff %}
         <div class="newsbox">
             <h1>Minecraft Server {{ instance.name }}</h1>
             <div class="newspost">
