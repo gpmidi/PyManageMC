@@ -7,7 +7,7 @@
     
         {# Instance Group Listings #}
         <ul class="nav nohover">
-		    <li>By Status Type</li>
+		    <li>By Availability</li>
 	        {% for sgroup in serverStatusGroups %}
 	            <li><a href="/e/instances/statusgroup/{{ sgroup }}/">{{ sgroup|capfirst }}</a></li>      
             {% endfor %}

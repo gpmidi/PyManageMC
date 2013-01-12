@@ -73,7 +73,7 @@ def instances(req, statusIs = None, statusIsInGroup = None):
         inst = inst.filter(status = statusIs)
     if statusIsInGroup is not None:
         try:
-            inst = inst.filter(status__in = ServerInstance.statusGroup('Active', refrenceType = "Actual", exactCase = False))
+            inst = inst.filter(status__in = ServerInstance.statusGroup(statusIsInGroup, refrenceType = "Actual", exactCase = False))
         except ValueError, e:
             raise Http404("Invalid group %r" % statusIsInGroup)
     groups = ServerInstance.listStatusGroups(forceLowerCase = True)
