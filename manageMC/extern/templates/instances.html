@@ -25,45 +25,46 @@
 {% endblock %}
 
 {% block body %}
-    {% cache 60 instancesBody2 user.is_staff %}
-        <div class="newsbox">
-            <h1>Minecraft Servers</h1>
-            {% for instance in serverInstances %}
-                <div class="newspost">
-                    <div>
-                        <h2 class="NewsTitle">
-                            <a href="/e/instances/instance/{{ instance.name|urlencode }}/">
-                                {{ instance.humanName }}
-                            </a>
-                        </h2>
-                        <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
-                    </div>
-                    <p class="News">                        
-                        <b>Status: </b>{{ instance.get_status_display }}<br/>
-                        <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">{{ instance.owner.get_profile.screenname }}</a><br/>
-                        {% if user.is_staff %}
-                            <b>Internal IP: </b> {{ instance.internalIP }}<br/>
-                            <b>Internal Port: </b> {{ instance.port }}<br/>
-                            <b>System: </b> {{ instance.system }}<br/>
-                        {% endif %}
-                        <br/>
-                        
-                        <b>Connection Info</b>
-                        <ul>
-                            {% for info in instance.serverinstanceexternalinfo_set.all %}
-                                <li>{{ info.host }}:{{ info.port }}</li>
-                            {% endfor %}
-                        </ul>
-                        
-                        <b>Server Admins: </b>
-                        <ul>
-                            {% for admin in instance.admins.all %}
-                                <li><a href="/e/users/{{ admin.pk }}/" title="User Info">{{ admin.get_profile.screenname }}</a></li>
-                            {% endfor %}
-                        </ul>
-                    </p>
-                </div>
-            {% endfor %}
-        </div>
-    {% endcache %}
+    <div class="newsbox">
+        <h1>Minecraft Servers</h1>
+        {% for instance in serverInstances %}
+            {% cache 60 bodyInstance0 instance.pk user.is_staff %}
+                 <div class="newspost">
+	                 <div>
+	                     <h2 class="NewsTitle">
+	                         <a href="/e/instances/instance/{{ instance.name|urlencode }}/">
+	                             {{ instance.humanName }}
+	                         </a>
+	                     </h2>
+	                     <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
+	                 </div>
+	                 <p class="News">                        
+	                     <b>Status: </b>{{ instance.get_status_display }}<br/>
+	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">{{ instance.owner.get_profile.screenname }}</a><br/>
+	                     {% if user.is_staff %}
+	                         <b>Internal IP: </b> {{ instance.internalIP }}<br/>
+	                         <b>Internal Port: </b> {{ instance.port }}<br/>
+	                         <b>System: </b> {{ instance.system }}<br/>
+	                     {% endif %}
+	                     <br/>
+	                     
+	                     <b>Connection Info</b>
+	                     <ul>
+	                         {% for info in instance.serverinstanceexternalinfo_set.all %}
+	                             <li>{{ info.host }}:{{ info.port }}</li>
+	                         {% endfor %}
+	                     </ul>
+	                     
+	                     <b>Server Admins: </b>
+	                     <ul>
+	                         {% for admin in instance.admins.all %}
+	                             <li><a href="/e/users/{{ admin.pk }}/" title="User Info">{{ admin.get_profile.screenname }}</a></li>
+	                         {% endfor %}
+	                     </ul>
+	                 </p>
+                 </div>
+            {% endcache %}
+        {% endfor %}
+    </div>
+    
 {% endblock %}
