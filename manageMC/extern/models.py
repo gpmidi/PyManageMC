@@ -297,6 +297,9 @@ class ServerSystem(models.Model):
                               verbose_name = "Owner",
                               help_text = "The user that is ultimately responsible for this server",
                               )
+    
+    def __str__(self):
+        return "System %r" % self.name
 
 class ServerSystemAdmin(admin.ModelAdmin):
     inlines = [
@@ -426,8 +429,8 @@ class ServerInstance(models.Model):
     port = models.IntegerField(
                                null = False,
                                default = 25565,
-                               verbose_name = "Port",
-                               help_text = "The TCP port that the server listens on",
+                               verbose_name = "Internal Port",
+                               help_text = "The TCP port that the server listens on internally",
                                validators = [
                                              MinValueValidator(1),
                                              MaxValueValidator(65535),
