@@ -124,6 +124,7 @@ class ExtraUserEmail(models.Model):
         
 class ExtraUserEmailInline(admin.TabularInline):
     model = ExtraUserEmail
+    extra = 0
 
 
 class MinecraftUsername(models.Model):
@@ -162,6 +163,7 @@ class MinecraftUsername(models.Model):
         
 class MinecraftUsernameInline(admin.TabularInline):
     model = MinecraftUsername
+    extra = 0
 
 
 class UserPhoneNumber(models.Model):
@@ -208,6 +210,7 @@ class UserPhoneNumber(models.Model):
     
 class UserPhoneNumberInline(admin.TabularInline):
     model = UserPhoneNumber
+    extra = 0
 
 
 class UserProfile(models.Model):
