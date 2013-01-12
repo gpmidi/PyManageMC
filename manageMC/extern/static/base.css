@@ -9,7 +9,7 @@ a {
 
 body {
 	height: 100%;
-	background-image: url('{{ STATIC_URL }}/fade2.png');
+	background-image: url('/static/fade2.png');
 	background-repeat: repeat-x;
 	
 	background-color: #FFE;
