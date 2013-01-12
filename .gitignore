@@ -3,4 +3,4 @@
 *.pyc
 local_settings.py
 /.settings
-/src/manageMC/manageMC/settings.py
+/manageMC/manageMC/settings.py
