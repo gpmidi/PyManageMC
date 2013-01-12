@@ -18,10 +18,10 @@
                     <span>{{ user.get_profile.publicName }}</span>
                 </div>
                 <p class="News">
-                    <b>Active</b>{{ user.is_active|yesno }}<br/>
-                    <b>Staff</b>{{ user.is_staff|yesno }}<br/>
-                    <b>Site Admin</b>{{ user.is_superuser|yesno }}<br/>
-                    <b>Date Joined</b>{{ user.date_joined }}<br/>
+                    <b>Active: </b>{{ user.is_active|yesno }}<br/>
+                    <b>Staff: </b>{{ user.is_staff|yesno }}<br/>
+                    <b>Site Admin: </b>{{ user.is_superuser|yesno }}<br/>
+                    <b>Date Joined: </b>{{ user.date_joined }}<br/>
                     
                     {% if user.is_staff %}                        
                         <b>Username: </b>{{ user.username }}<br/>
@@ -29,7 +29,7 @@
                         <b>Email: </b>{{ user.email }}<br/>
                         <b>Last Login</b>{{ user.last_login }}<br/>
                     {% endif %}
-                    
+                    <br/>
                     <b>Miscellaneous Contact Info: </b><br/>
                     <p>
                         {{ user.get_profile.miscContactInfo|linebreaks }}                        

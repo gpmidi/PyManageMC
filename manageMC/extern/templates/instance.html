@@ -18,6 +18,13 @@
                     </p>
                     
                     <b>Status: </b> {{ instance.status }}<br/>
+                    <b>Owner: </b> {{ instance.owner}}<br/>
+                    {% if user.is_staff %}
+                        <b>Internal IP: </b> {{ instance.internalIP }}<br/>
+                        <b>Internal Port: </b> {{ instance.port }}<br/>
+                        <b>System: </b> {{ instance.system }}<br/>
+                    {% endif %}
+                    <br/>
                     
                     <b>Connection Info</b><br/>
                     <ul>
@@ -25,21 +32,13 @@
                             <li>{{ info.host }}:{{ info.port }}</li>
                         {% endfor %}
                     </ul>
-                    
-                    <b>Owner: </b> {{ instance.owner}}<br/>
-                    
-                    <b>Admins: </b><br/>
+
+                    <b>Server Admins: </b><br/>
                     <ul>
                         {% for admin in instance.admins.all %}
                             <li>{{ admin }}</li>
                         {% endfor %}
                     </ul>
-                    
-                    {% if user.is_staff %}
-                        <b>Internal IP: </b> {{ instance.internalIP }}<br/>
-                        <b>Internal Port: </b> {{ instance.port }}<br/>
-                        <b>System: </b> {{ instance.system }}<br/>
-                    {% endif %}
                 </p>
             </div>
         </div>
