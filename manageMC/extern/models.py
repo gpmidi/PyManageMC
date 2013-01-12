@@ -268,6 +268,7 @@ class ServerSystemIPs(models.Model):
 class ServerSystemIPsInline(admin.TabularInline):
     model = ServerSystemIPs
 
+
 class ServerSystem(models.Model):
     """ A physical or virtual system that one or more Minecraft servers run on """
     verbose_name = "system"
@@ -303,7 +304,7 @@ class ServerSystemAdmin(admin.ModelAdmin):
     ]
 
 admin.site.register(ServerSystem, ServerSystemAdmin)
-   
+
 
 class ServerInstanceExternalInfo(models.Model):
     """ Information to access a server - ie hostname/IP and port
@@ -341,7 +342,7 @@ class ServerInstanceExternalInfo(models.Model):
                                              ],
                                )
     instance = models.ForeignKey(
-                                 'ServerInstanceExternalInfo',
+                                 'ServerInstance',
                                  null = False,
                                  verbose_name = "Server Instance",
                                  help_text = "The server instance that this access is for",
