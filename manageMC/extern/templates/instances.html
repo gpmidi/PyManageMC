@@ -39,7 +39,7 @@
                         <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
                     </div>
                     <p class="News">                        
-                        <b>Status: </b> {{ instance.status }}<br/>
+                        <b>Status: </b> {{ instance.get_status_display }}<br/>
                         <b>Owner: </b> {{ instance.owner}}<br/>
                         {% if user.is_staff %}
                             <b>Internal IP: </b> {{ instance.internalIP }}<br/>
