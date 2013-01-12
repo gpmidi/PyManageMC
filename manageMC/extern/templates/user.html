@@ -9,7 +9,7 @@
 {% endblock %} 
 
 {% block body %}
-    {% cache 60 userBody0 dUser.id %}
+    {% cache 60 userBody0 dUser.id user.is_staff %}
         <div class="newsbox">
             <h1>User Info</h1>
             <div class="newspost">
@@ -23,7 +23,7 @@
                     <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br/>
                     <b>Date Joined: </b>{{ dUser.date_joined }}<br/>
                     
-                    {% if dUser.is_staff %}                        
+                    {% if user.is_staff %}                        
                         <b>Username: </b>{{ dUser.username }}<br/>
                         <b>Given Name: </b>{{ dUser.get_full_name }}<br/>
                         <b>Email: </b>{{ dUser.email }}<br/>
