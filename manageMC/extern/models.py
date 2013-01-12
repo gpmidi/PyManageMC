@@ -104,8 +104,15 @@ class ExtraUserEmail(models.Model):
                                 null = False,
                                 default = True,
                                 verbose_name = "Private",
-                                help_text = "Do not allow non-superusers to see this address. ",
+                                help_text = "Allow only superusers to see this",
                                 )
+    public = models.BooleanField(
+                                null = False,
+                                default = True,
+                                verbose_name = "Public",
+                                help_text = "Allow unauthenticated users to see this",
+                                )
+    
 
 admin.site.register(ExtraUserEmail)
 
@@ -125,7 +132,13 @@ class MinecraftUsername(models.Model):
                                 null = False,
                                 default = True,
                                 verbose_name = "Private",
-                                help_text = "Do not allow non-superusers to see this username",
+                                help_text = "Allow only superusers to see this",
+                                )
+    public = models.BooleanField(
+                                null = False,
+                                default = True,
+                                verbose_name = "Public",
+                                help_text = "Allow unauthenticated users to see this",
                                 )
     verified = models.BooleanField(
                                    null = False,
@@ -165,7 +178,13 @@ class UserPhoneNumber(models.Model):
                                 null = False,
                                 default = True,
                                 verbose_name = "Private",
-                                help_text = "Do not allow non-superusers to see this phone number",
+                                help_text = "Allow only superusers to see this",
+                                )
+    public = models.BooleanField(
+                                null = False,
+                                default = True,
+                                verbose_name = "Public",
+                                help_text = "Allow unauthenticated users to see this",
                                 )
 admin.site.register(UserPhoneNumber)
 
@@ -256,14 +275,14 @@ class ServerSystem(models.Model):
                             )
     admins = models.ManyToManyField(
                                     User,
-                                    related_name="serveradmins",
+                                    related_name = "serveradmins",
                                     null = False,
                                     verbose_name = "Admins",
                                     help_text = "Users who have administrative access to this server",
                                     )
     owner = models.ForeignKey(
                               User,
-                              related_name="serverowners",
+                              related_name = "serverowners",
                               null = False,
                               blank = False,
                               verbose_name = "Owner",
@@ -307,14 +326,14 @@ class ServerInstance(models.Model):
     admins = models.ManyToManyField(
                                     User,
                                     null = False,
-                                    related_name="instanceadmins",
+                                    related_name = "instanceadmins",
                                     verbose_name = "Admins",
                                     help_text = "Users who have administrative access to this server instance",
                                     )
     owner = models.ForeignKey(
                               User,
                               null = False,
-                              related_name="instanceowners",
+                              related_name = "instanceowners",
                               blank = False,
                               verbose_name = "Owner",
                               help_text = "The user that is ultimately responsible for this server instance",
