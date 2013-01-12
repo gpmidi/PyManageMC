@@ -246,8 +246,8 @@ admin.site.register(UserProfile, UserProfileAdmin)
 
 class ServerSystemIPs(models.Model):
     """ An internal IP address of a physical or virtual system that one or more Minecraft servers run on """
-    verbose_name = "system IP"
-    verbose_name_plural = "system IPs"
+    verbose_name = "system ip"
+    verbose_name_plural = "system ip"
     name = models.SlugField(
                             primary_key = True,
                             null = False,
