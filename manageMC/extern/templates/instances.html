@@ -48,14 +48,14 @@
                         {% endif %}
                         <br/>
                         
-                        <b>Connection Info</b><br/>
+                        <b>Connection Info</b>
                         <ul>
                             {% for info in instance.serverinstanceexternalinfo_set.all %}
                                 <li>{{ info.host }}:{{ info.port }}</li>
                             {% endfor %}
                         </ul>
                         
-                        <b>Server Admins: </b><br/>
+                        <b>Server Admins: </b>
                         <ul>
                             {% for admin in instance.admins.all %}
                                 <li>{{ admin }}</li>
