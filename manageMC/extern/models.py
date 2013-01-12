@@ -477,14 +477,14 @@ class ServerInstance(models.Model):
     @classmethod
     def listStatuses(cls, forceLowerCase = False):
         """ List out all statuses """
-        statuses = []
+        ret = []
         for group, statuses in cls.SERVER_STATUS:
             for pk, name in statuses:
                 if forceLowerCase:
-                    statuses.append(name.lower())
+                    ret.append(name.lower())
                 else:
-                    statuses.append(name)
-        return statuses
+                    ret.append(name)
+        return ret
     
     
     @classmethod
