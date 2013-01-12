@@ -16,9 +16,67 @@
 #===============================================================================
 
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from extern.validators import validateHostIP
 from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
+from django.contrib import admin
+
+
+class News(models.Model):
+    title = models.CharField(
+                            null = False,
+                            max_length = 1024,
+                            verbose_name = "Title",
+                            help_text = "Title of the post",
+                            )
+    body = models.TextField(
+                            null = False,
+                            blank = True,
+                            verbose_name = "Body",
+                            help_text = "",
+                            )
+    published = models.BooleanField(
+                                    null = False,
+                                    default = True,
+                                    verbose_name = "Published",
+                                    help_text = "Visible to external users",
+                                    )
+    frontpage = models.BooleanField(
+                                    null = False,
+                                    default = True,
+                                    verbose_name = "Front Page?",
+                                    help_text = "Visible on the front page",
+                                    )
+    created = models.DateTimeField(
+                                   auto_now_add = True,
+                                   null = False,
+                                   verbose_name = "Created",
+                                   help_text = "",
+                                   )
+    modified = models.DateTimeField(
+                                   auto_now = True,
+                                   null = False,
+                                   verbose_name = "Last Modified",
+                                   help_text = "",
+                                   )
+
+class NewsAdmin(admin.ModelAdmin):
+    list_filter = (
+                   'published',
+                   'frontpage',
+                   )
+    list_display = (
+                  'title',
+                  'published',
+                  'frontpage',
+                  'created',
+                  'modified',
+                  )
+    ordering = (
+                '-created',
+                ) 
+
+admin.site.register(News, NewsAdmin)
 
 class ExtraUserEmail(models.Model):
     profile = models.ForeignKey(
@@ -48,7 +106,10 @@ class ExtraUserEmail(models.Model):
                                 verbose_name = "Private",
                                 help_text = "Do not allow non-superusers to see this address. ",
                                 )
-    
+
+admin.site.register(ExtraUserEmail)
+
+
 class MinecraftUsername(models.Model):
     """ One of a minecraft user's in-game usernames """
     profile = models.ForeignKey(
@@ -72,6 +133,7 @@ class MinecraftUsername(models.Model):
                                    verbose_name = "Verified",
                                    help_text = "Has this address been verified",
                                    )
+admin.site.register(MinecraftUsername)
 
 
 class UserPhoneNumber(models.Model):
@@ -104,7 +166,8 @@ class UserPhoneNumber(models.Model):
                                 verbose_name = "Private",
                                 help_text = "Do not allow non-superusers to see this phone number",
                                 )
-    
+admin.site.register(UserPhoneNumber)
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -134,6 +197,8 @@ class UserProfile(models.Model):
                                        max_length = 65536,
                                        verbose_name = "Miscellaneous Contact Info",
                                        )
+admin.site.register(UserProfile)
+
 
 class ServerInstanceExternalInfo(models.Model):
     """ Information to access a server - ie hostname/IP and port
@@ -174,6 +239,7 @@ class ServerInstanceExternalInfo(models.Model):
                                  verbose_name = "Server Instance",
                                  help_text = "The server instance that this access is for",
                                  )
+admin.site.register(ServerInstanceExternalInfo)
 
 
 class ServerSystem(models.Model):
@@ -200,7 +266,8 @@ class ServerSystem(models.Model):
                               verbose_name = "Owner",
                               help_text = "The user that is ultimately responsible for this server",
                               )
-    
+admin.site.register(ServerSystem)
+   
 
 class ServerSystemIPs(models.Model):
     """ An internal IP address of a physical or virtual system that one or more Minecraft servers run on """
@@ -221,7 +288,9 @@ class ServerSystemIPs(models.Model):
                                ServerSystem,
                                verbose_name = "System",
                                )
-    
+admin.site.register(ServerSystemIPs)
+
+
 class ServerInstance(models.Model):
     name = models.SlugField(
                             primary_key = True,
@@ -303,3 +372,4 @@ class ServerInstance(models.Model):
                                              MaxValueValidator(65535),
                                              ],
                                )
+admin.site.register(ServerInstance)
