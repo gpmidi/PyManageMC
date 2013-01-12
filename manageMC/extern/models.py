@@ -254,7 +254,7 @@ class ServerSystemIPs(models.Model):
                             blank = False,
                             max_length = 255,
                             db_index = True,
-                            verbose_name = "System IP Name",
+                            verbose_name = "IP Name",
                             help_text = "A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
                             )
     ip = models.IPAddressField(
