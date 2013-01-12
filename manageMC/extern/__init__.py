@@ -14,3 +14,6 @@
 #    You should have received a copy of the GNU General Public License
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
+""" The overall MC site details such as users info and the base site. 
+
+"""
