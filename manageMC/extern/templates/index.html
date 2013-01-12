@@ -11,19 +11,21 @@
             </p>
         {% endif %}
         
-        <div class="newsbox">
-            <h1>News</h1>
-            {% for inst in serverInstances %}
-                <div class="newspost">
-                    <div>
-                        <h2 class="NewsTitle">{{ post.title }}</h2>
-                        <span>Posted at {{ post.created }}</span>
-                    </div>
-                    {% autoescape off %}
-                        <p class="News">{{ post.body|linebreaks }}</p>
-                    {% endautoescape %}
-                </div>
-            {% endfor %}
-        </div>
+        {% if news %}
+	        <div class="newsbox">
+	            <h1>News</h1>
+	            {% for post in news %}
+	                <div class="newspost">
+	                    <div>
+	                        <h2 class="NewsTitle">{{ post.title }}</h2>
+	                        <span>Posted at {{ post.created }}</span>
+	                    </div>
+	                    {% autoescape off %}
+	                        <p class="News">{{ post.body|linebreaks }}</p>
+	                    {% endautoescape %}
+	                </div>
+	            {% endfor %}
+	        </div>
+	    {% endif %}
     {% endcache %}
 {% endblock %}
