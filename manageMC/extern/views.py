@@ -36,7 +36,20 @@ def index(req):
                               context_instance = RequestContext(req),
                               )
 
+# User access
+def userView(req, userPK):
+    """ Show info about a particular user """
+    user = get_object_or_404(User, pk = userPK)
+    return render_to_response(
+                              'user.html',
+                              dict(
+                                   user = user,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
 
+
+# Server instance access
 def instance(req, instanceSlug):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = instanceSlug)

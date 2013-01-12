@@ -232,7 +232,7 @@ class UserProfile(models.Model):
                                   null = True,
                                   blank = True,
                                   max_length = 255,
-                                  verbose_name = "The user's publicly visible name. Optional. ",
+                                  verbose_name = "The user's publicly visible name. Should NOT be a screenname. Optional. ",
                                   )
     miscContactInfo = models.TextField(
                                        null = True,

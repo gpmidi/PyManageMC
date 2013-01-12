@@ -31,15 +31,14 @@
             {% for instance in serverInstances %}
                 <div class="newspost">
                     <div>
-                        <h2 class="NewsTitle">{{ instance.humanName }}</h2>
-                        <span>ID {{ instance.name }} ({{ instance.status }})</span>
+                        <h2 class="NewsTitle">
+                            <a href="/instances/instance/{{ instance.name|urlencode }}/">
+                                {{ instance.humanName }}
+                            </a>
+                        </h2>
+                        <span>ID <a href="/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
                     </div>
-                    <p class="News">
-                        <b>Description: </b><br/>
-                        <p>
-                            {{ instance.description }}                        
-                        </p>
-                        
+                    <p class="News">                        
                         <b>Status: </b> {{ instance.status }}<br/>
                         
                         <b>Connection Info</b><br/>

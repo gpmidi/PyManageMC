@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load cache %}
+{# User Info #}
+
+{% block title %}
+    {% cache 60 userTitle0 user.pk %}
+        User: {{ user.get_profile.screenname }}
+    {% endcache %}
+{% endblock %} 
+
+{% block body %}
+    {% cache 60 userBody0 user.pk %}
+        <div class="newsbox">
+            <h1>User Info</h1>
+            <div class="newspost">
+                <div>
+                    <h2 class="NewsTitle">{{ user.get_profile.screenname }}</h2>
+                    <span>{{ user.get_profile.publicName }}</span>
+                </div>
+                <p class="News">
+                    <b>Active</b>{{ user.is_active|yesno }}<br/>
+                    <b>Staff</b>{{ user.is_staff|yesno }}<br/>
+                    <b>Site Admin</b>{{ user.is_superuser|yesno }}<br/>
+                    <b>Date Joined</b>{{ user.date_joined }}<br/>
+                    
+                    {% if user.is_staff %}                        
+                        <b>Username: </b>{{ user.username }}<br/>
+                        <b>Given Name: </b>{{ user.get_full_name }}<br/>
+                        <b>Email: </b>{{ user.email }}<br/>
+                        <b>Last Login</b>{{ user.last_login }}<br/>
+                    {% endif %}
+                    
+                    <b>Miscellaneous Contact Info: </b><br/>
+                    <p>
+                        {{ user.get_profile.miscContactInfo|linebreaks }}                        
+                    </p>
+                    
+                </p>
+            </div>
+        </div>
+    {% endcache %}
+{% endblock %}

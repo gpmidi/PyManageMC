@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 {% load cache %}
-{# Default page #}
+{# An instance #}
 
 {% block body %}
-    {% cache 60 indexbody0 %}
+    {% cache 60 instanceBody0 %}
         <div class="newsbox">
             <h1>Minecraft Server {{ instance.name }}</h1>
             <div class="newspost">
                 <div>
                     <h2 class="NewsTitle">{{ instance.humanName }}</h2>
-                    <span>ID {{ instance.name }} ({{ instance.status }})</span>
+                    <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
                 </div>
                 <p class="News">
                     <b>Description: </b><br/>
                     <p>
-                        {{ instance.description }}                        
+                        {{ instance.description|linebreaks }}                        
                     </p>
                     
                     <b>Status: </b> {{ instance.status }}<br/>
