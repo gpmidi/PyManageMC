@@ -79,6 +79,8 @@ class NewsAdmin(admin.ModelAdmin):
 admin.site.register(News, NewsAdmin)
 
 class ExtraUserEmail(models.Model):
+    verbose_name = "user email"
+    verbose_name_plural = "user emails"
     profile = models.ForeignKey(
                                 'UserProfile',
                                 null = False,
@@ -108,17 +110,19 @@ class ExtraUserEmail(models.Model):
                                 )
     public = models.BooleanField(
                                 null = False,
-                                default = True,
+                                default = False,
                                 verbose_name = "Public",
                                 help_text = "Allow unauthenticated users to see this",
                                 )
-    
 
-admin.site.register(ExtraUserEmail)
+class ExtraUserEmailInline(admin.TabularInline):
+    model = ExtraUserEmail
 
 
 class MinecraftUsername(models.Model):
     """ One of a minecraft user's in-game usernames """
+    verbose_name = "minecraft username"
+    verbose_name_plural = "minecraft usernames"
     profile = models.ForeignKey(
                                 'UserProfile',
                                 null = False,
@@ -136,7 +140,7 @@ class MinecraftUsername(models.Model):
                                 )
     public = models.BooleanField(
                                 null = False,
-                                default = True,
+                                default = False,
                                 verbose_name = "Public",
                                 help_text = "Allow unauthenticated users to see this",
                                 )
@@ -146,10 +150,13 @@ class MinecraftUsername(models.Model):
                                    verbose_name = "Verified",
                                    help_text = "Has this address been verified",
                                    )
-admin.site.register(MinecraftUsername)
+class MinecraftUsernameInline(admin.TabularInline):
+    model = MinecraftUsername
 
 
 class UserPhoneNumber(models.Model):
+    verbose_name = "phone number"
+    verbose_name_plural = "phone numbers"
     profile = models.ForeignKey(
                                 'UserProfile',
                                 null = False,
@@ -182,14 +189,18 @@ class UserPhoneNumber(models.Model):
                                 )
     public = models.BooleanField(
                                 null = False,
-                                default = True,
+                                default = False,
                                 verbose_name = "Public",
                                 help_text = "Allow unauthenticated users to see this",
                                 )
-admin.site.register(UserPhoneNumber)
+            
+class UserPhoneNumberInline(admin.TabularInline):
+    model = UserPhoneNumber
 
 
 class UserProfile(models.Model):
+    verbose_name = "user info"
+    verbose_name_plural = "user info"
     user = models.OneToOneField(
                                 User,
                                 null = False,
@@ -217,12 +228,86 @@ class UserProfile(models.Model):
                                        max_length = 65536,
                                        verbose_name = "Miscellaneous Contact Info",
                                        )
-admin.site.register(UserProfile)
+    
+    def __str__(self):
+        return "%s's Profile" % self.user.username
 
+class UserProfileAdmin(admin.ModelAdmin):
+    inlines = [
+        MinecraftUsernameInline,
+        ExtraUserEmailInline,
+        UserPhoneNumberInline,
+    ]
+
+admin.site.register(UserProfile, UserProfileAdmin)
+
+
+class ServerSystemIPs(models.Model):
+    """ An internal IP address of a physical or virtual system that one or more Minecraft servers run on """
+    verbose_name = "system IP"
+    verbose_name_plural = "system IPs"
+    name = models.SlugField(
+                            primary_key = True,
+                            null = False,
+                            blank = False,
+                            max_length = 255,
+                            db_index = True,
+                            verbose_name = "System IP Name",
+                            help_text = "A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
+                            )
+    ip = models.IPAddressField(
+                               null = False,
+                               verbose_name = "IP",
+                               )
+    system = models.ForeignKey(
+                               'ServerSystem',
+                               verbose_name = "System",
+                               )
+class ServerSystemIPsInline(admin.TabularInline):
+    model = ServerSystemIPs
+
+class ServerSystem(models.Model):
+    """ A physical or virtual system that one or more Minecraft servers run on """
+    verbose_name = "system"
+    verbose_name_plural = "systems"
+    name = models.SlugField(
+                            primary_key = True,
+                            null = False,
+                            blank = False,
+                            max_length = 255,
+                            db_index = True,
+                            verbose_name = "System Name",
+                            help_text = "A short, computer friendly name for this system/server/box. May only included letters, numbers, underscores, and hyphens. ",
+                            )
+    admins = models.ManyToManyField(
+                                    User,
+                                    related_name = "serveradmins",
+                                    null = False,
+                                    verbose_name = "Admins",
+                                    help_text = "Users who have administrative access to this server",
+                                    )
+    owner = models.ForeignKey(
+                              User,
+                              related_name = "serverowners",
+                              null = False,
+                              blank = False,
+                              verbose_name = "Owner",
+                              help_text = "The user that is ultimately responsible for this server",
+                              )
+
+class ServerSystemAdmin(admin.ModelAdmin):
+    inlines = [
+               ServerSystemIPsInline,
+    ]
+
+admin.site.register(ServerSystem, ServerSystemAdmin)
+   
 
 class ServerInstanceExternalInfo(models.Model):
     """ Information to access a server - ie hostname/IP and port
     """
+    verbose_name = "external info"
+    verbose_name_plural = "external info"
     name = models.SlugField(
                             primary_key = True,
                             null = False,
@@ -259,60 +344,9 @@ class ServerInstanceExternalInfo(models.Model):
                                  verbose_name = "Server Instance",
                                  help_text = "The server instance that this access is for",
                                  )
-admin.site.register(ServerInstanceExternalInfo)
-
-
-class ServerSystem(models.Model):
-    """ A physical or virtual system that one or more Minecraft servers run on """
-    name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "System Name",
-                            help_text = "A short, computer friendly name for this system/server/box. May only included letters, numbers, underscores, and hyphens. ",
-                            )
-    admins = models.ManyToManyField(
-                                    User,
-                                    related_name = "serveradmins",
-                                    null = False,
-                                    verbose_name = "Admins",
-                                    help_text = "Users who have administrative access to this server",
-                                    )
-    owner = models.ForeignKey(
-                              User,
-                              related_name = "serverowners",
-                              null = False,
-                              blank = False,
-                              verbose_name = "Owner",
-                              help_text = "The user that is ultimately responsible for this server",
-                              )
-admin.site.register(ServerSystem)
+class ServerInstanceExternalInfoInline(admin.TabularInline):
+    model = ServerInstanceExternalInfo
    
-
-class ServerSystemIPs(models.Model):
-    """ An internal IP address of a physical or virtual system that one or more Minecraft servers run on """
-    name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "System IP Name",
-                            help_text = "A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
-                            )
-    ip = models.IPAddressField(
-                               null = False,
-                               verbose_name = "IP",
-                               )
-    system = models.ForeignKey(
-                               ServerSystem,
-                               verbose_name = "System",
-                               )
-admin.site.register(ServerSystemIPs)
-
-
 class ServerInstance(models.Model):
     name = models.SlugField(
                             primary_key = True,
@@ -396,4 +430,11 @@ class ServerInstance(models.Model):
                                              MaxValueValidator(65535),
                                              ],
                                )
-admin.site.register(ServerInstance)
+    
+    
+class ServerInstanceAdmin(admin.ModelAdmin):
+    inlines = [
+        ServerInstanceExternalInfoInline,
+    ]
+    
+admin.site.register(ServerInstance, ServerInstanceAdmin)
