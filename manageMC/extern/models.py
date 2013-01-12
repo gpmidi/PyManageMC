@@ -315,7 +315,7 @@ class ServerSystem(models.Model):
                               )
     
     def __str__(self):
-        return "System %r" % self.name
+        return "System %s" % self.name
 
 class ServerSystemAdmin(admin.ModelAdmin):
     inlines = [
