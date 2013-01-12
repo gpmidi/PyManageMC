@@ -320,7 +320,7 @@ class ServerInstanceExternalInfo(models.Model):
                             blank = False,
                             max_length = 255,
                             db_index = True,
-                            verbose_name = "Access Name",
+                            verbose_name = "Name/Description",
                             help_text = "A short, computer friendly name for the access info. May only included letters, numbers, underscores, and hyphens. ",
                             )
     host = models.CharField(
