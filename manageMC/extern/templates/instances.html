@@ -48,9 +48,11 @@
 		                                     {% endif %}
 	                                   </a><br />
 	                     {% if user.is_staff %}
-	                         <b>Internal IP: </b> {{ instance.internalIP }}<br />
-	                         <b>Internal Port: </b> {{ instance.port }}<br />
-	                         <b>System: </b> {{ instance.system }}<br />
+	                         <div class="SectionBox">
+		                         <b>Internal IP: </b> {{ instance.internalIP }}<br />
+		                         <b>Internal Port: </b> {{ instance.port }}<br />
+		                         <b>System: </b> {{ instance.system }}<br />
+	                         </div>
 	                     {% endif %}
 	                     <br />
 	                     
