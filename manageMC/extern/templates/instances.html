@@ -31,14 +31,14 @@
             {% cache 60 bodyInstance1 instance.pk user.is_staff %}
                  <div class="newspost">
 	                 <div>
-	                     <h2 class="NewsTitle">
+	                     <h2 class="newstitle">
 	                         <a href="/e/instances/instance/{{ instance.name|urlencode }}/">
 	                             {{ instance.humanName }}
 	                         </a>
 	                     </h2>
 	                     <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
 	                 </div>
-	                 <div class="News">                        
+	                 <div class="news">                        
 	                     <b>Status: </b>{{ instance.get_status_display }}<br />
 	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
 	                                         {% if instance.owner.get_profile.screenname %}   
@@ -48,7 +48,7 @@
 		                                     {% endif %}
 	                                   </a><br />
 	                     {% if user.is_staff %}
-	                         <div class="SectionBox">
+	                         <div class="sectionbox">
 		                         <b>Internal IP: </b> {{ instance.internalIP }}<br />
 		                         <b>Internal Port: </b> {{ instance.port }}<br />
 		                         <b>System: </b> {{ instance.system }}<br />
