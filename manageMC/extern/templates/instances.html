@@ -6,7 +6,7 @@
     {% cache 60 instancesQuick1 %}
     
         {# Instance Group Listings #}
-        <ul class="nav nohover">
+        <ul class="nav">
 		    <li>By Availability</li>
 	        {% for sgroup in serverStatusGroups %}
 	            <li><a href="/e/instances/statusgroup/{{ sgroup }}/">{{ sgroup|capfirst }}</a></li>      
@@ -14,7 +14,7 @@
 		</ul>       
 		
         {# By Status #}
-        <ul class="nav nohover">
+        <ul class="nav">
             <li>By Status</li>
 			{% for status in serverStatuses %}
 			    <li><a href="/e/instances/status/{{ status.0 }}/">{{ status.1 }}</a></li>      
@@ -30,7 +30,7 @@
         {% for instance in serverInstances %}
             {% cache 60 bodyInstance2 instance.pk user.is_staff %}
                  <div class="newspost">
-	                 <div>
+	                 <div class="newsheader">
 	                     <h2 class="newstitle">
 	                         <a href="/e/instances/instance/{{ instance.name|urlencode }}/">
 	                             {{ instance.humanName }}
@@ -40,9 +40,9 @@
 	                 </div>
 	                 <div class="news">  
 	                     <div class="sectionbox">                      
-		                     <h6>Status: </h6>
+		                     <h4>Status: </h4>
 		                     {{ instance.get_status_display }}
-		                     <h6>Owner: </h6>
+		                     <h4>Owner: </h4>
 		                         <a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
 		                             {% if instance.owner.get_profile.screenname %}   
 			                             {{ instance.owner.get_profile.screenname }}
@@ -53,16 +53,16 @@
 		                     </div>
 	                     {% if user.is_staff %}
 	                         <div class="sectionbox">
-		                         <h6>Internal IP: </h6>
+		                         <h4>Internal IP: </h4>
 		                         {{ instance.internalIP }}
-		                         <h6>Internal Port: </h6>
+		                         <h4>Internal Port: </h4>
 		                         {{ instance.port }}
-		                         <h6>System: </h6>
+		                         <h4>System: </h4>
 		                         {{ instance.system }}
 	                         </div>
 	                     {% endif %}
 	                     <div class="sectionbox">
-		                     <h6>Connection Info</h6>
+		                     <h4>Connection Info</h4>
 		                     <ul>
 		                         {% for info in instance.serverinstanceexternalinfo_set.all %}
 		                             <li>{{ info.host }}:{{ info.port }}</li>
@@ -70,7 +70,7 @@
 		                     </ul>
 		                 </div>
 		                 <div class="sectionbox">
-		                     <h6>Server Admins: </h6>
+		                     <h4>Server Admins: </h4>
 		                     <ul>
 		                         {% for admin in instance.admins.all %}
 	                                 <li><a href="/e/users/{{ admin.pk }}/" title="User Info">

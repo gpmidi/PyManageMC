@@ -62,10 +62,6 @@ div.leftColumn ul.nav li {
 	background-color: #fff6e0;
 }
 
-div.leftColumn ul.nav li.alt {
-	background-color: #fffcf4;
-}
-
 div.leftColumn ul[class="nav"] li:hover {	
 	background-color: #fff;
 	
@@ -137,7 +133,7 @@ div.rightColumn div.newsbox h1 {
 	font-size: 11px;
 }
 
-div.rightColumn div.newsbox div.newspost div:first-child {
+div.rightColumn div.newsbox div.newspost div.newsheader:first-child {
 	padding: 6px;
 	
 	font-size: 11px;
@@ -151,14 +147,14 @@ div.rightColumn div.newsbox div.newspost div:first-child {
 	overflow: hidden;
 }
 
-div.rightColumn div.newsbox div.newspost div:first-child h2 {
+div.rightColumn div.newsbox div.newspost div.newsheader:first-child h2 {
 	float: left;
 	font-size: 15px;
 	
 	margin: 0px;
 }
 
-div.rightColumn div.newsbox div.newspost div:first-child span {
+div.rightColumn div.newsbox div.newspost div.newsheader:first-child span {
 	float: right;
 	padding-top: 2px;
 }
@@ -188,6 +184,18 @@ div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
     margin-bottom: 5px;
     
     border-left: 1px solid #FCE1CF;
+}
+
+div.sectionbox ul {
+    margin: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+div.sectionbox h4 {
+    margin: 0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
 }
 
 div.minnewspost {

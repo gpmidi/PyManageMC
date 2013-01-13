@@ -7,23 +7,23 @@
         <div class="newsbox">
             <h1>Minecraft Server {{ instance.name }}</h1>
             <div class="newspost">
-                <div>
+                <div class="newsheader">
                     <h2 class="NewsTitle">{{ instance.humanName }}</h2>
                     <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
                 </div>
                 <div class="News">
                     {% if instance.description %}
                         <div class="sectionbox">
-	                        <h6>Description: </h6>
+	                        <h4>Description: </h4>
 		                    <p>
 		                        {{ instance.description|linebreaks }}                        
 		                    </p>
 		                </div>
 	                {% endif %}
                     <div class="sectionbox">
-	                    <h6>Status: </h6>
+	                    <h4>Status: </h4>
 	                    {{ instance.get_status_display }}
-	                    <h6>Owner: </h6>
+	                    <h4>Owner: </h4>
 	                    <a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
 				            {% if instance.owner.get_profile.screenname %}   
 				                {{ instance.owner.get_profile.screenname }}
@@ -34,16 +34,16 @@
 	                </div>
                     {% if user.is_staff %}
                         <div class="sectionbox">
-	                        <h6>Internal IP: </h6>
+	                        <h4>Internal IP: </h4>
 	                        {{ instance.internalIP }}
-	                        <h6>Internal Port: </h6>
+	                        <h4>Internal Port: </h4>
 	                        {{ instance.port }}
-	                        <h6>System: </h6>
+	                        <h4>System: </h4>
 	                        {{ instance.system }}
 	                    </div>
                     {% endif %}
                     <div class="sectionbox">                    
-	                    <h6>Connection Info</h6>
+	                    <h4>Connection Info</h4>
 	                    <ul>
 	                        {% for info in instance.serverinstanceexternalinfo_set.all %}
 	                            <li>{{ info.host }}:{{ info.port }}</li>
@@ -51,7 +51,7 @@
 	                    </ul>
 	                </div>
 	                <div class="sectionbox">
-	                    <h6>Server Admins: </h6>
+	                    <h4>Server Admins: </h4>
 	                    <ul>
 	                        {% for admin in instance.admins.all %}
 	                            <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
