@@ -31,20 +31,19 @@
                     <li><a href="/" title="Main page">Home</a></li>
                     <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>                                     
             </ul>
-            {# TODO: Check and see if using user.username forces a query #}
-            {% cache 86400 usernavbar0 user.id %}
+            {# TODO: Find a way of doing this without triggering a query #}
+            {% cache 86400 userNavBar1 user.id %}
 	            <ul class="nav">
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
-	                            {% if user.is_staff %}
-	                                <li><a href="/admin/">Admin</a></li>
-	                            {% endif %}
-	                            <li><a href="/accounts/profile/">Edit Profile</a></li>      
-	                            <li><a href="/accounts/changepassword/">Change Password</a></li>            
-	                            <li><a href="/accounts/logout/">Logout</a></li>                 
-	                    {% else %}                      
-	                            {# <li><a href="/accounts/register/">Register</a></li> #}
-	                            {# <li class="alt"><a href="/password_reset/">Reset Password</a></li> #}
+	                        {% if user.is_staff %}
+	                            <li><a href="/admin/">Admin</a></li>
+	                        {% endif %}
+	                        <li><a href="/accounts/profile/">Edit Profile</a></li>      
+	                        <li><a href="/accounts/changepassword/">Change Password</a></li>            
+	                        <li><a href="/accounts/logout/">Logout</a></li>
+	                    {% else %}
+	                            <li class="alt"><a href="/admin/password_reset/">Reset Password</a></li>
 	                    {% endif %}
 	            </ul>
 	            {% if user.is_staff %}
