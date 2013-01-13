@@ -192,8 +192,7 @@ div.newspost div.news {
 }
 
 div.newspost div.news div.sectionbox:first-child {
-    width: 30%;
-
+    max-width: 30%;
     margin-right: 2%;
     margin-left: 2%;
 
@@ -202,12 +201,10 @@ div.newspost div.news div.sectionbox:first-child {
 }
 
 div.newspost div.news div.sectionbox:last-child {
-    width: 60%;
-
     margin-right: 2%;
     margin-left: 2%;
 
-    float: right;
+    overflow: hidden;
     bottom: 0;
 }
 
