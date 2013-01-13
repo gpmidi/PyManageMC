@@ -23,7 +23,7 @@ import os.path
 from minecraft.serverType import loadOtherServerTypes, allServerTypes
 
 class MinecraftServerBinary(models.Model):
-    """ A type of Minecraft server """
+    """ A type of Minecraft server a a specific version """
     typeName = models.CharField(
                                 null = False,
                                 blank = False,
@@ -37,6 +37,7 @@ class MinecraftServerBinary(models.Model):
                                               ('Bukkit', 'Bukkit'),
                                               ('Tekkit', 'Tekkit'),
                                               ('NerdBukkit', 'NerdBukkit'),
+                                              ('FTB', "Feed The Beast"),
                                            ),
                                 )
     exc = models.FileField(
@@ -63,6 +64,23 @@ class MinecraftServerBinary(models.Model):
                             verbose_name = "Version",
                             help_text = "Version of the binary",
                             )
+    releaseStatus = models.CharField(
+                                null = False,
+                                blank = False,
+                                max_length = 255,
+                                verbose_name = "Release Status",
+                                help_text = "This server version release type",
+                                choices = (
+                                              # (TYPE string, human name),
+                                              ('Production Release', 'Production Release'),
+                                              ('Dev Build', 'Dev Build'),
+                                              ('Mature Release', 'Mature Release'),
+                                              ('Nightly Dev Build', 'Nightly Dev Build'),
+                                              ('Pre-release', 'Pre-release'),
+                                              ('Beta', 'Beta'),
+                                              ('Alpha', 'Alpha'),
+                                           ),
+                                )
     created = models.DateTimeField(
                                     null = False,
                                     auto_now_add = True,
@@ -79,6 +97,9 @@ class MinecraftServerBinary(models.Model):
                                     )
     
     def __str__(self):
+        return "MCServerBin %s_%s" % (self.name, self.version)
+    
+    def __repr__(self):
         return "<MCServerBin_%s_%s>" % (self.name, self.version)
     
 admin.site.register(MinecraftServerBinary)
@@ -114,34 +135,38 @@ class MinecraftServer(models.Model):
                                     verbose_name = "Date Modified",
                                     help_text = "The date that this server object was last modified",
                                     )
-    owners = models.ForeignKey(
-                               Group,
-                               verbose_name = "Owners",
-                               )
+    instance = models.OneToOneField(
+                                    'extern.ServerInstance',
+                                    null = False,
+                                    db_index = True,
+                                    editable = False,
+                                    verbose_name = "Server Instance",
+                                    # help_text="",
+                                    )
     
     def __str__(self):
+        return "MCServer_%s_%s" % (self.name, self.getSessionName())
+    
+    def __repr__(self):
         return "<MCServer %r %r>" % (self.name, self.getSessionName())
-    
-    def owners_csv(self, joinChar = ','):
-        # TODO: Make sure this works right
-        return joinChar.join(User.objects.filter(groups__contains = self.owners).order_by('username'))
-    
+        
     def loc(self):
         """ Return the full path to the server """
         return os.path.join(settings.MC_SERVER_PATH, str(self.getSessionName()))
     
     def getSessionName(self):
         """ Returns the screen session name. 
-        Must never change. 
+        Must NEVER change. 
         """
         return "MC-%d" % self.pk
 
 admin.site.register(MinecraftServer)
 
-class MapSave(models.Model):
+class PublicMapSave(models.Model):
     """ Allow users to save maps. 
     Note: Map files are NOT private. 
     Note: The zip must be in the following structure
+    FIXME: Does it have to be named world? Any support for importing ones not named world?
         /world/<map data>
         /world_nether/<map data>         ** optional **
         /world_the_end/<map data>         ** optional **
@@ -166,11 +191,13 @@ class MapSave(models.Model):
                             max_length = 255,
                             db_index = True,
                             verbose_name = "Version",
-                            help_text = "Name version of the map save",
+                            help_text = "Version of the map save",
                             )
     owners = models.ForeignKey(
-                              Group,
-                              verbose_name = "Owners",
+                              User,
+                              null = False,
+                              editable = False,
+                              verbose_name = "Owner",
                               )
     zipName = models.CharField(
                             null = False,
@@ -194,9 +221,7 @@ class MapSave(models.Model):
                                     verbose_name = "Date Modified",
                                     help_text = "The date that this map save object was last modified",
                                     )
-admin.site.register(MapSave)
-
-
+admin.site.register(PublicMapSave)
 
 
 # class MapSave(models.Model):
