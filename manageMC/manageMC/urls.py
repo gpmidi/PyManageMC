@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     
     # User
     url(r'^accounts/login(?:/)?$', 'django.contrib.auth.views.login', dict(redirect_field_name = '/')),
-    url(r'^accounts/profile(?:/)?$', 'userEditProfile', name = "UserProfileEdit"),
+    url(r'^accounts/profile(?:/)?$', 'extern.views.userEditProfile', name = "UserProfileEdit"),
     url(r'^accounts/password/change(?:/)?$', 'django.contrib.auth.views.password_change', name = "UserChangePassword"),
     url(r'^accounts/password/done(?:/)?$', 'django.contrib.auth.views.password_change_done', name = "UserChangePasswordDone"),
     url(r'^accounts/logout(?:/)?$', 'django.contrib.auth.views.logout_then_login', name = "UserLogout"),
