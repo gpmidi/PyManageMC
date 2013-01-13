@@ -25,7 +25,16 @@ from extern.models import *
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile  # @UndefinedVariable
-        
+        exclude = (
+                   'user',
+                   )
+        fields = (
+                  'screenname',
+                  'first_name',
+                  'last_name',
+                  'publicName',
+                  'miscContactInfo',
+                  )
     first_name = forms.CharField(
                                  max_length = 255,
                                  min_length = 0,
