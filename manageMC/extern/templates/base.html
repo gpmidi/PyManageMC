@@ -36,21 +36,18 @@
 	            <ul class="nav">
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
-	                        {% if user.is_staff %}
-	                            <li><a href="/admin/">Admin</a></li>
-	                        {% endif %}
 	                        <li><a href="/accounts/profile/">Edit Profile</a></li>      
 	                        <li><a href="/accounts/password/change/">Change Password</a></li>            
 	                        <li><a href="/accounts/logout/">Logout</a></li>
 	                    {% else %}
 	                            <li class="alt"><a href="/accounts/login/">Login</a></li>
-	                            <li class="alt"><a href="/accounts/password_reset/">Reset Password</a></li>
+	                            <li class="alt"><a href="/accounts/reset/">Reset Password</a></li>
 	                    {% endif %}
 	            </ul>
 	            {% if user.is_staff %}
 	                <ul class="nav">
 	                    <li>Administration</li>
-	                        {# <li><a href="/blah/" title="A longer description of something">Something</a></li> #}
+	                        <li><a href="/admin/">Admin</a></li>
 	                </ul>
 	            {% endif %}
 	        {% endcache %}
