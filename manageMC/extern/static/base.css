@@ -186,20 +186,29 @@ div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
     border-left: 1px solid #FCE1CF;
 }
 
-div.news div.sectionbox:first-child {
+div.newspost div.news {
+    position: relative;
+    overflow: hidden;
+}
+
+div.newspost div.news div.sectionbox:first-child {
     width: 30%;
+
     margin-right: 2%;
     margin-left: 2%;
 
     float: left;
+    bottom: 0;
 }
 
-div.news div.sectionbox:last-child {
-    width: 30%;
+div.newspost div.news div.sectionbox:last-child {
+    width: 60%;
+
     margin-right: 2%;
     margin-left: 2%;
 
     float: right;
+    bottom: 0;
 }
 
 div.sectionbox ul {
