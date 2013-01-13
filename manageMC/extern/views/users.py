@@ -50,7 +50,7 @@ def userView(req, userPK):
 
 
 @login_required
-def editProfile(req):
+def userEditProfile(req):
     try:
         profile = req.user.get_profile()
     except ObjectDoesNotExist, e:

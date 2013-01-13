@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{# Pre-login form and post-login error form #}
+
+{% block title %}Login{% endblock %}
+
+{% block body %}
+	{% if form.errors %}
+		<p class="error">Sorry, Invalid Username/Password. </p>
+	{% endif %}
+	
+	<form action="." method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<input type="submit" value="Login"/>
+	</form>
+{% endblock %}
