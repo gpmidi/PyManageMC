@@ -51,35 +51,11 @@
 			                         {% endif %}
 		                         </a>
 		                     </div>
-	                     {% if user.is_staff %}
-	                         <div class="sectionbox">
-		                         <h4>Internal IP: </h4>
-		                         {{ instance.internalIP }}
-		                         <h4>Internal Port: </h4>
-		                         {{ instance.port }}
-		                         <h4>System: </h4>
-		                         {{ instance.system }}
-	                         </div>
-	                     {% endif %}
 	                     <div class="sectionbox">
 		                     <h4>Connection Info</h4>
 		                     <ul>
 		                         {% for info in instance.serverinstanceexternalinfo_set.all %}
 		                             <li>{{ info.host }}:{{ info.port }}</li>
-		                         {% endfor %}
-		                     </ul>
-		                 </div>
-		                 <div class="sectionbox">
-		                     <h4>Server Admins: </h4>
-		                     <ul>
-		                         {% for admin in instance.admins.all %}
-	                                 <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
-	                                     {% if admin.get_profile.screenname %}   
-	                                         {{ admin.get_profile.screenname }}
-	                                     {% else %}
-	                                         {{ admin.username }}
-	                                     {% endif %}
-	                                 </a></li>
 		                         {% endfor %}
 		                     </ul>
 		                 </div>

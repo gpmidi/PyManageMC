@@ -186,6 +186,22 @@ div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
     border-left: 1px solid #FCE1CF;
 }
 
+div.news div.sectionbox:first-child {
+    width: 30%;
+    margin-right: 2%;
+    margin-left: 2%;
+
+    float: left;
+}
+
+div.news div.sectionbox:last-child {
+    width: 30%;
+    margin-right: 2%;
+    margin-left: 2%;
+
+    float: left;
+}
+
 div.sectionbox ul {
     margin: 0px;
     padding-top: 0px;
