@@ -156,11 +156,9 @@ div.rightColumn div.newsbox div.newspost div:first-child h2 {
 	font-size: 15px;
 	
 	margin: 0px;
-
 }
 
 div.rightColumn div.newsbox div.newspost div:first-child span {
-	
 	float: right;
 	padding-top: 2px;
 }
@@ -179,15 +177,16 @@ div.rightColumn div.newsbox div.newspost div.news {
 }
 
 div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
-    margin: 0px;
     padding: 0px;
-    
     padding-bottom: 5px;
     padding-top: 5px;    
     padding-left: 5px;
     padding-right: 5px;
+    
+    margin: 0px;
     margin-top: 5px;
     margin-bottom: 5px;
+    
     border-left: 1px solid #FCE1CF;
 }
 
@@ -209,7 +208,6 @@ div.link_thumb {
 	padding: 0px;
 	
 	padding-bottom: 10px;
-	
 	padding-left: 10px;
 	padding-right: 10px;
 }
