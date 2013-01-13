@@ -186,8 +186,9 @@ div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
     padding-top: 5px;    
     padding-left: 5px;
     padding-right: 5px;
-    
-    border-left: 1px solid #D4A88C;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    border-left: 1px solid #FCE1CF;
 }
 
 div.minnewspost {
