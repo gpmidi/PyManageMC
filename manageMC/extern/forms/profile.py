@@ -31,7 +31,7 @@ class UserProfileForm(forms.ModelForm):
                                  min_length = 0,
                                  required = False,
                                  label = "First Name",
-                                 help_text = "Your first name (optional)",
+                                 help_text = "Your first name - Only visible to Admins - Optional",
                                  )
         
     last_name = forms.CharField(
@@ -39,7 +39,7 @@ class UserProfileForm(forms.ModelForm):
                                  min_length = 0,
                                  required = False,
                                  label = "Last Name",
-                                 help_text = "Your last name (very optional)",
+                                 help_text = "Your last name - Only visible to Admins - Optional",
                                  )
 
 #    email = forms.EmailField(
