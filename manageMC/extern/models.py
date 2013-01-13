@@ -220,6 +220,7 @@ class UserProfile(models.Model):
                                 User,
                                 null = False,
                                 verbose_name = "User",
+                                editable = False,
                                 )
     
     screenname = models.SlugField(
