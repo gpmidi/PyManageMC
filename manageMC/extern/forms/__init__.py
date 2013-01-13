@@ -14,12 +14,4 @@
 #    You should have received a copy of the GNU General Public License
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
-'''
-Created on Jan 12, 2013
-
-@author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
-'''
-
-from users import *
-from index import *
-from instances import *
+from profile import *
