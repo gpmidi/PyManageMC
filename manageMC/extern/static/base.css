@@ -170,6 +170,9 @@ div.rightColumn div.newsbox div.newspost div.news {
 	
 	border: 1px solid #ffccaa;
 	background-color: #ffffee;
+	
+	position: relative;
+    overflow: hidden;
 }
 
 div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
@@ -184,11 +187,6 @@ div.rightColumn div.newsbox div.newspost div.news div.sectionbox {
     margin-bottom: 5px;
     
     border-left: 1px solid #FCE1CF;
-}
-
-div.newspost div.news {
-    position: relative;
-    overflow: hidden;
 }
 
 div.newspost div.news div.sectionbox:first-child {
