@@ -38,15 +38,17 @@
 	                     </h2>
 	                     <span>ID <a href="/e/instances/instance/{{ instance.name|urlencode }}/">{{ instance.name }}</a> ({{ instance.get_status_display }})</span>
 	                 </div>
-	                 <div class="news">                        
-	                     <b>Status: </b>{{ instance.get_status_display }}<br />
-	                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
-	                                         {% if instance.owner.get_profile.screenname %}   
-		                                         {{ instance.owner.get_profile.screenname }}
-		                                     {% else %}
-		                                         {{ instance.owner.username }}
-		                                     {% endif %}
-	                                   </a><br />
+	                 <div class="news">  
+	                     <div class="sectionbox">                      
+		                     <b>Status: </b>{{ instance.get_status_display }}<br />
+		                     <b>Owner: </b><a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
+		                                         {% if instance.owner.get_profile.screenname %}   
+			                                         {{ instance.owner.get_profile.screenname }}
+			                                     {% else %}
+			                                         {{ instance.owner.username }}
+			                                     {% endif %}
+		                                   </a>
+		                 </div>
 	                     {% if user.is_staff %}
 	                         <div class="sectionbox">
 		                         <b>Internal IP: </b> {{ instance.internalIP }}<br />
@@ -54,26 +56,28 @@
 		                         <b>System: </b> {{ instance.system }}<br />
 	                         </div>
 	                     {% endif %}
-	                     <br />
-	                     
-	                     <b>Connection Info</b>
-	                     <ul>
-	                         {% for info in instance.serverinstanceexternalinfo_set.all %}
-	                             <li>{{ info.host }}:{{ info.port }}</li>
-	                         {% endfor %}
-	                     </ul>
-	                     <b>Server Admins: </b>
-	                     <ul>
-	                         {% for admin in instance.admins.all %}
-                                 <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
-                                     {% if admin.get_profile.screenname %}   
-                                         {{ admin.get_profile.screenname }}
-                                     {% else %}
-                                         {{ admin.username }}
-                                     {% endif %}
-                                 </a></li>
-	                         {% endfor %}
-	                     </ul>
+	                     <div class="sectionbox">
+		                     <b>Connection Info</b>
+		                     <ul>
+		                         {% for info in instance.serverinstanceexternalinfo_set.all %}
+		                             <li>{{ info.host }}:{{ info.port }}</li>
+		                         {% endfor %}
+		                     </ul>
+		                 </div>
+		                 <div class="sectionbox">
+		                     <b>Server Admins: </b>
+		                     <ul>
+		                         {% for admin in instance.admins.all %}
+	                                 <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
+	                                     {% if admin.get_profile.screenname %}   
+	                                         {{ admin.get_profile.screenname }}
+	                                     {% else %}
+	                                         {{ admin.username }}
+	                                     {% endif %}
+	                                 </a></li>
+		                         {% endfor %}
+		                     </ul>
+		                 </div>
 	                 </div>
                  </div>
             {% endcache %}
