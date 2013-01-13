@@ -165,7 +165,7 @@ div.rightColumn div.newsbox div.newspost div:first-child span {
 	padding-top: 2px;
 }
 
-div.rightColumn div.newsbox div.newspost p {
+div.rightColumn div.newsbox div.newspost div {
 	margin: 0px;
 	padding: 0px;
 	
