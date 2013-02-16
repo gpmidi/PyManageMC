@@ -153,7 +153,7 @@ class ServerType(object):
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
                                       version
                                       )    
-    
+
     def localSaveMap(self, name, desc = '', version = '', owner = None):
         """ Save the map in the map archive """
         from tempfile import mkstemp, mkdtemp

@@ -162,72 +162,11 @@ class MinecraftServer(models.Model):
 
 admin.site.register(MinecraftServer)
 
-class PublicMapSave(models.Model):
-    """ Allow users to save maps. 
-    Note: Map files are NOT private. 
-    Note: The zip must be in the following structure
-    FIXME: Does it have to be named world? Any support for importing ones not named world?
-        /world/<map data>
-        /world_nether/<map data>         ** optional **
-        /world_the_end/<map data>         ** optional **
-    """
-    name = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Name",
-                            help_text = "Name of the map save",
-                            )
-    desc = models.TextField(
-                            null = False,
-                            blank = True,
-                            default = '',
-                            verbose_name = "Description of the map save",
-                            )
-    version = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Version",
-                            help_text = "Version of the map save",
-                            )
-    owners = models.ForeignKey(
-                              User,
-                              null = False,
-                              editable = False,
-                              verbose_name = "Owner",
-                              )
-    zipName = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Map ZIP Name",
-                            help_text = "Name of the map save's ZIP file",
-                            )
-    created = models.DateTimeField(
-                                    null = False,
-                                    auto_now_add = True,
-                                    editable = False,
-                                    verbose_name = "Date Created",
-                                    help_text = "The date that this map save was created",
-                                    )
-    modified = models.DateTimeField(
-                                    null = False,
-                                    auto_now = True,
-                                    editable = False,
-                                    verbose_name = "Date Modified",
-                                    help_text = "The date that this map save object was last modified",
-                                    )
-admin.site.register(PublicMapSave)
-
-
-# class MapSave(models.Model):
+# class PublicMapSave(models.Model):
 #    """ Allow users to save maps. 
 #    Note: Map files are NOT private. 
 #    Note: The zip must be in the following structure
+#    FIXME: Does it have to be named world? Any support for importing ones not named world?
 #        /world/<map data>
 #        /world_nether/<map data>         ** optional **
 #        /world_the_end/<map data>         ** optional **
@@ -252,28 +191,22 @@ admin.site.register(PublicMapSave)
 #                            max_length = 255,
 #                            db_index = True,
 #                            verbose_name = "Version",
-#                            help_text = "Name version of the map save",
+#                            help_text = "Version of the map save",
 #                            )
 #    owners = models.ForeignKey(
-#                              Group,
-#                              verbose_name = "Owners",
+#                              User,
+#                              null = False,
+#                              editable = False,
+#                              verbose_name = "Owner",
 #                              )
-#    zip = models.FileField(
-#                           null = False,
-#                           blank = False,
-#                           max_length = 4096,
-#                           upload_to = "maps/%Y/%m/%d/",
-#                           verbose_name = "Map File(s)",
-#                           help_text = "A zip of the map directory(s)",
-#                           )
-#    zipPW = models.CharField(
-#                             null = False,
-#                             blank = False,
-#                             default = lambda: User.objects.make_random_password(length = 30, allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'),
-#                             max_length = 255,
-#                             verbose_name = "ZIP Password",
-#                             help_text = "The password the ZIP file was encrypted with",
-#                             )
+#    zipName = models.CharField(
+#                            null = False,
+#                            blank = False,
+#                            max_length = 255,
+#                            db_index = True,
+#                            verbose_name = "Map ZIP Name",
+#                            help_text = "Name of the map save's ZIP file",
+#                            )
 #    created = models.DateTimeField(
 #                                    null = False,
 #                                    auto_now_add = True,
@@ -288,24 +221,91 @@ admin.site.register(PublicMapSave)
 #                                    verbose_name = "Date Modified",
 #                                    help_text = "The date that this map save object was last modified",
 #                                    )
-# admin.site.register(MapSave)
+# admin.site.register(PublicMapSave)
 
-# class MinecraftServerCfgFile(models.Model):
-#    """ A config file for a minecraft server. 
-#    WARNING: Files listed here may be modified by the Minecraft Server proc. 
-#    """
-#    cfgLoc = models.CharField(
-#                              null = False,
-#                              blank = False,
-#                              db_index = True,
-#                              max_length = 255,
-#                              verbose_name = "File Location",
-#                              help_text = "The path to the file relative to the server home. Must be in the server type's CONFIG_FILES list. ",
-#                              )
-#    serverInstance = models.ForeignKey(
-#                                       MinecraftServer,
-#                                       db_index = True,
-#                                       verbose_name = "Server Binary",
-#                                       help_text = "The type/version of server to run",
-#                                       )
-# admin.site.register(MinecraftServerCfgFile)
+
+class MapSave(models.Model):
+    """ Allow users to save maps. 
+    Note: Map files are NOT private. 
+    Note: The zip must be in the following structure
+        /world/<map data>
+        /world_nether/<map data>         ** optional **
+        /world_the_end/<map data>         ** optional **
+    """
+    name = models.SlugField(
+                            null = False,
+                            blank = False,
+                            max_length = 255,
+                            db_index = True,
+                            verbose_name = "Name",
+                            help_text = "Name of the map save",
+                            )
+    desc = models.TextField(
+                            null = False,
+                            blank = True,
+                            default = '',
+                            verbose_name = "Description of the map save",
+                            )
+    version = models.CharField(
+                            null = False,
+                            blank = True,
+                            max_length = 255,
+                            db_index = True,
+                            verbose_name = "Version",
+                            help_text = "Map version identifier for this save",
+                            )
+    owners = models.ForeignKey(
+                              Group,
+                              verbose_name = "Owners",
+                              )
+    zip = models.FileField(
+                           null = False,
+                           blank = False,
+                           max_length = 4096,
+                           upload_to = "maps/%Y/%m/%d/",
+                           verbose_name = "Map File(s)",
+                           help_text = "A zip of the map directory(s)",
+                           )
+#    zipPW = models.CharField(
+#                             null = False,
+#                             blank = False,
+#                             default = lambda: User.objects.make_random_password(length = 30, allowed_chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'),
+#                             max_length = 255,
+#                             verbose_name = "ZIP Password",
+#                             help_text = "The password the ZIP file was encrypted with",
+#                             )
+    created = models.DateTimeField(
+                                    null = False,
+                                    auto_now_add = True,
+                                    editable = False,
+                                    verbose_name = "Date Created",
+                                    help_text = "The date that this map save was created",
+                                    )
+    modified = models.DateTimeField(
+                                    null = False,
+                                    auto_now = True,
+                                    editable = False,
+                                    verbose_name = "Date Modified",
+                                    help_text = "The date that this map save object was last modified",
+                                    )
+admin.site.register(MapSave)
+
+class MinecraftServerCfgFile(models.Model):
+    """ A config file for a minecraft server. 
+    WARNING: Files listed here may be modified by the Minecraft Server proc. 
+    """
+    cfgLoc = models.CharField(
+                              null = False,
+                              blank = False,
+                              db_index = True,
+                              max_length = 255,
+                              verbose_name = "File Location",
+                              help_text = "The path to the file relative to the server home. Must be in the server type's CONFIG_FILES list. ",
+                              )
+    serverInstance = models.ForeignKey(
+                                       MinecraftServer,
+                                       db_index = True,
+                                       verbose_name = "Server Binary",
+                                       help_text = "The type/version of server to run",
+                                       )
+admin.site.register(MinecraftServerCfgFile)
