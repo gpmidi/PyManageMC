@@ -38,7 +38,7 @@ class _fileType(type):
             for typ in cls.SERVERTYPE:
                 if not fileTypeRegister.has_key(cls.SERVERTYPE):
                     fileTypeRegister[cls.SERVERTYPE] = {}
-                assert not fileTypeRegister[cls.SERVERTYPE].has_key(name)
+                assert not fileTypeRegister[cls.SERVERTYPE].has_key(name), "Error: %r.%r already has %r" % (cls.SERVERTYPE, name, cls)
                 fileTypeRegister[cls.SERVERTYPE][name] = cls
 
 class FileType(object):
