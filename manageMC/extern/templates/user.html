@@ -25,9 +25,8 @@
                 </div>
                 <div class="News">
                     <b>Site Username: </b>{{ dUser.username }}<br />
-                    <b>Active: </b>{{ dUser.is_active|yesno }}<br />
+                    <b>Account Active: </b>{{ dUser.is_active|yesno }}<br />
                     <b>Staff: </b>{{ dUser.is_staff|yesno }}<br />
-                    <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br />
                     <b>Date Joined: </b>{{ dUser.date_joined }}<br />
                     
                     {% if user.is_staff %}                        
@@ -35,6 +34,7 @@
                         <b>Given Name: </b>{{ dUser.get_full_name }}<br />
                         <b>Email: </b>{{ dUser.email }}<br />
                         <b>Last Login: </b>{{ dUser.last_login }}<br />
+                        <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br />
                     {% endif %}
                     <br />
                     
@@ -43,7 +43,7 @@
                         {% if dUser.get_profile.miscContactInfo %}
                             {{ dUser.get_profile.miscContactInfo|linebreaks }}
                         {% else %}
-                            <i>None</i>
+                            <i>None Given</i>
                         {% endif %}                        
                     </p>
                 </div>
