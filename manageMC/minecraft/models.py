@@ -17,7 +17,6 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
-from django.contrib import admin
 import os.path
 # Load serverType objects
 from minecraft.serverType import loadOtherServerTypes, allServerTypes
@@ -102,7 +101,6 @@ class MinecraftServerBinary(models.Model):
     def __repr__(self):
         return "<MCServerBin_%s_%s>" % (self.typeName, self.version)
     
-admin.site.register(MinecraftServerBinary)
                   
 class MinecraftServer(models.Model):
     """ A standard Minecraft server """
@@ -160,7 +158,6 @@ class MinecraftServer(models.Model):
         """
         return "MC-%d" % self.pk
 
-admin.site.register(MinecraftServer)
 
 # class PublicMapSave(models.Model):
 #    """ Allow users to save maps. 
@@ -221,7 +218,6 @@ admin.site.register(MinecraftServer)
 #                                    verbose_name = "Date Modified",
 #                                    help_text = "The date that this map save object was last modified",
 #                                    )
-# admin.site.register(PublicMapSave)
 
 
 class MapSave(models.Model):
@@ -288,7 +284,7 @@ class MapSave(models.Model):
                                     verbose_name = "Date Modified",
                                     help_text = "The date that this map save object was last modified",
                                     )
-admin.site.register(MapSave)
+
 
 class MinecraftServerCfgFile(models.Model):
     """ A config file for a minecraft server. 
@@ -308,4 +304,4 @@ class MinecraftServerCfgFile(models.Model):
                                        verbose_name = "Server Binary",
                                        help_text = "The type/version of server to run",
                                        )
-admin.site.register(MinecraftServerCfgFile)
+

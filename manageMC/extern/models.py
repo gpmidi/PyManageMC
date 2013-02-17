@@ -19,7 +19,6 @@ from django.db import models
 from django.contrib.auth.models import User, Group
 from extern.validators import validateHostIP
 from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
-from django.contrib import admin
 
 
 class News(models.Model):
@@ -64,23 +63,7 @@ class News(models.Model):
     def __str__(self):
         return "News %r...(%s)" % (self.title[:75], self.created)
 
-class NewsAdmin(admin.ModelAdmin):
-    list_filter = (
-                   'published',
-                   'frontpage',
-                   )
-    list_display = (
-                  'title',
-                  'published',
-                  'frontpage',
-                  'created',
-                  'modified',
-                  )
-    ordering = (
-                '-created',
-                ) 
 
-admin.site.register(News, NewsAdmin)
 
 class ExtraUserEmail(models.Model):
     verbose_name = "user email"
@@ -121,10 +104,6 @@ class ExtraUserEmail(models.Model):
     
     def __str__(self):
         return "Email %r" % self.email
-        
-class ExtraUserEmailInline(admin.TabularInline):
-    model = ExtraUserEmail
-    extra = 0
 
 
 class MinecraftUsername(models.Model):
@@ -160,10 +139,6 @@ class MinecraftUsername(models.Model):
                                    )
     def __str__(self):
         return "MC %s" % self.username
-        
-class MinecraftUsernameInline(admin.TabularInline):
-    model = MinecraftUsername
-    extra = 0
 
 
 class UserPhoneNumber(models.Model):
@@ -207,10 +182,6 @@ class UserPhoneNumber(models.Model):
                                 )
     def __str__(self):
         return "Phone Number %s" % self.phoneNumber    
-    
-class UserPhoneNumberInline(admin.TabularInline):
-    model = UserPhoneNumber
-    extra = 0
 
 
 class UserProfile(models.Model):
@@ -248,15 +219,6 @@ class UserProfile(models.Model):
     def __str__(self):
         return "%s's Profile" % self.user.username
 
-class UserProfileAdmin(admin.ModelAdmin):
-    inlines = [
-        MinecraftUsernameInline,
-        ExtraUserEmailInline,
-        UserPhoneNumberInline,
-    ]
-
-admin.site.register(UserProfile, UserProfileAdmin)
-
 
 class ServerSystemIPs(models.Model):
     """ An internal IP address of a physical or virtual system that one or more Minecraft servers run on """
@@ -281,9 +243,6 @@ class ServerSystemIPs(models.Model):
                                )
     def __str__(self):
         return "System IP %s(%s)" % (self.name, self.ip)
-    
-class ServerSystemIPsInline(admin.TabularInline):
-    model = ServerSystemIPs
 
 
 class ServerSystem(models.Model):
@@ -317,13 +276,6 @@ class ServerSystem(models.Model):
     
     def __str__(self):
         return "System %s" % self.name
-
-class ServerSystemAdmin(admin.ModelAdmin):
-    inlines = [
-               ServerSystemIPsInline,
-    ]
-
-admin.site.register(ServerSystem, ServerSystemAdmin)
 
 
 class ServerInstanceExternalInfo(models.Model):
@@ -375,9 +327,6 @@ class ServerInstanceExternalInfo(models.Model):
                                  )
     def __str__(self):
         return "ExternalInfo %s" % self.name
-    
-class ServerInstanceExternalInfoInline(admin.TabularInline):
-    model = ServerInstanceExternalInfo
    
    
 class ServerInstance(models.Model):
@@ -529,9 +478,3 @@ class ServerInstance(models.Model):
     def __str__(self):
         return "Instance %s" % self.name
     
-class ServerInstanceAdmin(admin.ModelAdmin):
-    inlines = [
-        ServerInstanceExternalInfoInline,
-    ]
-    
-admin.site.register(ServerInstance, ServerInstanceAdmin)
