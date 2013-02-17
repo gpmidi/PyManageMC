@@ -184,7 +184,7 @@ class ServerType(object):
     
     def _localGenZipName(self, name, version):
         import datetime
-        return "%05d_%s_%d-%d-%s_%s.zip" % (
+        return "%09s_%s_%d-%d-%s_%s.zip" % (
                                       self.mcServer.pk,
                                       self.mcServer.bin.typeName,
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
