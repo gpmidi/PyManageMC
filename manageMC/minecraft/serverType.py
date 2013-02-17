@@ -100,6 +100,7 @@ import threading
 class _IOLoggerThread(threading.Thread):
     
     def __init__(self, stream, prg, name = 'Unnamed', loglevel = 20):
+        threading.Thread.__init__(self)
         self.level = loglevel
         self.stream = stream
         self.prg = prg
