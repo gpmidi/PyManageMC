@@ -191,29 +191,44 @@ class ServerType(object):
                                       version
                                       )    
 
-    def localSaveMap(self, name, desc = '', version = '', owner = None):
-        """ Save the map in the map archive """
+    def localSaveMap(self, name, desc = '', version = '', owner = None, forceSaveBefore = True):
+        """ Save the map in the map archive 
+        @param forceSaveBefore: If True, run 'save-all' on the server prior to making a ZIP of the map files on disk.  
+        """
         from tempfile import mkstemp, mkdtemp
         from zipfile import ZipFile
+        from django.core.files import File
         import os, sys, os.path, shutil
         
+        if forceSaveBefore:
+            self.localForceSave()
+        
         zipName = self._localGenZipName(name, version)
-        map = MapSave(name = name, desc = desc, version = version, owner = owner, zipName = zipName)
-    
-        mapPath = os.path.join(settings.MC_MAP_SAVE_PATH, zipName)
+        mapsave = MapSave(
+                          name = name,
+                          desc = desc,
+                          version = version,
+                          owner = owner,
+                          )
+            
+        # mapPath = os.path.join(settings.MC_MAP_SAVE_PATH, zipName)
         orgMapPath = os.path.join(self.getServerRoot())
         
         assert os.access(orgMapPath, os.R_OK | os.W_OK)
-        assert os.access(mapPath, os.R_OK)
         
         z, zpath = mkstemp()
-        zip = ZipFile(z, 'w')
-        zip.write(orgMapPath)
-        zip.close()
+        zipf = ZipFile(z, 'w')
+        zipf.write(orgMapPath)
+        zipf.close()
         
-        os.rename(z, mapPath)
+        assert os.access(zpath, os.R_OK)
         
-        return map.pk
+        mapsave.zip.save(os.path.basename(zipName), File(open(zpath, 'rb')))
+        mapsave.save()
+        
+        os.remove(zpath)
+        
+        return mapsave.pk
     
     def _simpleStartWait(self, args):
         """ Run the requested app. Collect all output and RC. """
@@ -280,8 +295,15 @@ class ServerType(object):
         self.log.info("Going to stop %r", self)
         # Tell the users we are shutting down
         self.localSay(msg = "SERVER SHUTDOWN REQUESTED")
-
         # Gracefully stop the server
+        self.localRunCommand(cmd = "stop")
+        # Success
+        return True
+    
+    def localRunCommand(self, cmd):
+        """ Run a server command. """
+        self.log.debug("Going to run %r on %r", cmd, self)
+        # Tell the users we are shutting down
         args = [
               "/usr/bin/screen",
               "-p",
@@ -290,43 +312,37 @@ class ServerType(object):
               self.getSessionName(),
               "-X",
               "eval",
-              'stuff "stop"\015'
+              # TODO: Validating escaping is working right here
+              "stuff %r\015" % cmd,
               ]
         self._logStartWaitError(args = args, cwd = self.getServerRoot())
-        # Success
         return True
         
     def localSay(self, msg):
         self.log.info("Going to say %r on %r", msg, self)
-        # Tell the users we are shutting down
-        args = [
-              "/usr/bin/screen",
-              "-p",
-              "0",
-              "-S",
-              self.getSessionName(),
-              "-X",
-              "eval",
-              "stuff \"say %r\"\015" % msg,
-              ]
-        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        self.localRunCommand(cmd = "say %r" % msg)
         return True
     
     def localStatus(self):
         self.log.info("Going to run 'list' on %r", self)
-        # Tell the users we are shutting down
-        args = [
-              "/usr/bin/screen",
-              "-p",
-              "0",
-              "-S",
-              self.getSessionName(),
-              "-X",
-              "eval",
-              "stuff \"list\"\015",
-              ]
-        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        self.localRunCommand(cmd = "list")
         return True
+    
+    def localForceSave(self):
+        self.log.info("Going to run 'save-all' on %r", self)
+        self.localRunCommand(cmd = "save-all")
+        return True
+    
+    def localEnableAutoSave(self):
+        self.log.info("Going to run 'save-on' on %r", self)
+        self.localRunCommand(cmd = "save-on")
+        return True
+    
+    def localDisableAutoSave(self):
+        self.log.info("Going to run 'save-off' on %r", self)
+        self.localRunCommand(cmd = "save-off")
+        return True
+       
     
     # Override all var below this point
     
