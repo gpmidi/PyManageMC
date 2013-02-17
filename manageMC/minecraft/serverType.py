@@ -252,7 +252,7 @@ class ServerType(object):
               "/usr/bin/screen",
               "-dmS",
               self.getSessionName(),
-              '%s -Xmx%dM -Xms%dM =jar %s %s >> %s/%s.log' % (
+              '%s -Xmx%dM -Xms%dM -jar %s %s >> %s/%s.log' % (
                                                         settings.MC_JAVA_LOC,
                                                         settings.MC_RAM_X,
                                                         settings.MC_RAM_S,
