@@ -50,7 +50,7 @@ class MinecraftServerBinary(models.Model):
                            )
     files = models.FileField(
                                null = True,
-                               blank = False,
+                               blank = True,
                                max_length = 4096,
                                upload_to = "srv/files/%Y/%m/%d/",
                                verbose_name = "Support Files - Overwrite",
