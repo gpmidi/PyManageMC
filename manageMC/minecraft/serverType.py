@@ -114,7 +114,7 @@ class _IOLoggerThread(threading.Thread):
         rc = self.prg.poll()
         while rc is None:
             line = self.stream.readline()
-            if line!='' and line!='\n':
+            if line != '' and line != '\n':
                 self.log.log(self.level, "Read: " + line)            
             rc = self.prg.poll()
         line = self.stream.read()
@@ -253,15 +253,12 @@ class ServerType(object):
               "/usr/bin/screen",
               "-dmS",
               self.getSessionName(),
-              '%s -Xmx%dM -Xms%dM -jar %s %s >> %s/%s.log' % (
-                                                        settings.MC_JAVA_LOC,
-                                                        settings.MC_RAM_X,
-                                                        settings.MC_RAM_S,
-                                                        jarPath,
-                                                        self.getSessionName(),
-                                                        settings.MC_LOG_LOC,
-                                                        self.getSessionName(),
-                                                        ),
+              settings.MC_JAVA_LOC,
+              "-Xmx%dM" % settings.MC_RAM_X,
+              "-Xms%dM" % settings.MC_RAM_S,
+              "-jar",
+              jarPath,
+              self.getSessionName(),
               ]
         
         rc = self._logStartWait(args, cwd = self.getServerRoot())
