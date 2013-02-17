@@ -31,6 +31,7 @@ allServerTypes = {}
 
 fileTypeRegister = {}
     
+    
 class _fileType(type):
     def __init__(cls, name, bases, dct):
         super(_fileType, cls).__init__(name, bases, dct)
@@ -40,6 +41,7 @@ class _fileType(type):
             # print "Setting %r to %r.%r already has %r" % (typ,cls.SERVERTYPE, name, cls)
             assert not fileTypeRegister[cls.SERVERTYPE].has_key(name), "Error: %r.%r already has %r" % (cls.SERVERTYPE, name, cls)
             fileTypeRegister[cls.SERVERTYPE][name] = cls
+
 
 class FileType(object):
     __metaclass__ = _fileType
@@ -225,6 +227,7 @@ class ServerType(object):
         
     def _logStartWait(self, args, cwd = None):
         """ Run the requested app. Log all output and RC. """
+        self.log.debug("Running %r in %r", args, cwd)
         # Run it
         prg = subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE, cwd = cwd)
         # Log IO
@@ -237,13 +240,22 @@ class ServerType(object):
         while rc is None:
             self.log.debug("Still waiting for %r to complete" % args)
             rc = prg.poll()
+        self.log.debug("RC from %r is %r", args, rc)
         return rc
-        
+    
+    def _logStartWaitError(self, args, cwd = None):
+        """ Run the requested app. Log all output and RC. Generate an error if RC!=0. """
+        rc = self._logStartWait(args = args, cwd = cwd)
+        if rc != 0:
+            self.log.debug("Command %r failed with an RC of %r", args, rc)
+            raise RuntimeError("Return code from %r non-zero: %r" % (args, rc))
+        return rc
     
     def localStartServer(self):       
         """ Start a server
         @return: True=Start OK, False=Start Failed
         """
+        self.log.info("Going to start %r", self)
         jarPath = os.path.join(
                               self.getServerRoot(),
                               os.path.basename(self.mcServer.bin.exc.name),
@@ -261,42 +273,60 @@ class ServerType(object):
               self.getSessionName(),
               ]
         
-        rc = self._logStartWait(args, cwd = self.getServerRoot())
-        if rc != 0:
-            raise RuntimeError("Return code from screen non-zero: " + repr(rc))
-        return rc == 0
+        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        return True
     
     def localStopServer(self):
-        rc = os.system("/usr/bin/screen -p 0 -S '%s' -X eval 'stuff \"say SERVER SHUTDOWN REQUESTED\"\015'" % (
-                                                            self.getSessionName(),
-                                                            ))
-        if rc != 0:
-            raise RuntimeError, "Return code from screen non-zero - say shutdown cmd: " + repr(rc)
-        
-        rc = os.system("/usr/bin/screen -p 0 -S '%s' -X eval 'stuff \"stop\"\015'" % (
-                                                            self.getSessionName(),
-                                                            ))
-        if rc != 0:
-            raise RuntimeError, "Return code from screen non-zero - stop cmd: " + repr(rc)
-        
-        return rc == 0
+        self.log.info("Going to stop %r", self)
+        # Tell the users we are shutting down
+        self.localSay(msg = "SERVER SHUTDOWN REQUESTED")
+
+        # Gracefully stop the server
+        args = [
+              "/usr/bin/screen",
+              "-p",
+              "0",
+              "-S",
+              self.getSessionName(),
+              "-X",
+              "eval",
+              'stuff "stop"\015'
+              ]
+        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        # Success
+        return True
         
     def localSay(self, msg):
-        rc = os.system("/usr/bin/screen -p 0 -S '%s' -X eval 'stuff \"say %s\"\015'" % (
-                                                            self.getSessionName(),
-                                                            msg,
-                                                            ))
-        if rc != 0:
-            raise RuntimeError, "Return code from screen non-zero - say %r " % msg + repr(rc)
-        
-        return rc == 0
+        self.log.info("Going to say %r on %r", msg, self)
+        # Tell the users we are shutting down
+        args = [
+              "/usr/bin/screen",
+              "-p",
+              "0",
+              "-S",
+              self.getSessionName(),
+              "-X",
+              "eval",
+              "stuff \"say %r\"\015" % msg,
+              ]
+        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        return True
     
     def localStatus(self):
-        rc = os.system("/usr/bin/screen -p 0 -S '%s' -X eval 'stuff \"list\"\015'" % (
-                                                            self.getSessionName(),
-                                                            ))
-        
-        return rc == 0
+        self.log.info("Going to run 'list' on %r", self)
+        # Tell the users we are shutting down
+        args = [
+              "/usr/bin/screen",
+              "-p",
+              "0",
+              "-S",
+              self.getSessionName(),
+              "-X",
+              "eval",
+              "stuff \"list\"\015",
+              ]
+        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        return True
     
     # Override all var below this point
     
@@ -313,11 +343,13 @@ class StockServerType(ServerType):
         log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
         ServerType.__init__(self, *args, **kw)
 
+
 class BannedIPSConfigFileType(ConfigFileType):
     # File match stuff
     FILE_MATCH = re.compile(r'^banned\-ips\.txt$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
 
 class BannedPlayersConfigFileType(ConfigFileType):
     # File match stuff
@@ -325,11 +357,13 @@ class BannedPlayersConfigFileType(ConfigFileType):
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
 
+
 class OpsConfigFileType(ConfigFileType):
     # File match stuff
     FILE_MATCH = re.compile(r'^ops\.txt$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
 
 class ServerProperitiesConfigFileType(ConfigFileType):
     # File match stuff
@@ -337,17 +371,20 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
 
+
 class WhiteListConfigFileType(ConfigFileType):
     # File match stuff
     FILE_MATCH = re.compile(r'^white\-list\.txt$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
 
+
 def getServerFromModel(mcServer):
     if allServerTypes.has_key(mcServer.bin.typeName):
         return allServerTypes[mcServer.bin.typeName]
     else:
         raise IndexError, "Server type %r not found" % mcServer.bin.typeName
+ 
  
 def loadOtherServerTypes():
     """ Load server allServerTypes from other modules """
