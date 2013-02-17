@@ -37,7 +37,7 @@ class _fileType(type):
         if cls.SERVERTYPE:
             if not fileTypeRegister.has_key(cls.SERVERTYPE):
                 fileTypeRegister[cls.SERVERTYPE] = {}
-            #print "Setting %r to %r.%r already has %r" % (typ,cls.SERVERTYPE, name, cls)
+            # print "Setting %r to %r.%r already has %r" % (typ,cls.SERVERTYPE, name, cls)
             assert not fileTypeRegister[cls.SERVERTYPE].has_key(name), "Error: %r.%r already has %r" % (cls.SERVERTYPE, name, cls)
             fileTypeRegister[cls.SERVERTYPE][name] = cls
 
@@ -193,10 +193,7 @@ class ServerType(object):
                                                             settings.MC_JAVA_LOC,
                                                             settings.MC_RAM_X,
                                                             settings.MC_RAM_S,
-                                                            os.path.join(
-                                                                         self.getServerRoot(),
-                                                                         jarPath,
-                                                                         ),
+                                                            jarPath,
                                                             self.getSessionName(),
                                                             settings.MC_LOG_LOC,
                                                             self.getSessionName(),
