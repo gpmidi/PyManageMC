@@ -184,7 +184,7 @@ class ServerType(object):
     
     def _localGenZipName(self, name, version):
         import datetime
-        return "%09s_%s_%d-%d-%s_%s.zip" % (
+        return "%09s_%s_%s_%s.zip" % (
                                       self.mcServer.pk,
                                       self.mcServer.bin.typeName,
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
@@ -199,7 +199,8 @@ class ServerType(object):
         from zipfile import ZipFile
         from django.core.files import File
         import os, sys, os.path, shutil
-        
+        from minecraft.models import MapSave
+
         if forceSaveBefore:
             self.localForceSave()
         
@@ -208,7 +209,7 @@ class ServerType(object):
                           name = name,
                           desc = desc,
                           version = version,
-                          owner = owner,
+                          owners = owner,
                           )
             
         # mapPath = os.path.join(settings.MC_MAP_SAVE_PATH, zipName)
@@ -217,7 +218,7 @@ class ServerType(object):
         assert os.access(orgMapPath, os.R_OK | os.W_OK)
         
         z, zpath = mkstemp()
-        zipf = ZipFile(z, 'w')
+        zipf = ZipFile(os.fdopen(z,'w'), 'w')
         zipf.write(orgMapPath)
         zipf.close()
         

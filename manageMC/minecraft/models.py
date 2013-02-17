@@ -253,6 +253,8 @@ class MapSave(models.Model):
     owners = models.ForeignKey(
                               Group,
                               verbose_name = "Owners",
+                              null = True,
+                              blank = False,
                               )
     zip = models.FileField(
                            null = False,
