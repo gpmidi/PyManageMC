@@ -114,11 +114,12 @@ class _IOLoggerThread(threading.Thread):
         rc = self.prg.poll()
         while rc is None:
             line = self.stream.readline()
-            self.log.log(self.level, "Read: " + line)            
+            if line!='' and line!='\n':
+                self.log.log(self.level, "Read: " + line)            
             rc = self.prg.poll()
-        line = self.stream.readline()
+        line = self.stream.read()
         self.log.log(self.level, "Read: " + line)
-        self.log.log(self.level, "--Completed with a return code of %r--" % rc)
+        self.log.log(self.level, "-- Completed with a return code of %r --" % rc)
         
 
 class ServerType(object):
