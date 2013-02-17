@@ -21,9 +21,9 @@ Created on Aug 11, 2012
 '''
 # Setup logging
 import logging
-logger = logging.getLogger("server.allServerTypes." + __name__)
-log = logger.log
+log = logging.getLogger("server.allServerTypes." + __name__)
 
+import subprocess
 import re
 from minecraft.models import *
 
@@ -65,22 +65,26 @@ class FileType(object):
         """
         assert filePath[0] != '/'
         return self.FILE_MATCH.match(filePath)
+
         
 class OverwriteFileType(FileType):
     """ A file that should be overwritten whenever an update
     occurs """
     OVERWRITE = True
 
+
 class NoOverwriteFileType(FileType):
     """ A file that should not be overwritten whenever an update
     occurs """
     OVERWRITE = False
+
     
 class ConfigFileType(NoOverwriteFileType):
     """ A special type of file that should never be overwritten 
     but may be modified by the user. May also be automatically 
     updated by the server process
     """
+
 
 class _serverTypeType(type):
     def __init__(cls, name, bases, dct):
@@ -91,6 +95,30 @@ class _serverTypeType(type):
             assert not allServerTypes.has_key(cls.TYPE)
             allServerTypes[cls.TYPE] = cls
 
+
+import threading
+class _IOLoggerThread(threading.Thread):
+    
+    def __init__(self, stream, prg, name = 'Unnamed', loglevel = 20):
+        self.level = loglevel
+        self.stream = stream
+        self.prg = prg
+        self.streamname = name
+        self.setName(name = "IOReaderThread-%s" % name)
+        self.log = logging.getLogger("server.allServerTypes." + name)
+        self.log.debug("Creating IO logger %r (%r)" % (name, self.getName()))
+        self.setDaemon(True)
+        
+    def run(self):
+        rc = self.prg.poll()
+        while rc is not None:
+            line = self.stream.readline()
+            self.log.log(self.level, "Read: " + line)            
+            rc = self.prg.poll()
+        self.log.log(self.level, "Read: " + line)
+        self.log.log(self.level, "--Completed with a return code of %r--" % rc)
+        
+
 class ServerType(object):
     """ Represent a stock server. 
         
@@ -100,9 +128,13 @@ class ServerType(object):
     mcServer = None
     
     def __init__(self, mcServer):
-        log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
         self.mcServer = mcServer
-    
+        self.log = logging.getLogger("server.allServerTypes.%s.%s" % (
+                                                                      self.__class__.__name__,
+                                                                      self.mcServer.name,
+                                                                      ))
+        self.log.debug("Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        
     def getServerRoot(self):
         return self.mcServer.loc()
     
@@ -178,29 +210,60 @@ class ServerType(object):
         
         return map.pk
     
-    def localStartServer(self):
-        import os
-        cwd = os.getcwd()
-        os.chdir(self.getServerRoot())
+    def _simpleStartWait(self, args):
+        """ Run the requested app. Collect all output and RC. """
+        prg = subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE)
+        stdout, stderr = prg.communicate()        
+        return dict(
+                    rc = prg.returncode,
+                    stdout = stdout,
+                    stderr = stderr,
+                    )
         
+    def _logStartWait(self, args, cwd = None):
+        """ Run the requested app. Log all output and RC. """
+        # Run it
+        prg = subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE, cwd = cwd)
+        # Log IO
+        r = _IOLoggerThread(stream = prg.stdout, prg = prg, name = "%s.stdout" % args[0])
+        r.start()
+        r = _IOLoggerThread(stream = prg.stderr, prg = prg, name = "%s.stderr" % args[0])
+        r.start()
+        
+        rc = prg.poll()
+        while rc is None:
+            self.log.debug("Still waiting for %r to complete" % args)
+            rc = prg.poll()
+        return rc
+        
+    
+    def localStartServer(self):       
+        """ Start a server
+        @return: True=Start OK, False=Start Failed
+        """
         jarPath = os.path.join(
                               self.getServerRoot(),
                               os.path.basename(self.mcServer.bin.exc.name),
                               )
         
-        rc = os.system("/usr/bin/screen -dmS '%s' '%s -Xmx%dM -Xms%dM %s %s >> %s/%s.log'" % (
-                                                            self.getSessionName(),
-                                                            settings.MC_JAVA_LOC,
-                                                            settings.MC_RAM_X,
-                                                            settings.MC_RAM_S,
-                                                            jarPath,
-                                                            self.getSessionName(),
-                                                            settings.MC_LOG_LOC,
-                                                            self.getSessionName(),
-                                                            ))
+        args = [
+              "/usr/bin/screen",
+              "-dmS",
+              self.getSessionName(),
+              '%s -Xmx%dM -Xms%dM %s %s >> %s/%s.log' % (
+                                                        settings.MC_JAVA_LOC,
+                                                        settings.MC_RAM_X,
+                                                        settings.MC_RAM_S,
+                                                        jarPath,
+                                                        self.getSessionName(),
+                                                        settings.MC_LOG_LOC,
+                                                        self.getSessionName(),
+                                                        ),
+              ]
+        
+        rc = self._logStartWait(args, cwd = self.getServerRoot())
         if rc != 0:
-            raise RuntimeError, "Return code from screen non-zero: " + repr(rc)
-        os.chdir(cwd)
+            raise RuntimeError("Return code from screen non-zero: " + repr(rc))
         return rc == 0
     
     def localStopServer(self):
@@ -246,9 +309,9 @@ class ServerType(object):
 class StockServerType(ServerType):
     TYPE = "Stock"
     
-    def __init__(self,*args,**kw):
-        log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
-        ServerType.__init__(self,*args,**kw)
+    def __init__(self, *args, **kw):
+        log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self, *args, **kw)
 
 class BannedIPSConfigFileType(ConfigFileType):
     # File match stuff
@@ -296,9 +359,9 @@ def loadOtherServerTypes():
             if app[:3] == 'mod':
                 modName = "%s.serverType" % app
                 stMod = __import__(modName)
-                log(10, "Imported %r successfully", modName)
+                log.log(10, "Imported %r successfully", modName)
             else:
-                log(10, "Skipping %r - Doesn't start with 'mod'", modName)
+                log.log(10, "Skipping %r - Doesn't start with 'mod'", modName)
         except:
-            log(15, "Importing %r failed", modName)
-    log(10, "Tried to load all installed_apps")
+            log.log(15, "Importing %r failed", modName)
+    log.log(10, "Tried to load all installed_apps")
