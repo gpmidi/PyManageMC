@@ -112,7 +112,7 @@ class _IOLoggerThread(threading.Thread):
         
     def run(self):
         rc = self.prg.poll()
-        while rc is not None:
+        while rc is None:
             line = self.stream.readline()
             self.log.log(self.level, "Read: " + line)            
             rc = self.prg.poll()
