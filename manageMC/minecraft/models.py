@@ -97,10 +97,10 @@ class MinecraftServerBinary(models.Model):
                                     )
     
     def __str__(self):
-        return "MCServerBin %s_%s" % (self.name, self.version)
+        return "MCServerBin %s_%s" % (self.typeName, self.version)
     
     def __repr__(self):
-        return "<MCServerBin_%s_%s>" % (self.name, self.version)
+        return "<MCServerBin_%s_%s>" % (self.typeName, self.version)
     
 admin.site.register(MinecraftServerBinary)
                   
