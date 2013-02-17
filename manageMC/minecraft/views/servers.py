@@ -53,7 +53,7 @@ def view(req, server_id):
             m = form.save(commit = True)
             if server.bin.pk != m.bin.pk:
                 # Change the server exec
-                
+
             for i in server.plugins:
                 if not i in m.plugins:
                     # Remove a plugin

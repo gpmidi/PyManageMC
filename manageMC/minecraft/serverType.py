@@ -35,11 +35,11 @@ class _fileType(type):
     def __init__(cls, name, bases, dct):
         super(_fileType, cls).__init__(name, bases, dct)
         if cls.SERVERTYPE:
-            for typ in cls.SERVERTYPE:
-                if not fileTypeRegister.has_key(cls.SERVERTYPE):
-                    fileTypeRegister[cls.SERVERTYPE] = {}
-                assert not fileTypeRegister[cls.SERVERTYPE].has_key(name), "Error: %r.%r already has %r" % (cls.SERVERTYPE, name, cls)
-                fileTypeRegister[cls.SERVERTYPE][name] = cls
+            if not fileTypeRegister.has_key(cls.SERVERTYPE):
+                fileTypeRegister[cls.SERVERTYPE] = {}
+            #print "Setting %r to %r.%r already has %r" % (typ,cls.SERVERTYPE, name, cls)
+            assert not fileTypeRegister[cls.SERVERTYPE].has_key(name), "Error: %r.%r already has %r" % (cls.SERVERTYPE, name, cls)
+            fileTypeRegister[cls.SERVERTYPE][name] = cls
 
 class FileType(object):
     __metaclass__ = _fileType
