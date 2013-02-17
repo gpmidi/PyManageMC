@@ -53,25 +53,26 @@ def view(req, server_id):
             m = form.save(commit = True)
             if server.bin.pk != m.bin.pk:
                 # Change the server exec
-
+                server.bin = m.bin
+                server.save()
             for i in server.plugins:
                 if not i in m.plugins:
                     # Remove a plugin
+                    raise NotImplementedError("FIXME: Need to add support for removing plugins")
             for i in m.plugins:
                 if not i in server.plugins:
                     # Add a plugin
-            
+                    raise NotImplementedError("FIXME: Need to add support for adding plugins")
             if m.owner.pk != server.owner.pk:
                 # Chagne owning group
-                pass
+                raise NotImplementedError("FIXME: Need to add support for changing owners")
             
             if m.listen != server.listen or m.port != server.port:
                 # Change server listening info
-                
+                raise NotImplementedError("FIXME: Need to add support for changing the server's port")
             if m.auto_save != server.auto_save:
                 # Change auto save
-            
-            
+                raise NotImplementedError("FIXME: Need to add support for changing the server's auto-save policy")            
             server = m
         else:
             pass
@@ -92,6 +93,8 @@ def view(req, server_id):
 def newserver(req):
     """ Create a server """
     
+    raise NotImplementedError("FIXME: Finish this")
+
     return render_to_response(
                               'mcer/servers/new.html',
                               dict(
