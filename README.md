@@ -29,10 +29,11 @@ Long Term TODOs
 ======
 * Add support for managing Minecraft servers on multiple machines from a single web UI
 * Add support for managing Minecraft servers that run as different users than the "default" Celery daemon
-
+* A minimal, automatic backup system (Low priority as external software can do a better job)
 
 Short Term TODOs
 ======
 * Add a web interface for managing server instances
 * Make the Admins list box bigger in the form for the server instance Admins chooser
-* 
+* Map file (including very large map file) save/restore/ZIPing/etc
+* Ban/Op/Whitelist interaction
