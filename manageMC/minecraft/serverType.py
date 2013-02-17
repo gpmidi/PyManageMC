@@ -116,6 +116,7 @@ class _IOLoggerThread(threading.Thread):
             line = self.stream.readline()
             self.log.log(self.level, "Read: " + line)            
             rc = self.prg.poll()
+        line = self.stream.readline()
         self.log.log(self.level, "Read: " + line)
         self.log.log(self.level, "--Completed with a return code of %r--" % rc)
         
