@@ -249,8 +249,9 @@ class ServerType(object):
 class StockServerType(ServerType):
     TYPE = "Stock"
     
-    def __init__(self):
+    def __init__(self,*args,**kw):
         log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self,*args,**kw)
 
 class BannedIPSConfigFileType(ConfigFileType):
     # File match stuff
