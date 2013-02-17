@@ -25,6 +25,7 @@ log = logging.getLogger("server.allServerTypes." + __name__)
 
 import subprocess
 import re
+import os, os.path, sys, shutil
 from minecraft.models import *
 
 allServerTypes = {}
@@ -146,10 +147,18 @@ class ServerType(object):
     def getSessionName(self):
         return self.mcServer.getSessionName()
     
+    def getMapFilenames(self):
+        # TODO: Support world names beyond 'world'
+        return [
+                os.path.join(self.getServerRoot(), 'world'),
+                # Not needed for vanilla
+                # os.path.join(self.getServerRoot(), 'world_nether'),
+                # os.path.join(self.getServerRoot(), 'world_the_end'),
+                ]
+    
     # Tasks that should only be performed by the locally running Celery daemon
     def localInit(self):
         """ Perform first-round initialization tasks """
-        import os, sys, os.path
         from shutil import copyfile
         
         try:
@@ -168,19 +177,18 @@ class ServerType(object):
     def localLoadMap(self, mapSave):
         """ Load a saved map into the server. Overwrite if one already exists """
         # Remove old world
-        import os, sys, os.path, shutil
-        try:
-            world = os.path.join(self.getServerRoot(), 'world')
-            shutil.rmtree(world, ignore_errors = True)
-        except:
-            pass
+        worlds = self.getMapFilenames()
+        for world in worlds:
+            try:
+                shutil.rmtree(world, ignore_errors = True)
+            except Exception, e:
+                self.log.exception("Failed to remove %r with %r", world, e)
         
         from zipfile import ZipFile
-        from django.conf import settings
         zipLoc = os.path.join(settings.MC_MAP_SAVE_PATH, mapSave.zipName)
-        zip = ZipFile(zipLoc, 'r')
-        zip.extractall(self.getServerRoot())
-        zip.close()
+        zipF = ZipFile(zipLoc, 'r')
+        zipF.extractall(self.getServerRoot())
+        zipF.close()
     
     def _localGenZipName(self, name, version):
         import datetime
@@ -195,11 +203,8 @@ class ServerType(object):
         """ Save the map in the map archive 
         @param forceSaveBefore: If True, run 'save-all' on the server prior to making a ZIP of the map files on disk.  
         """
-        from tempfile import mkstemp, mkdtemp
-        from zipfile import ZipFile
+        from tempfile import mkdtemp
         from django.core.files import File
-        import os, sys, os.path, shutil
-        from minecraft.models import MapSave
 
         if forceSaveBefore:
             self.localForceSave()
@@ -212,24 +217,27 @@ class ServerType(object):
                           owners = owner,
                           )
             
-        # mapPath = os.path.join(settings.MC_MAP_SAVE_PATH, zipName)
-        orgMapPath = os.path.join(self.getServerRoot())
+        orgMapPaths = self.getMapFilenames()
+        for mapPath in orgMapPaths:
+            assert os.access(mapPath, os.R_OK | os.W_OK), "Lacking sufficient access to the map files in %r" % mapPath
         
-        assert os.access(orgMapPath, os.R_OK | os.W_OK)
-        
-        z, zpath = mkstemp()
-        zipf = ZipFile(os.fdopen(z,'w'), 'w')
-        zipf.write(orgMapPath)
-        zipf.close()
-        
-        assert os.access(zpath, os.R_OK)
-        
-        mapsave.zip.save(os.path.basename(zipName), File(open(zpath, 'rb')))
-        mapsave.save()
-        
-        os.remove(zpath)
-        
-        return mapsave.pk
+        tmpdir = mkdtemp()
+        try:
+            zipTmpPath = os.path.join(tmpdir, zipName)
+            args = [
+                    '/usr/bin/zip',
+                    '-r',
+                    zipTmpPath,
+                    ] + orgMapPaths
+            self._logStartWait(args = args, cwd = tmpdir)
+
+            mapsave.zip.save(os.path.basename(zipName), File(open(zipTmpPath, 'rb')))
+            mapsave.save()
+            
+            return mapsave.pk
+        finally:
+            self.log.debug("Cleaning up %r", tmpdir)
+            shutil.rmtree(tmpdir, ignore_errors = True)
     
     def _simpleStartWait(self, args):
         """ Run the requested app. Collect all output and RC. """
