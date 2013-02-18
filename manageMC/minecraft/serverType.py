@@ -205,10 +205,11 @@ class ServerType(object):
         """
         from tempfile import mkdtemp
         from django.core.files import File
+        from minecraft.models import MapSave
 
         if forceSaveBefore:
             self.localForceSave()
-        
+
         zipName = self._localGenZipName(name, version)
         mapsave = MapSave(
                           name = name,
@@ -216,10 +217,11 @@ class ServerType(object):
                           version = version,
                           owners = owner,
                           )
-            
-        orgMapPaths = self.getMapFilenames()
-        for mapPath in orgMapPaths:
+
+        orgMapPaths = []
+        for mapPath in self.getMapFilenames():
             assert os.access(mapPath, os.R_OK | os.W_OK), "Lacking sufficient access to the map files in %r" % mapPath
+            orgMapPaths.append(os.path.relpath(mapPath,self.getServerRoot()))
         
         tmpdir = mkdtemp()
         try:
@@ -229,7 +231,7 @@ class ServerType(object):
                     '-r',
                     zipTmpPath,
                     ] + orgMapPaths
-            self._logStartWait(args = args, cwd = tmpdir)
+            self._logStartWait(args = args, cwd = self.getServerRoot())
 
             mapsave.zip.save(os.path.basename(zipName), File(open(zipTmpPath, 'rb')))
             mapsave.save()
