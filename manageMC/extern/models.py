@@ -187,15 +187,16 @@ class UserPhoneNumber(models.Model):
 class UserProfile(models.Model):
     verbose_name = "user info"
     verbose_name_plural = "user info"
+
     user = models.OneToOneField(
                                 User,
+                                primary_key = True,
                                 null = False,
                                 verbose_name = "User",
                                 editable = False,
                                 )
-    
     screenname = models.SlugField(
-                            primary_key = True,
+                            unique = True,
                             null = False,
                             blank = False,
                             max_length = 255,
