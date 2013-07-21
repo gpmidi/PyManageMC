@@ -39,7 +39,7 @@ def footerProcessor(request):
 def siteInfoProcessor(request):
     """ Add an optional site info """
     INFOSETTINGS = {
-                  # Setting name => ( Default value, Template name)
+                  # Setting name => ( Default value, Template var name)
                   'SITE_HUMAN_NAME':("Minecraft Servers", 'SiteHumanName'),
                   "INTRO_TEXT":(None, 'IntroText'),
                   }
