@@ -221,4 +221,4 @@ from datetime import timedelta
 TASK_RESULT_EXPIRES = timedelta(hours = 1)
 
 
-from local_settings import *
+from manageMC.local_settings import *
