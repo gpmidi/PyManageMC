@@ -30,6 +30,10 @@ Long Term TODOs
 * Add support for managing Minecraft servers on multiple machines from a single web UI
 * Add support for managing Minecraft servers that run as different users than the "default" Celery daemon
 * A minimal, automatic backup system (Low priority as external software can do a better job)
+* Support for working with common backup utilities. This includes: 
+  * Easy to use scripts that can be run to disable save-all before the backup starts and then re-enable save-all once the backup is complete. 
+  * A timeout on backups save-all in case the backup tool fails to call the 'all done' script that re-enables save-all. 
+  * LVM-based COW snapshot support
 
 Short Term TODOs
 ======
