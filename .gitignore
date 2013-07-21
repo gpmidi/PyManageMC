@@ -3,6 +3,6 @@
 *.pyc
 local_settings.py
 /.settings
-/manageMC/manageMC/settings.py
+/manageMC/manageMC/local_settings.py
 /static
 /media
