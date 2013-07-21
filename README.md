@@ -21,12 +21,17 @@ License: GPLv2
 
 
 Items In Progress
-=====
+=================
 * Add basic management of server instances via an interactive Python console
 
 
+Known Issues
+============
+See [the PyManageMC Open Issues](https://github.com/gpmidi/PyManageMC/issues) page. 
+
+
 Long Term TODOs
-======
+===============
 * Add support for managing Minecraft servers on multiple machines from a single web UI
 * Add support for managing Minecraft servers that run as different users than the "default" Celery daemon
 * A minimal, automatic backup system (Low priority as external software can do a better job)
@@ -35,8 +40,9 @@ Long Term TODOs
   * A timeout on backups save-all in case the backup tool fails to call the 'all done' script that re-enables save-all. 
   * LVM-based COW snapshot support
 
+
 Short Term TODOs
-======
+================
 * Add a web interface for managing server instances
 * Make the Admins list box bigger in the form for the server instance Admins chooser
 * Map file (including very large map file) save/restore/ZIPing/etc
