@@ -48,7 +48,8 @@ Long Term TODOs
   * Easy to use scripts that can be run to disable save-all before the backup starts and then re-enable save-all once the backup is complete. 
   * A timeout on backups save-all in case the backup tool fails to call the 'all done' script that re-enables save-all. 
   * LVM-based COW snapshot support
-
+* Add support for using git to track changes to a given server's map. It should support local-only repos at the very least. If reasonable, add remote repo support too. 
+ 
 
 Short Term TODOs
 ================
