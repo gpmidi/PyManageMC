@@ -27,7 +27,16 @@ Items In Progress
 
 Known Issues
 ============
+
+
+Branch: master
+--------------
 See [the PyManageMC Open Issues](https://github.com/gpmidi/PyManageMC/issues) page. 
+
+
+Branch: released_v0.0
+--------------
+None yet since this project is still alpha...
 
 
 Long Term TODOs
