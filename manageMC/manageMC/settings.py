@@ -131,9 +131,12 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    # Make AJAX work easier
     'dajaxice',
     'dajax',
+    # Celery - Distributed task queues
     'djcelery',
+    # Our stuff
     'extern',
     'minecraft',
 )
