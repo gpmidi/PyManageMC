@@ -26,6 +26,7 @@ log = logging.getLogger("server.allServerTypes." + __name__)
 import subprocess
 import re
 import os, os.path, sys, shutil
+import time
 from minecraft.models import *
 
 allServerTypes = {}
@@ -302,10 +303,13 @@ class ServerType(object):
         self._logStartWaitError(args = args, cwd = self.getServerRoot())
         return True
     
-    def localStopServer(self):
+    def localStopServer(self, warn = True, warnDelaySeconds = 0):
         self.log.info("Going to stop %r", self)
-        # Tell the users we are shutting down
-        self.localSay(msg = "SERVER SHUTDOWN REQUESTED")
+        if warn:
+            # Tell the users we are shutting down
+            self.localSay(msg = "SERVER SHUTDOWN REQUESTED")
+            if warnDelaySeconds and warnDelaySeconds > 0:
+                time.sleep(warnDelaySeconds)
         # Gracefully stop the server
         self.localRunCommand(cmd = "stop")
         # Success

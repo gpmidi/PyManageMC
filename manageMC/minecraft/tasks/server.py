@@ -84,7 +84,7 @@ def start(serverPK):
     return server.localStartServer()
     
 @task(expires = 60 * 60 * 24)
-def stop(serverPK):
+def stop(serverPK, warn = True, warnDelaySeconds = 0):
     """ Start a server """
     # Get model objects
     mcServer = MinecraftServer.objects.get(pk = serverPK)
@@ -93,7 +93,7 @@ def stop(serverPK):
     # Server interaction object
     server = stype(mcServer = mcServer)
     
-    return server.localStopServer()
+    return server.localStopServer(warn = warn, warnDelaySeconds = warnDelaySeconds)
     
 @task(expires = 60 * 60 * 24)
 def say(serverPK, msg):
