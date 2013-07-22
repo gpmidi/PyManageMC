@@ -136,6 +136,13 @@ INSTALLED_APPS = (
     'dajax',
     # Celery - Distributed task queues
     'djcelery',
+    # May be used later for JSON/XML RPC
+    # 'rpc4django',
+    # Used to help speed up file transfers by offloading the
+    # reading and sending to the web server
+    'sendfile',
+    # A document-based NoSQL ORM
+    'couchdbkit.ext.django',
     # Our stuff
     'extern',
     'minecraft',
@@ -194,6 +201,13 @@ CACHES = {
 #     }
 }
 
+SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+##################################################################################
+# PyManageMC
+##################################################################################
+
 # GA_ACCOUNT = "UA-nnnnnn-xx"
 
 SITE_HUMAN_NAME = "My Minecraft Servers"
@@ -210,6 +224,11 @@ MC_RAM_S = 1024
 # MC_SERVER_PATH = "/path/to/servers/directory"
 # MC_MAP_SAVE_PATH = "/path/to/maps/directory"
 
+
+##################################################################################
+# Celery
+##################################################################################
+
 # BROKER_URL = 'amqp://myusername:mypassword@myhostname:5672/myinstancename'
 CELERY_RESULT_BACKEND = "amqp"
 CELERYD_CONCURRENCY = 2
@@ -223,5 +242,25 @@ CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 from datetime import timedelta
 TASK_RESULT_EXPIRES = timedelta(hours = 1)
 
+import djcelery  # @UnresolvedImport
+djcelery.setup_loader()
+CELERY_DEFAULT_RATE_LIMIT = None
+CELERY_DISABLE_RATE_LIMITS = True
 
+
+##################################################################################
+# RPC4Django
+##################################################################################
+
+# XML-RPC and JSON-RPC
+RPC4DJANGO_LOG_REQUESTS_RESPONSES = False
+RPC4DJANGO_RESTRICT_RPCTEST = True
+
+
+##################################################################################
+# Local Settings & Overrides
+##################################################################################
 from manageMC.local_settings import *
+
+
+

@@ -2,6 +2,9 @@
 settings.py = Defaults and recommended settings for PyManageMC
 local_settings.py = Your settings
 '''
+##################################################################################
+# Django
+##################################################################################
 
 DEBUG = False
 # DEBUG = True
@@ -60,6 +63,28 @@ CACHES = {
 #     }
 }
 
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# In a Windows environment this must be set to your system time zone.
+TIME_ZONE = 'America/New_York'
+
+SITE_ID = 1
+
+DEFAULT_FROM_EMAIL = 'nobody@example.com'
+
+
+##################################################################################
+# Celery
+##################################################################################
+
+BROKER_URL = 'amqp://myusername:mypassword@myhostname:5672/myinstancename'
+
+
+##################################################################################
+# PyManageMC
+##################################################################################
+
 SITE_HUMAN_NAME = "Test Server Minecraft"
 
 MC_JAVA_LOC = "/path/to/bin/java"
@@ -69,20 +94,27 @@ MC_LOG_LOC = "/path/to/logs"
 MC_SERVER_PATH = "/path/to/srvs"
 MC_MAP_SAVE_PATH = "/path/to/maps"
 
-BROKER_URL = 'amqp://myusername:mypassword@myhostname:5672/myinstancename'
-
-### Stuff you may want to change ###
-
 # GA_ACCOUNT = "UA-nnnnnn-xx"
 
 INTRO_TEXT = """ """
 
 LEGAL_FOOTER = """ """
 
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/New_York'
 
-SITE_ID = 1
+##################################################################################
+# CouchDB Stuff
+##################################################################################
+# App-to-DB mapping
+COUCHDB_DATABASES = (
+                     # ('appname.modelname','http://username:password@couchdbhostname:5984/vhostname'),
+                     )
+
+
+##################################################################################
+# Large File Sending Via  Sendfile
+##################################################################################
+import os, os.path
+
+SENDFILE_BACKEND = 'sendfile.backends.nginx'
+SENDFILE_ROOT = '/path/to/media/private'
+SENDFILE_URL = '/media/private/'
