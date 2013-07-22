@@ -106,7 +106,7 @@ LEGAL_FOOTER = """ """
 ##################################################################################
 # App-to-DB mapping
 COUCHDB_DATABASES = (
-                     # ('appname.modelname','http://username:password@couchdbhostname:5984/vhostname'),
+                     # ('projectname.appname','http://username:password@couchdbhostname:5984/vhostname'),
                      )
 
 
