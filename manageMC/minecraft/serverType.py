@@ -148,6 +148,18 @@ class ServerType(object):
     def getSessionName(self):
         return self.mcServer.getSessionName()
     
+    def getScreenRoot(self):
+        return os.path.join(
+                            self.getServerRoot(),
+                            'screen',
+                            )
+
+    def getServerScreenConfig(self):
+        return os.path.join(
+                            self.getScreenRoot(),
+                            'screen.config',
+                            )
+
     def getMapFilenames(self):
         # TODO: Support world names beyond 'world'
         return [
@@ -162,10 +174,15 @@ class ServerType(object):
         """ Perform first-round initialization tasks """
         from shutil import copyfile
         
-        try:
-            os.mkdir(self.getServerRoot())
-        except OSError:
-            pass
+        for path in [
+                     # Needs to be before most others as they are subdirectories
+                     self.getServerRoot(),
+                     self.getScreenRoot(),
+                     ]:
+            try:
+                os.mkdir(path)
+            except OSError:
+                pass
         
         copyfile(
                  self.mcServer.bin.exc.path,
@@ -174,6 +191,22 @@ class ServerType(object):
                               os.path.basename(self.mcServer.bin.exc.name),
                               ),
                  )
+
+        self.localUpdateScreenConfig()
+    
+    def localGetScreenConfig(self):
+        from django.template.loader import render_to_string
+        return render_to_string('screen.config',{
+                                                 'screenDir':self.getScreenRoot(),
+                                                 # TODO: Add ability to change doInitialHardCopy setting
+                                                 'doInitialHardCopy':True,
+                                                 },)
+    
+    def localUpdateScreenConfig(self):
+        # Do this first so we don't spend ages with the file empty
+        toWrite = self.localGetScreenConfig()
+        with open(self.getServerScreenConfig(),'wb') as f:
+            f.write(toWrite)
     
     def localLoadMap(self, mapSave):
         """ Load a saved map into the server. Overwrite if one already exists """
@@ -290,6 +323,8 @@ class ServerType(object):
         
         args = [
               "/usr/bin/screen",
+              '-c',
+              self.getServerScreenConfig(),
               "-dmS",
               self.getSessionName(),
               settings.MC_JAVA_LOC,
