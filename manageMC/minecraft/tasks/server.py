@@ -94,7 +94,29 @@ def stop(serverPK, warn = True, warnDelaySeconds = 0):
     server = stype(mcServer = mcServer)
     
     return server.localStopServer(warn = warn, warnDelaySeconds = warnDelaySeconds)
+
+@task(expires = 60 * 60 * 24)
+def restart(serverPK, warn = True, warnDelaySeconds = 0):
+    """ Restart a server """
+    # Get model objects
+    mcServer = MinecraftServer.objects.get(pk = serverPK)
+    # Get the class type that is the right type
+    stype = getServerFromModel(mcServer = mcServer)
+    # Server interaction object
+    server = stype(mcServer = mcServer)
     
+    results=dict(start=None,stop=None)
+    results['stop'] = stop(
+                           serverPK = mcServer.pk,
+                           warn = warn,
+                           warnDelaySeconds = warnDelaySeconds,
+                           )
+
+    # Make sure the stop worked
+    if results['stop']:
+        results['start'] = start(serverPK = mcServer.pk)
+    return results
+
 @task(expires = 60 * 60 * 24)
 def say(serverPK, msg):
     """ Start a server """
