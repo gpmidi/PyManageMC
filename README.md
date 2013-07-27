@@ -17,8 +17,6 @@ and modifying the actual daemon. The long term goal is to have a one stop platfo
 aspects of Minecraft server management. Users requiring something that works -right now- should
 look to Thue's RFWAdmin (https://github.com/Thue/rfwadmin)._ 
 
-License: GPLv2
-
 
 Known Issues
 ============
@@ -29,7 +27,7 @@ Branch: master
 See [the PyManageMC Open Issues](https://github.com/gpmidi/PyManageMC/issues) page. 
 
 
-Branch: released_v0.0
+Branch: released
 --------------
 None yet since this project is still alpha...
 
@@ -44,3 +42,10 @@ Long Term TODOs & Ideas
   * A timeout on backups save-all in case the backup tool fails to call the 'all done' script that re-enables save-all. 
   * LVM-based COW snapshot support
 * Add support for using git to track changes to a given server's map. It should support local-only repos at the very least. If reasonable, add remote repo support too. 
+
+
+License
+=======
+
+PyManageMC: GPLv2
+Bootstrap: Apache License v2.0
