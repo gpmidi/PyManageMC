@@ -20,11 +20,6 @@ look to Thue's RFWAdmin (https://github.com/Thue/rfwadmin)._
 License: GPLv2
 
 
-Items In Progress
-=================
-* Add basic management of server instances via an interactive Python console
-
-
 Known Issues
 ============
 
@@ -39,7 +34,7 @@ Branch: released_v0.0
 None yet since this project is still alpha...
 
 
-Long Term TODOs
+Long Term TODOs & Ideas
 ===============
 * Add support for managing Minecraft servers on multiple machines from a single web UI
 * Add support for managing Minecraft servers that run as different users than the "default" Celery daemon
@@ -49,11 +44,3 @@ Long Term TODOs
   * A timeout on backups save-all in case the backup tool fails to call the 'all done' script that re-enables save-all. 
   * LVM-based COW snapshot support
 * Add support for using git to track changes to a given server's map. It should support local-only repos at the very least. If reasonable, add remote repo support too. 
- 
-
-Short Term TODOs
-================
-* Add a web interface for managing server instances
-* Make the Admins list box bigger in the form for the server instance Admins chooser
-* Map file (including very large map file) save/restore/ZIPing/etc
-* Ban/Op/Whitelist interaction
