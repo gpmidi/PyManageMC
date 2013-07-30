@@ -225,6 +225,10 @@ class ServerType(object):
                             'screen.config',
                             )
 
+    @property
+    def pk(self):
+        return self.mcServer.pk
+
     def getMapFilenames(self):
         # TODO: Support world names beyond 'world'
         return [
