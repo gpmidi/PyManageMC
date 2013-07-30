@@ -571,9 +571,69 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
         """
         ret = self.rawParseConfig(filedata)
+        for k, v in ret.items():
+            found = filter(
+                           lambda x: x[1].name == k,
+                           self.getModelClass().properties().items(),
+                           )
+            assert len(found) <= 1, "Found more than one property with the right name: %r / %r / %r" % (found, k, v)
+            if len(found) == 1:
+                found = map(lambda x: dict(
+                                           propName = x[1].name,
+                                           attrName = x[0],
+                                           obj = x[1],
+                                           dataType = x[1].data_type,
+                                           ), found)[0]
+                ret[k] = self.convertType(
+                                           strValue = v,
+                                           **found
+                                           )
+            else:
+                pass
+
         ret['nc_configFileTypeName'] = str(relativepath)
         ret['nc_minecraftServerPK'] = self.minecraftServerObj.mcServer.pk
         return ret
+    
+    CT_NONE_VALUES=[
+                    'null',
+                    'none',
+                    ]
+    CT_TRUE_VALUES=[
+                    'true',
+                    '1',
+                    'y',                   
+                    ]
+    CT_FALSE_VALUES=[
+                    'false',
+                    '0',
+                    'n',                   
+                    ]
+    def convertType(self,propName,attrName,strValue, obj,dataType):
+        assert isinstance(strValue,str)
+        strValue=strValue.lower()
+                
+        # Handle Nulls
+        if len(strValue)==0:
+            return None
+        if strValue in self.CT_NONE_VALUES:
+            return None
+                
+        if dataType is bool:
+            if strValue in self.CT_TRUE_VALUES:
+                return True
+            elif strValue in self.CT_FALSE_VALUES:
+                return False
+            raise ValueError("%r is not %r.%r" % (strValue, dataType, obj))
+        if dataType is str:
+            return str(strValue)
+        if dataType is unicode:
+            return unicode(strValue)
+        if dataType is int:
+            return int(strValue)
+
+        raise ValueError("%r is not %r.%r" % (strValue, dataType, obj))
+        
     
     RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$',re.MULTILINE)
     @classmethod
