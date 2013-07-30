@@ -120,7 +120,7 @@ class FileType(object):
         """ Write this config file data to the given file """
         assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
 
-        cls = self.getModelClass
+        cls = self.getModelClass()
         obj = cls.get_or_create(self.getModelClassID())
 
         data = render_to_string(
