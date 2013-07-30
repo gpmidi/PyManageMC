@@ -107,7 +107,7 @@ class FileType(object):
         """ Parse the given config file and then save the results to
         the DB """
         parsed = self.parseConfig(filepath, relativepath, filedata)
-        cls = self.getModelClass
+        cls = self.getModelClass()
         obj = cls.objects.get_or_create(self.getModelClassID())
 
         for k, v in parsed.items():
