@@ -21,6 +21,8 @@ import os.path
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.conf import settings
+from django.core.validators import MinLengthValidator, MaxValueValidator
+from django.core.validators import validate_slug, MinValueValidator
 
 # CouchDB
 from couchdbkit.ext.django.schema import *
@@ -243,6 +245,7 @@ class MapSave(models.Model):
                             db_index = True,
                             verbose_name = "Name",
                             help_text = "Name of the map save",
+                            validators = [ validate_slug, ],
                             )
     desc = models.TextField(
                             null = False,

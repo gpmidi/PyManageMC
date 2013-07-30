@@ -18,8 +18,8 @@
 from django.db import models
 from django.contrib.auth.models import User, Group
 from extern.validators import validateHostIP
-from django.core.validators import MinLengthValidator, MaxValueValidator, MinValueValidator
-
+from django.core.validators import MinLengthValidator, MaxValueValidator
+from django.core.validators import validate_slug, MinValueValidator
 
 class News(models.Model):
     verbose_name = "news"
@@ -203,6 +203,7 @@ class UserProfile(models.Model):
                             db_index = True,
                             verbose_name = "Screen Name",
                             help_text = "The user's screenname. May only included letters, numbers, underscores, and hyphens. ",
+                            validators = [ validate_slug, ],
                             )
     publicName = models.CharField(
                                   null = True,
@@ -233,6 +234,7 @@ class ServerSystemIPs(models.Model):
                             db_index = True,
                             verbose_name = "IP Name",
                             help_text = "A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
+                            validators = [ validate_slug, ],
                             )
     ip = models.IPAddressField(
                                null = False,
@@ -258,6 +260,7 @@ class ServerSystem(models.Model):
                             db_index = True,
                             verbose_name = "System Name",
                             help_text = "A short, computer friendly name for this system/server/box. May only included letters, numbers, underscores, and hyphens. ",
+                            validators = [ validate_slug, ],
                             )
     admins = models.ManyToManyField(
                                     User,
@@ -292,6 +295,7 @@ class ServerInstanceExternalInfo(models.Model):
                             db_index = True,
                             verbose_name = "Name/Description",
                             help_text = "A short, computer friendly name for the access info. May only included letters, numbers, underscores, and hyphens. ",
+                            validators = [ validate_slug, ],
                             )
     host = models.CharField(
                             null = False,
@@ -329,7 +333,7 @@ class ServerInstanceExternalInfo(models.Model):
     def __str__(self):
         return "ExternalInfo %s" % self.name
    
-   
+
 class ServerInstance(models.Model):
     name = models.SlugField(
                             primary_key = True,
@@ -339,6 +343,7 @@ class ServerInstance(models.Model):
                             db_index = True,
                             verbose_name = "Instance Name",
                             help_text = "A short, computer friendly name for the server instance. May only included letters, numbers, underscores, and hyphens. ",
+                            validators = [ validate_slug, ],
                             )
     admins = models.ManyToManyField(
                                     User,
