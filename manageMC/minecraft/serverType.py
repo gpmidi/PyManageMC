@@ -108,7 +108,7 @@ class FileType(object):
         the DB """
         parsed = self.parseConfig(filepath, relativepath, filedata)
         cls = self.getModelClass()
-        obj = cls.objects.get_or_create(self.getModelClassID())
+        obj = cls.get_or_create(self.getModelClassID())
 
         for k, v in parsed.items():
             setattr(obj, k, v)
