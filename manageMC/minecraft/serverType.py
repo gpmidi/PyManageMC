@@ -508,7 +508,10 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         that should be saved to the DB.
         @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
         """
-        return self.rawParseConfig(filedata)        
+        ret = self.rawParseConfig(filedata)
+        ret['nc_configFileTypeName'] = str(relativepath)
+        ret['nc_minecraftServerPK'] = self.minecraftServerObj.pk
+        return ret
     
     RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$',re.MULTILINE)
     @classmethod
