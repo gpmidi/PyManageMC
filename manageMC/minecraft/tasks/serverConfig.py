@@ -52,5 +52,24 @@ def updateDB_MCConfig(configPK):
                                           serverDir = server.getServerRoot(),
                                           minecraftServerObj = server,
                                           )
+    server.localUpdateDBConfigFile(cfg)
+
+
+@task(expires = 60 * 60)
+def createFile_MCConfig(configPK):
+    """ Update the given server.properties config file  """
+    # FIXME: Add in file locking to prevent race conditions around this
+    mcp = MinecraftServerProperties.get(docid = configPK)
+
+    mcServer = MinecraftServer.objects.get(pk = mcp.minecraftServerPK)
+    # Get the class type that is the right type
+    stype = getServerFromModel(mcServer = mcServer)
+    # Server interaction object
+    server = stype(mcServer = mcServer)
+#     # Run the init
+#     server.localInit()
+    cfg = ServerProperitiesConfigFileType(
+                                          serverDir = server.getServerRoot(),
+                                          minecraftServerObj = server,
+                                          )
     server.localUpdateConfigFile(cfg)
-    

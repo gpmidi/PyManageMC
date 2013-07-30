@@ -27,6 +27,7 @@ import subprocess
 import re
 import os, os.path, sys, shutil
 import time
+import hashlib
 
 from django.template.loader import render_to_string
 
@@ -464,7 +465,7 @@ class ServerType(object):
         with open(os.path.join(self.getServerRoot(), filename), 'r') as f:
             return f.read()
 
-    def localUpdateConfigFile(self, fileTypeObj):
+    def localUpdateDBConfigFile(self, fileTypeObj):
         """ Update couchdb with the current contents of the 
         requested config file.
         """
@@ -478,8 +479,37 @@ class ServerType(object):
                                filedata = confTxt,
                                )
 
-    
-
+    def localUpdateConfigFile(self, fileTypeObj, preChangeSHA512):
+        """ Update the config file with data from couchdb.
+        """
+        assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
+        
+        filePath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME)
+        relPath = fileTypeObj.FILE_NAME
+        
+        # Make sure the file matches what we were told to expect
+        if preChangeSHA512 is None:
+            log.debug("I've been told %r won't exist", fileTypeObj)
+            if os.path.exists(filePath):
+                log.info("File %r exists but I was told it wouldn't exist",filePath)
+                raise IOError("File %r exists but I was told it wouldn't exist"%filePath)
+            else:
+                log.debug("Config file %r doesn't exist as was expected. ", filePath)
+        else:
+            log.debug("I've been told %r will exist and that it's sha512 is %r", fileTypeObj, preChangeSHA512)
+            with open(filePath, 'rb') as f:
+                data = f.read()
+            h = hashlib.new('sha512', data)
+            if h.hexdigest().lower() == preChangeSHA512.lower():
+                log.debug("SHA512 checksums match %r=%r", h.hexdigest(), preChangeSHA512)
+            else:
+                log.info("SHA512 checksums for %r don't match: %r!=%r", filePath, h.hexdigest(), preChangeSHA512)
+                raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, h.hexdigest(), preChangeSHA512)
+            
+        fileTypeObj.writeConfig(
+                                filepath = filePath,
+                                relativepath = relPath,
+                                )
     # Override all var below this point
     
     # The 'name' (both human-readable and allServerTypes's key) for the server
