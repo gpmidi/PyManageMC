@@ -72,4 +72,4 @@ def createFile_MCConfig(configPK):
                                           serverDir = server.getServerRoot(),
                                           minecraftServerObj = server,
                                           )
-    server.localUpdateConfigFile(cfg)
+    server.localUpdateConfigFile(cfg, preChangeSHA512 = None)
