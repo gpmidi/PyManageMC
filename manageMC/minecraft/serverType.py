@@ -63,6 +63,16 @@ class FileType(object):
     # Must be a compiled regex
     FILE_MATCH = None
     
+    def __init__(self, serverDir, minecraftServerObj):
+        self.serverDir = serverDir
+        self.minecraftServerObj = minecraftServerObj
+
+    def getModelClassID(self):
+        return self.getModelClass(
+            ).makeServerID(
+               minecraftServerPK = self.minecraftServerObj.pk,
+               )
+
     def matchFile(self, filePath):
         """ filePath should be relative to the base of the server
         directory. 
@@ -70,7 +80,35 @@ class FileType(object):
         assert filePath[0] != '/'
         return self.FILE_MATCH.match(filePath)
 
-        
+    def getAllConfigs(self):
+        """ Return a list of all config files that are of our type """
+        for (dirpath, dirnames, filenames) in os.walk(self.serverDir):
+            for filename in filenames:
+                filepath = os.path.join(dirpath, filename)
+                filerel = os.path.relpath(filepath, self.serverDir)
+                if self.matchFile(filerel):
+                    yield dict(filepath = filepath, relativepath = filerel)
+    
+    def parseConfig(self,filepath,relativepath,filedata):
+        """ Parse the given config file and return a dict of strings
+        that should be saved to the DB.
+        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
+        """
+        return dict(filepath = filepath, relativepath = relativepath, filedata = filedata)
+
+    def saveConfig(self, filepath, relativepath, filedata):
+        """ Parse the given config file and then save the results to
+        the DB """
+        parsed = self.parseConfig(filepath, relativepath, filedata)
+        cls = self.getModelClass
+        obj = cls.get_or_create(self.getModelClassID())
+
+        for k, v in parsed.items():
+            setattr(obj, k, v)
+
+        obj.save()
+        return self.getModelClassID()
+
 class OverwriteFileType(FileType):
     """ A file that should be overwritten whenever an update
     occurs """
@@ -392,8 +430,30 @@ class ServerType(object):
         self.log.info("Going to run 'save-off' on %r", self)
         self.localRunCommand(cmd = "save-off")
         return True
-       
     
+    def localGetConfigFile(self, filename):
+        """ Return the current contents of the given file. The 
+        filename should be relitiave to the server root. 
+        """
+        with open(os.path.join(self.getServerRoot(), filename), 'r') as f:
+            return f.read()
+
+    def localUpdateConfigFile(self, fileTypeObj):
+        """ Update couchdb with the current contents of the 
+        requested config file.
+        """
+        assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
+
+        confTxt = self.localGetConfigFile(filename = fileTypeObj.FILE_NAME)
+        
+        pk = fileTypeObj.saveConfig(
+                               filepath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME),
+                               relativepath = fileTypeObj.FILE_NAME,
+                               filedata = confTxt,
+                               )
+
+    
+
     # Override all var below this point
     
     # The 'name' (both human-readable and allServerTypes's key) for the server
@@ -436,6 +496,26 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     FILE_MATCH = re.compile(r'^server\.properties$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+    # Our config file name relitive to the server root
+    FILE_NAME = 'server.properties'
+
+    def getModelClass(self):
+        return MinecraftServerProperties
+    
+    def parseConfig(self,filepath,relativepath,filedata):
+        """ Parse the given config file and return a dict of strings
+        that should be saved to the DB.
+        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
+        """
+        return self.rawParseConfig(filedata)        
+    
+    RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$',re.MULTILINE)
+    @classmethod
+    def rawParseConfig(cls,fileContents):
+        ret = {}
+        for k, v in cls.RE_PARSE_CONFIG.findall(fileContents):
+            ret[k] = v
+        return ret
 
 
 class WhiteListConfigFileType(ConfigFileType):

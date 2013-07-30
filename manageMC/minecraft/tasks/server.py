@@ -14,6 +14,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
+# Setup logging
+import logging
+log = logging.getLogger("minecraft.tasks.server")
+
 # Django
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
