@@ -66,9 +66,23 @@ def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanNam
     mcInstance.save()
     mcInstance.admins.add(User.objects.get(pk = ownerPK))
     mcInstance.save()
+
+    binObj = MinecraftServerBinary(
+                                   typeName = 'Stock',
+                                   files = None,
+                                   version = 'Unk',
+                                   releaseStatus = '',
+                                   )
+    # Could stream this, but not bothering since these "should" be small and this func won't be heavily used
+    # TODO: Stream this so it can handle large files
+    with open(binLoc, 'rb') as inFil:
+        with binObj.exc.open('wb') as outFil:
+            outFil.write(inFil.read())
+    binObj.save()
+
     mcServer = MinecraftServer(
                                name = name,
-                               bin = binLoc,
+                               bin = binObj,
                                instance = mcInstance,
                                )
     mcServer.save()
