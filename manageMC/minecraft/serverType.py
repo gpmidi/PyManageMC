@@ -558,6 +558,7 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     TEMPLATE_INIT = 'configs/server.properties'
 
     def getModelClass(self):
+        from minecraft.models import MinecraftServerProperties
         return MinecraftServerProperties
     
     def parseConfig(self,filepath,relativepath,filedata):
