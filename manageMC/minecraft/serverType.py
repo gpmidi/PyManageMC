@@ -109,6 +109,7 @@ class FileType(object):
         obj.save()
         return self.getModelClassID()
 
+
 class OverwriteFileType(FileType):
     """ A file that should be overwritten whenever an update
     occurs """
