@@ -567,7 +567,7 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         """
         ret = self.rawParseConfig(filedata)
         ret['nc_configFileTypeName'] = str(relativepath)
-        ret['nc_minecraftServerPK'] = self.minecraftServerObj.pk
+        ret['nc_minecraftServerPK'] = self.minecraftServerObj.mcServer.pk
         return ret
     
     RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$',re.MULTILINE)
