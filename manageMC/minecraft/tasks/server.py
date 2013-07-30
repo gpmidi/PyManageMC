@@ -34,6 +34,46 @@ from celery.task import task  # @UnresolvedImport
 # Mcer
 from minecraft.models import *
 from minecraft.serverType import getServerFromModel
+from extern.models import *
+
+
+@task(expires = 60 * 60)
+def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanName = '', desc = '', systemPK = None):
+    """ Quick and dirty server creation  """
+    if systemPK is None and ServerSystem.objects.all().count()==0:
+        sSystem = ServerSystem(
+                               name='First System',
+                               owner=User.objects.get(pk=ownerPK),
+                               )
+        sSystem.save()
+        sSystem.admins.append(User.objects.get(pk=ownerPK))
+        sSystem.save()
+    elif systemPK is None and ServerSystem.objects.all().count()>0:
+        sSystem = ServerSystem.objects.all()[0]
+    else:
+        sSystem = ServerSystem.objects.get(pk=systemPK)
+        
+    mcInstance = ServerInstance(
+                                name=name,
+                                owner=User.objects.get(pk=ownerPK),
+                                status=status,
+                                humanName=humanName,
+                                description=desc,
+                                system=sSystem,
+                                internalIP=ip,
+                                port=port,
+                                )
+    mcInstance.save()
+    mcInstance.admins.append(User.objects.get(pk = ownerPK))
+    mcInstance.save()
+    mcServer = MinecraftServer(
+                               name = name,
+                               bin = binLoc,
+                               instance = mcInstance,
+                               )
+    mcServer.save()
+
+    init(serverPK = mcServer.pk)
 
 @task(expires = 60 * 60)
 def init(serverPK):
