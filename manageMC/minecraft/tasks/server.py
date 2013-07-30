@@ -46,7 +46,7 @@ def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanNam
                                owner=User.objects.get(pk=ownerPK),
                                )
         sSystem.save()
-        sSystem.admins += User.objects.get(pk = ownerPK)
+        sSystem.admins.add(User.objects.get(pk = ownerPK))
         sSystem.save()
     elif systemPK is None and ServerSystem.objects.all().count()>0:
         sSystem = ServerSystem.objects.all()[0]
@@ -64,7 +64,7 @@ def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanNam
                                 port=port,
                                 )
     mcInstance.save()
-    mcInstance.admins += User.objects.get(pk = ownerPK)
+    mcInstance.admins.add(User.objects.get(pk = ownerPK))
     mcInstance.save()
     mcServer = MinecraftServer(
                                name = name,
