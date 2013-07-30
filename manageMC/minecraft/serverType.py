@@ -27,6 +27,9 @@ import subprocess
 import re
 import os, os.path, sys, shutil
 import time
+
+from django.template.loader import render_to_string
+
 from minecraft.models import *
 
 allServerTypes = {}
@@ -63,6 +66,9 @@ class FileType(object):
     # Must be a compiled regex
     FILE_MATCH = None
     
+    # The template to use when the file doesn't already exist
+    TEMPLATE_INIT = None
+
     def __init__(self, serverDir, minecraftServerObj):
         self.serverDir = serverDir
         self.minecraftServerObj = minecraftServerObj
@@ -108,6 +114,25 @@ class FileType(object):
 
         obj.save()
         return self.getModelClassID()
+    
+    def writeConfig(self,filepath, relativepath):
+        """ Write this config file data to the given file """
+        assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
+
+        cls = self.getModelClass
+        obj = cls.get_or_create(self.getModelClassID())
+
+        data = render_to_string(
+                              self.TEMPLATE_INIT,
+                              dict(
+                                   fileType = self,
+                                   fileRelPath = relativepath,
+                                   fileData = obj,
+                                   server = self.minecraftServerObj,
+                                   ),
+                              )
+        with open(filepath, 'w') as f:
+            f.write(data)
 
 
 class OverwriteFileType(FileType):
@@ -499,6 +524,8 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     SERVERTYPE = StockServerType.TYPE
     # Our config file name relitive to the server root
     FILE_NAME = 'server.properties'
+    # Used to create the file
+    TEMPLATE_INIT = 'configs/server.properties'
 
     def getModelClass(self):
         return MinecraftServerProperties
