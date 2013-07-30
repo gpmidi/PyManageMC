@@ -73,11 +73,8 @@ def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanNam
                                    version = 'Unk',
                                    releaseStatus = '',
                                    )
-    # Could stream this, but not bothering since these "should" be small and this func won't be heavily used
-    # TODO: Stream this so it can handle large files
-    with open(binLoc, 'rb') as inFil:
-        with binObj.exc.open('wb') as outFil:
-            outFil.write(inFil.read())
+    with open(binLoc, 'rb') as f:
+        binObj.exc.save(os.path.basename(binLoc), File(f))
     binObj.save()
 
     mcServer = MinecraftServer(
