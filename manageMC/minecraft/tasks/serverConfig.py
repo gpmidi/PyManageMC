@@ -41,7 +41,7 @@ def updateDB_MCConfig(configPK):
     """ Update the given server.properties config file  """
     mcp = MinecraftServerProperties.get(docid = configPK)
 
-    mcServer = MinecraftServer.objects.get(pk = mcp.minecraftServerPK)
+    mcServer = MinecraftServer.objects.get(pk = mcp.nc_minecraftServerPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer = mcServer)
     # Server interaction object
@@ -61,7 +61,7 @@ def createFile_MCConfig(configPK):
     # FIXME: Add in file locking to prevent race conditions around this
     mcp = MinecraftServerProperties.get(docid = configPK)
 
-    mcServer = MinecraftServer.objects.get(pk = mcp.minecraftServerPK)
+    mcServer = MinecraftServer.objects.get(pk = mcp.nc_minecraftServerPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer = mcServer)
     # Server interaction object
