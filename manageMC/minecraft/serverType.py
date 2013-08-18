@@ -643,6 +643,28 @@ class ServerProperitiesConfigFileType(ConfigFileType):
             ret[k] = v
         return ret
 
+    def writeConfig(self, filepath, relativepath):
+        """ Write this config file data to the given file """
+        assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
+
+        cls = self.getModelClass()
+        obj = cls.get_or_create(self.getModelClassID())
+        fileData = {}
+        for k, v in obj.items():
+            fileData[]=
+
+        data = render_to_string(
+                              self.TEMPLATE_INIT,
+                              dict(
+                                   fileType = self,
+                                   fileRelPath = relativepath,
+                                   fileData = fileData,
+                                   server = self.minecraftServerObj,
+                                   ),
+                              )
+        with open(filepath, 'w') as f:
+            f.write(data)
+
 
 class WhiteListConfigFileType(ConfigFileType):
     # File match stuff
