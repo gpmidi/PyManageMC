@@ -30,6 +30,11 @@ def generateTemplate(opts):
             'templatePath':opts.templatePath,
             'cfgsPath':opts.cfgsPath,
             'tagPrefix':opts.tagPrefix,
+            'buildDispName':opts.buildDispName,
+            'username':opts.username,
+            'uid':opts.uid,
+            'gid':opts.gid,
+            'parent':'%s_%s' % (opts.tagPrefix, opts.os),
             }
     templateListing = os.listdir(opts.templatePath)
     names = [
@@ -117,6 +122,38 @@ if __name__ == "__main__":
                       type = str,
                       default = '',
                       help = "Prefix to use for all generated tag names. [default %default]",
+                      )
+    parser.add_option(
+                      "--buildDispName",
+                      dest = "buildDispName",
+                      action = 'store',
+                      type = str,
+                      default = None,
+                      help = "BUILD_DISPLAY_NAME [default %default]",
+                      )
+    parser.add_option(
+                      "--username",
+                      dest = "username",
+                      action = 'store',
+                      type = str,
+                      default = 'mcservers',
+                      help = "Username to use [default %default]",
+                      )
+    parser.add_option(
+                      "--uid",
+                      dest = "uid",
+                      action = 'store',
+                      type = int,
+                      default = 1000,
+                      help = "UID to use [default %default]",
+                      )
+    parser.add_option(
+                      "--gid",
+                      dest = "gid",
+                      action = 'store',
+                      type = int,
+                      default = 1000,
+                      help = "GID to use [default %default]",
                       )
     parser.add_option(
                       "--verbose",

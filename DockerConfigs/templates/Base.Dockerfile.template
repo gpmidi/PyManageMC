@@ -1,8 +1,9 @@
-FROM {{ tagPrefix }}
-MAINTAINER Paulson McIntyre, paul+mcdocker@gpmidi.net
+{% autoescape off %}
+FROM {{ parent }}
+MAINTAINER Paulson McIntyre, paul+pymanagemc@gpmidi.net
 
-RUN groupadd --gid 1000 mcservers \
-  && useradd --home-dir "/var/lib/minecraft" -m --gid 1000 --uid 1000 mcservers
+RUN groupadd --gid {{ gid }} {{ username }} \
+  && useradd --home-dir "/var/lib/minecraft" -m --gid {{ gid }} --uid {{ uid }} {{ username }}
 
 # Do an initial update
 RUN apt-get update
@@ -27,4 +28,7 @@ ADD ./DockerFiles/supervisord.d/minecraft.conf /etc/supervisor/conf.d/minecraft.
 # Fix other perms
 RUN  chown -R root:root /etc/supervisor/ /etc/logrotate.d/ \
   && chmod -R 644 /etc/supervisor/ /etc/logrotate.d/ \
-  && chmod 755 /etc/supervisor/ /etc/logrotate.d /etc/supervisor/conf.d/
+  && chmod 755 /etc/supervisor/ /etc/logrotate.d /etc/supervisor/conf.d \
+  && chown -R {{ uid }}:{{ gid }} /var/lib/minecraft
+
+{% endautoescape %}

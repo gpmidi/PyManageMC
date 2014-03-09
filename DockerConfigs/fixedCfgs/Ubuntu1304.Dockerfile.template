@@ -1,8 +1,5 @@
 FROM ubuntu:13.04
-MAINTAINER Paulson McIntyre, paul+mcdocker@gpmidi.net
-
-RUN groupadd --gid 1000 mcservers \
-  && useradd --home-dir "/var/lib/minecraft" -m --gid 1000 --uid 1000 mcservers
+MAINTAINER Paulson McIntyre, paul+pymanagemc@gpmidi.net
 
 # Do an initial update
 RUN apt-get update
@@ -35,8 +32,7 @@ RUN  chown -R root:root /root \
   && chmod -R 700 /root
 
 # Fix perms for mcservers's home
-RUN  chown -R 1000:1000 /var/lib/minecraft \
-  && chmod -R 600 /var/lib/minecraft \
+RUN  chmod -R 600 /var/lib/minecraft \
   && chmod 700 /var/lib/minecraft /var/lib/minecraft/.ssh
 
 # Fix other perms
