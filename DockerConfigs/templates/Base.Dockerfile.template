@@ -1,4 +1,4 @@
-FROM FIXME
+FROM {{ tagPrefix }}
 MAINTAINER Paulson McIntyre, paul+mcdocker@gpmidi.net
 
 RUN groupadd --gid 1000 mcservers \

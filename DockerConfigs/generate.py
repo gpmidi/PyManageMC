@@ -20,37 +20,39 @@ def createSettings(opts):
         TEMPLATE_DIRS = (ops.templatePath,))
 
 
-def generateAllTemplates(opts):
-    log.debug("Generating all template files")
-    for fil in os.listdir(opts.templatePath):
-        log.debug("Found file %r",fil)
-        if str(fil).endswith('.template'):
-            generateTemplate(opts=opts,templatePath=fil)
-    log.debug("Done generating templates")
-
-def generateTemplate(opts, **kw):
-    templatePath = kw.get('templatePath', None)
-    log.debug("Going to generate template %r", templatePath)
-    templateName = os.path.relpath(path = templatePath, start = opts.templatePath)
-    for k, v in {
+def generateTemplate(opts):
+    log.debug("Going to generate template")
+    kws = {
             'os':opts.os,
             'project':opts.project,
             'releaseType':opts.releaseType,
             'projectVersionStr':opts.projectVersionStr,
             'templatePath':opts.templatePath,
             'cfgsPath':opts.cfgsPath,
-            'templateName':templateName,
             'tagPrefix':opts.tagPrefix,
-            }:
-        if k not in kw:
-            kw[k] = v
+            }
+    templateListing = os.listdir(opts.templatePath)
+    names = [
+             ('Base',),
+             ("%s" % opts.os,),
+             ('%s_%s' % (opts.project, opts.os),),
+             ('%s_%s_%s' % (opts.releaseType, opts.project, opts.os),),
+             ('%s_%s' % (opts.projectVersionStr, opts.os),),
+             ]
+    found = None
+    for s in names:
+        m = "%s.Dockerfile.template" % s[0]
+        if s in templateListing:
+            found = s
+    assert found is not None, "Expected to find a valid template"
+    kw['templateName'] = found[0]
     outFile = os.path.join(
                            ops.cfgsPath,
-                           os.path.basename(templateName).replace('.template', ''),
+                           found[0].replace('.template', ''),
                            )
     rendered = render_to_string(templateName, kw)
 
-    log.debug("Done generating template %r", templatePath)
+    log.debug("Done generating template")
 
 
 if __name__ == "__main__":
@@ -131,6 +133,6 @@ if __name__ == "__main__":
 
     createSettings(opts = opts)
 
-
+    generateTemplate(opts = opts)
 
     log.info("Done")
