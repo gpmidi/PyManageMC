@@ -42,8 +42,8 @@ RUN  chown -R 1000:1000 /var/lib/minecraft \
 # Fix other perms
 RUN  chown -R root:root /etc/supervisor/ /etc/logrotate.d/ \
   && chmod -R 644 /etc/supervisor/ /etc/logrotate.d/ \
-  && chmod 755 /etc/supervisor/ /etc/logrotate.d
+  && chmod 755 /etc/supervisor/ /etc/logrotate.d /etc/supervisor/conf.d/
 
 EXPOSE 22 25565
-VOLUME ["/var/lib/minecraft","/var/log"]
+VOLUME ["/var/lib/minecraft","/var/log","/etc/ssh"]
 CMD ["supervisord", "--nodaemon", "--logfile=/var/log/supervisor/supervisord.log", "--loglevel=warn", "--logfile_maxbytes=1GB", "--logfile_backups=0"]
