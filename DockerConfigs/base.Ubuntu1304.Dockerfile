@@ -45,5 +45,7 @@ RUN  chown -R root:root /etc/supervisor/ /etc/logrotate.d/ \
   && chmod 755 /etc/supervisor/ /etc/logrotate.d
 
 EXPOSE 22 25565
+
 VOLUME ["/var/lib/minecraft","/var/log"]
+
 CMD ["supervisord", "--nodaemon", "--logfile=/var/log/supervisor/supervisord.log", "--loglevel=warn", "--logfile_maxbytes=1GB", "--logfile_backups=0"]
