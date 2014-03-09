@@ -44,14 +44,17 @@ def generateTemplate(opts):
         m = "%s.Dockerfile.template" % s[0]
         if s in templateListing:
             found = s
-    assert found is not None, "Expected to find a valid template"
+    if found is None:
+        raise ValueError("Expected to find a valid template")
     kw['templateName'] = found[0]
     outFile = os.path.join(
                            ops.cfgsPath,
                            found[0].replace('.template', ''),
                            )
     rendered = render_to_string(templateName, kw)
-
+    log.info("Writing template to %r", outFile)
+    with open(outFile, 'w') as f:
+        f.write(rendered)
     log.debug("Done generating template")
 
 
