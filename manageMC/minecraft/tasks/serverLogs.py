@@ -35,6 +35,7 @@ from celery.task import task  # @UnresolvedImport
 from minecraft.models import *
 from minecraft.serverType import getServerFromModel
 
+
 @task(expires = 60 * 60)
 def init(serverPK):
     """ Init the given server.  """
