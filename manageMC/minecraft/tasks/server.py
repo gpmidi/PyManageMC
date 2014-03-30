@@ -194,5 +194,7 @@ def status(serverPK):
     # Server interaction object
     server = stype(mcServer = mcServer)
     
-    return server.localStatus()
-    
+    try:
+        return server.localStatus()
+    except RuntimeError as e:
+        return False
