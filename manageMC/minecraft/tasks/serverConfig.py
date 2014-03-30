@@ -119,4 +119,6 @@ def updateFile_MCConfig(
                     serverPK = mcServer.pk,
                     **restartKWArgs
                     )
+        return True
+    return False
 

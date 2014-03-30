@@ -140,7 +140,7 @@ class FileType(object):
             
     def writeConfig(self,filepath, relativepath):
         """ Write this config file data to the given file """
-        with open(filepath, 'w') as f:
+        with open(filepath, 'wb') as f:
             f.write(self.renderConfig(relativepath=relativepath))
 
 
@@ -226,12 +226,10 @@ class ServerType(object):
 
 
     class FailConfigUpdateResult(ConfigUpdateResult):
-        def __init__(self, newHashDB, newFileDB,newHashFS, newFileFS, fileDiff, **kw):
+        def __init__(self, newHashDB, newFileDB, fileDiff, **kw):
             ServerType.ConfigUpdateResult.__init__(self, **kw)
             self.newHashDB = newHashDB
             self.newFileDB = newFileDB
-            self.newHashFS = newHashFS
-            self.newFileFS = newFileFS
             self.fileDiff=fileDiff
 
 
@@ -577,12 +575,15 @@ class ServerType(object):
                 if errorOnFail:
                     raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
                 else:
-                    results['fileDiff'] = '\n'.join(difflib.unified_diff(
-                                                                         results['oldFileDB'].splitlines(),
-                                                                         results['oldFileFS'].splitlines(),
-                                                                         fromfile = 'oldFileDB',
-                                                                         tofile = 'oldFileFS',
-                                                                         ))
+                    if results['oldFileDB'] and results['oldFileFS']:
+                        results['fileDiff'] = '\n'.join(difflib.unified_diff(
+                             results['oldFileDB'].splitlines(),
+                             results['oldFileFS'].splitlines(),
+                             fromfile = 'oldFileDB',
+                             tofile = 'oldFileFS',
+                             ))
+                    else:
+                        results['fileDiff'] = None
                     return ServerType.FailConfigUpdateResult(**results)
             
         fileTypeObj.writeConfig(
@@ -591,7 +592,8 @@ class ServerType(object):
                                 )
 
         results['newHashFS'], results['newFileFS'] = self._hashFile(filePath)
-
+        results['oldHashFS'] = results['newHashFS']
+        results['oldHashDB'] = results['newFileFS']
         return ServerType.SuccessConfigUpdateResult(**results)
 
     # Override all var below this point
