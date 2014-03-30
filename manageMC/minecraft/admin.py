@@ -27,9 +27,9 @@ admin.site.register(MapSave)
 # admin.site.register(PublicMapSave)
 
 
-@admin.register(MinecraftServer)
 class MinecraftServerAdmin(admin.ModelAdmin):
     fields = ('name', 'bin', 'instance')
+admin.site.register(MinecraftServer, MinecraftServerAdmin)
 
 
 admin.site.register(MinecraftServerBinary)
