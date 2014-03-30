@@ -44,11 +44,6 @@ urlpatterns = patterns('',
     url(r'^accounts/reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)(?:/)?$', 'django.contrib.auth.views.password_reset_confirm', name = 'password_reset_confirm'),
     url(r'^accounts/reset/done(?:/)?$', 'django.contrib.auth.views.password_reset_complete', name = 'password_reset_complete'),
 
-    # Server access
-    url(r'^servers(?:/)?$', 'minecraft.views.servers.index'),
-    url(r'^servers/new(?:/)?$', 'minecraft.views.servers.newserver'),
-    url(r'^servers/(\d+)(?:/)?$', 'minecraft.views.servers.view'),
-
     # Admin
     url(r'^admin/', include(admin.site.urls)),
 )
