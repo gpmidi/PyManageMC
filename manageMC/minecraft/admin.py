@@ -25,5 +25,11 @@ from minecraft.models import *
 admin.site.register(MinecraftServerCfgFile)
 admin.site.register(MapSave)
 # admin.site.register(PublicMapSave)
-admin.site.register(MinecraftServer)
+
+
+@admin.register(MinecraftServer)
+class MinecraftServerAdmin(admin.ModelAdmin):
+    fields = ('name', 'bin', 'instance')
+
+
 admin.site.register(MinecraftServerBinary)
