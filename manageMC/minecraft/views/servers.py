@@ -35,7 +35,7 @@ def index(req):
     """ List all of my servers """
     servers = MinecraftServer.objects.filter(instance__owner__in = req.user.groups.all())
     return render_to_response(
-                              'mcer/servers/index.html',
+                              'servers/index.html',
                               dict(
                                    servers = servers,
                                     ),
@@ -80,7 +80,7 @@ def view(req, server_id):
         form = EditServerForm()
     
     return render_to_response(
-                              'mcer/servers/view.html',
+                              'servers/view.html',
                               dict(
                                    server = server,
                                    form = form,
@@ -96,7 +96,7 @@ def newserver(req):
     raise NotImplementedError("FIXME: Finish this")
 
     return render_to_response(
-                              'mcer/servers/new.html',
+                              'servers/new.html',
                               dict(
                                     ),
                               context_instance = RequestContext(req),
