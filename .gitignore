@@ -4,6 +4,8 @@
 local_settings.py
 /.settings
 /manageMC/manageMC/local_settings.py
+.*.swp
 /static
 /media
 /logs
+/_gsdata_

@@ -82,10 +82,11 @@ admin.site.register(ServerSystem, ServerSystemAdmin)
 class ServerInstanceExternalInfoInline(admin.TabularInline):
     model = ServerInstanceExternalInfo
 
-
+from minecraft.admin import MinecraftServerAdmin
 class ServerInstanceAdmin(admin.ModelAdmin):
     inlines = [
         ServerInstanceExternalInfoInline,
+        MinecraftServerAdmin,
     ]
-    
+
 admin.site.register(ServerInstance, ServerInstanceAdmin)

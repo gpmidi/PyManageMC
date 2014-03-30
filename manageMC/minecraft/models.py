@@ -111,7 +111,7 @@ class MinecraftServerBinary(models.Model):
     def __repr__(self):
         return "<MCServerBin_%s_%s>" % (self.typeName, self.version)
     
-                  
+
 class MinecraftServer(models.Model):
     """ A standard Minecraft server """
     name = models.CharField(

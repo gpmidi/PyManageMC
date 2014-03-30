@@ -22,14 +22,35 @@ Created on Feb 16, 2013
 from django.contrib import admin
 from minecraft.models import *
 
-admin.site.register(MinecraftServerCfgFile)
+
+# admin.site.register(MinecraftServerCfgFile)
 admin.site.register(MapSave)
 # admin.site.register(PublicMapSave)
 
+class MinecraftServerCfgFileAdmin(admin.StackedInline):
+    model = MinecraftServerCfgFile
+    fields = ('cfgLoc',)
+    readonly_fields = ('serverInstance',)
 
-class MinecraftServerAdmin(admin.ModelAdmin):
-    fields = ('name', 'bin', 'instance')
-admin.site.register(MinecraftServer, MinecraftServerAdmin)
+
+class MinecraftServerAdmin(admin.StackedInline):
+    model = MinecraftServer
+    fields = ('bin',)
+    readonly_fields = ('name', 'created', 'modified', 'instance',)
+    inlines = [
+               MinecraftServerCfgFileAdmin,
+               ]
+
+
+class MinecraftServerAdminMain(admin.ModelAdmin):
+    model = MinecraftServer
+    fields = ('bin',)
+    readonly_fields = ('name', 'created', 'modified', 'instance',)
+    inlines = [
+               MinecraftServerCfgFileAdmin,
+               ]
+
+admin.site.register(MinecraftServer, MinecraftServerAdminMain)
 
 
 admin.site.register(MinecraftServerBinary)
