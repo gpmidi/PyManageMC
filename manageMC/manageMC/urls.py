@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     
     # General interaction
     url(r'^e/', include('extern.urls')),
-    url(r'^servers/', include('servers.urls')),
+    url(r'^mc/', include('minecraft.urls')),
 
     # User
     url(r'^accounts/login(?:/)?$', 'django.contrib.auth.views.login',),
