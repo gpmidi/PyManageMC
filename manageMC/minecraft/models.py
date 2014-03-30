@@ -31,55 +31,36 @@ from couchdbkit.ext.django.schema import *
 from minecraft.serverType import loadOtherServerTypes, allServerTypes
 
 
-class MinecraftServerBinary(models.Model):
-    """ A type of Minecraft server a a specific version """
-    typeName = models.CharField(
-                                null = False,
-                                blank = False,
-                                max_length = 255,
-                                db_index = True,
-                                verbose_name = "Name",
-                                help_text = "Name of the server type",
-                                choices = (
-                                              # (TYPE string, human name),
-                                              ('Stock', 'Stock'),
-                                              ('Bukkit', 'Bukkit'),
-                                              ('Tekkit', 'Tekkit'),
-                                              ('NerdBukkit', 'NerdBukkit'),
-                                              ('FTB', "Feed The Beast"),
-                                           ),
-                                )
-    exc = models.FileField(
-                           null = True,
-                           blank = False,
-                           max_length = 4096,
-                           upload_to = "srv/jars/%Y/%m/%d/",
-                           verbose_name = "Exec",
-                           help_text = "The binary JAR file",
-                           )
-    files = models.FileField(
-                               null = True,
-                               blank = True,
-                               max_length = 4096,
-                               upload_to = "srv/files/%Y/%m/%d/",
-                               verbose_name = "Support Files - Overwrite",
-                               help_text = "A ZIP file containing any supporting files. Will overwrite any existing files with the same name/path. ",
-                               )    
-    version = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Version",
-                            help_text = "Version of the binary",
-                            )
-    releaseStatus = models.CharField(
-                                null = False,
-                                blank = False,
-                                max_length = 255,
-                                verbose_name = "Release Status",
-                                help_text = "This server version release type",
-                                choices = (
+class MinecraftServerBinary(Document):
+    typeName = StringProperty(
+                              required = True,
+                              default = None,
+                              validators = [],
+                              name = "Name",
+                              verbose_name = "Name of the server type",
+                              choices = (
+                                          # (TYPE string, human name),
+                                          ('Stock', 'Stock'),
+                                          ('Bukkit', 'Bukkit'),
+                                          ('Tekkit', 'Tekkit'),
+                                          ('NerdBukkit', 'NerdBukkit'),
+                                          ('FTB', "Feed The Beast"),
+                                         ),
+                              )
+    version = StringProperty(
+                              required = True,
+                              default = None,
+                              validators = [],
+                              name = "Version",
+                              verbose_name = "Version of the binary",
+                              )
+    releaseStatus = StringProperty(
+                              required = True,
+                              default = None,
+                              validators = [],
+                              name = "Name",
+                              verbose_name = "Name of the server type",
+                              choices = (
                                               # (TYPE string, human name),
                                               ('Production Release', 'Production Release'),
                                               ('Dev Build', 'Dev Build'),
@@ -88,85 +69,213 @@ class MinecraftServerBinary(models.Model):
                                               ('Pre-release', 'Pre-release'),
                                               ('Beta', 'Beta'),
                                               ('Alpha', 'Alpha'),
-                                           ),
+                                              ),
+                              )
+    created = DateTimeProperty(
+                                # default=
+                                required = True,
+                                validators = [],
+                                name = "Date Created",
+                                verbose_name = "The date that this server bin was first defined",
                                 )
-    created = models.DateTimeField(
-                                    null = False,
-                                    auto_now_add = True,
-                                    editable = False,
-                                    verbose_name = "Date Created",
-                                    help_text = "The date that this server bin was first defined",
-                                    )
-    modified = models.DateTimeField(
-                                    null = False,
-                                    auto_now = True,
-                                    editable = False,
-                                    verbose_name = "Date Modified",
-                                    help_text = "The date that this server bin was last modified",
-                                    )
+    modified = DateTimeProperty(
+                                # default=
+                                required = True,
+                                validators = [],
+                                name = "Date Modified",
+                                verbose_name = "The date that this server bin was last modified",
+                                )
     
     def __str__(self):
         return "MCServerBin %s_%s" % (self.typeName, self.version)
-    
+
     def __repr__(self):
         return "<MCServerBin_%s_%s>" % (self.typeName, self.version)
-    
-                  
-class MinecraftServer(models.Model):
-    """ A standard Minecraft server """
-    name = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            editable = False,
-                            verbose_name = "Name",
-                            help_text = "Name of this server",
-                            )
-    bin = models.ForeignKey(
-                             MinecraftServerBinary,
-                             db_index = True,
-                             verbose_name = "Server Binary",
-                             help_text = "The type/version of server to run",
-                             )
-    created = models.DateTimeField(
-                                    null = False,
-                                    auto_now_add = True,
-                                    editable = False,
-                                    verbose_name = "Date Created",
-                                    help_text = "The date that this server was created",
-                                    )
-    modified = models.DateTimeField(
-                                    null = False,
-                                    auto_now = True,
-                                    editable = False,
-                                    verbose_name = "Date Modified",
-                                    help_text = "The date that this server object was last modified",
-                                    )
-    instance = models.OneToOneField(
-                                    'extern.ServerInstance',
-                                    null = False,
-                                    db_index = True,
-                                    editable = False,
-                                    verbose_name = "Server Instance",
-                                    # help_text="",
-                                    )
-    
+
+
+class MinecraftServer(Document):
+    binary = StringProperty(
+                              required = True,
+                              default = None,
+                              validators = [],
+                              name = "Binary",
+                              verbose_name = "MinecraftServerBinary of the binary",
+                              )
+
+    created = DateTimeProperty(
+                                # default=
+                                required = True,
+                                validators = [],
+                                name = "Date Created",
+                                verbose_name = "The date that this server bin was first defined",
+                                )
+    modified = DateTimeProperty(
+                                # default=
+                                required = True,
+                                validators = [],
+                                name = "Date Modified",
+                                verbose_name = "The date that this server bin was last modified",
+                                )
+    instance = StringProperty(
+                              required = True,
+                              default = None,
+                              validators = [],
+                              name = "Server Instance",
+                              # verbose_name = "",
+                              )
+
     def __str__(self):
         return "MCServer_%s_%s" % (self.name, self.getSessionName())
-    
+
     def __repr__(self):
         return "<MCServer %r %r>" % (self.name, self.getSessionName())
-        
+
     def loc(self):
         """ Return the full path to the server """
         return os.path.join(settings.MC_SERVER_PATH, str(self.getSessionName()))
-    
+
     def getSessionName(self):
         """ Returns the screen session name. 
         Must NEVER change. 
         """
         return "MC-%d" % self.pk
+
+# class zzzMinecraftServerBinary(models.Model):
+#     """ A type of Minecraft server of a specific version """
+#     typeName = models.CharField(
+#                                 null = False,
+#                                 blank = False,
+#                                 max_length = 255,
+#                                 db_index = True,
+#                                 verbose_name = "Name",
+#                                 help_text = "Name of the server type",
+#                                 choices = (
+#                                               # (TYPE string, human name),
+#                                               ('Stock', 'Stock'),
+#                                               ('Bukkit', 'Bukkit'),
+#                                               ('Tekkit', 'Tekkit'),
+#                                               ('NerdBukkit', 'NerdBukkit'),
+#                                               ('FTB', "Feed The Beast"),
+#                                            ),
+#                                 )
+#     exc = models.FileField(
+#                            null = True,
+#                            blank = False,
+#                            max_length = 4096,
+#                            upload_to = "srv/jars/%Y/%m/%d/",
+#                            verbose_name = "Exec",
+#                            help_text = "The binary JAR file",
+#                            )
+#     files = models.FileField(
+#                                null = True,
+#                                blank = True,
+#                                max_length = 4096,
+#                                upload_to = "srv/files/%Y/%m/%d/",
+#                                verbose_name = "Support Files - Overwrite",
+#                                help_text = "A ZIP file containing any supporting files. Will overwrite any existing files with the same name/path. ",
+#                                )
+#     version = models.CharField(
+#                             null = False,
+#                             blank = False,
+#                             max_length = 255,
+#                             db_index = True,
+#                             verbose_name = "Version",
+#                             help_text = "Version of the binary",
+#                             )
+#     releaseStatus = models.CharField(
+#                                 null = False,
+#                                 blank = False,
+#                                 max_length = 255,
+#                                 verbose_name = "Release Status",
+#                                 help_text = "This server version release type",
+#                                 choices = (
+#                                               # (TYPE string, human name),
+#                                               ('Production Release', 'Production Release'),
+#                                               ('Dev Build', 'Dev Build'),
+#                                               ('Mature Release', 'Mature Release'),
+#                                               ('Nightly Dev Build', 'Nightly Dev Build'),
+#                                               ('Pre-release', 'Pre-release'),
+#                                               ('Beta', 'Beta'),
+#                                               ('Alpha', 'Alpha'),
+#                                            ),
+#                                 )
+#     created = models.DateTimeField(
+#                                     null = False,
+#                                     auto_now_add = True,
+#                                     editable = False,
+#                                     verbose_name = "Date Created",
+#                                     help_text = "The date that this server bin was first defined",
+#                                     )
+#     modified = models.DateTimeField(
+#                                     null = False,
+#                                     auto_now = True,
+#                                     editable = False,
+#                                     verbose_name = "Date Modified",
+#                                     help_text = "The date that this server bin was last modified",
+#                                     )
+#
+#     def __str__(self):
+#         return "MCServerBin %s_%s" % (self.typeName, self.version)
+#
+#     def __repr__(self):
+#         return "<MCServerBin_%s_%s>" % (self.typeName, self.version)
+    
+                  
+# class zzzMinecraftServer(models.Model):
+#     """ A standard Minecraft server """
+#     name = models.CharField(
+#                             null = False,
+#                             blank = False,
+#                             max_length = 255,
+#                             db_index = True,
+#                             editable = False,
+#                             verbose_name = "Name",
+#                             help_text = "Name of this server",
+#                             )
+#     bin = models.ForeignKey(
+#                              MinecraftServerBinary,
+#                              db_index = True,
+#                              verbose_name = "Server Binary",
+#                              help_text = "The type/version of server to run",
+#                              )
+#     created = models.DateTimeField(
+#                                     null = False,
+#                                     auto_now_add = True,
+#                                     editable = False,
+#                                     verbose_name = "Date Created",
+#                                     help_text = "The date that this server was created",
+#                                     )
+#     modified = models.DateTimeField(
+#                                     null = False,
+#                                     auto_now = True,
+#                                     editable = False,
+#                                     verbose_name = "Date Modified",
+#                                     help_text = "The date that this server object was last modified",
+#                                     )
+#     instance = models.OneToOneField(
+#                                     'extern.ServerInstance',
+#                                     null = False,
+#                                     db_index = True,
+#                                     editable = False,
+#                                     verbose_name = "Server Instance",
+#                                     # help_text="",
+#                                     )
+#
+#     def __str__(self):
+#         return "MCServer_%s_%s" % (self.name, self.getSessionName())
+#
+#     def __repr__(self):
+#         return "<MCServer %r %r>" % (self.name, self.getSessionName())
+#
+#     def loc(self):
+#         """ Return the full path to the server """
+#         return os.path.join(settings.MC_SERVER_PATH, str(self.getSessionName()))
+#
+#     def getSessionName(self):
+#         """ Returns the screen session name.
+#         Must NEVER change.
+#         """
+#         return "MC-%d" % self.pk
 
 
 # class PublicMapSave(models.Model):
@@ -660,7 +769,7 @@ class MinecraftServerProperties(Document):
             )
 
 
-class MinecraftServerLogLine(Document):
+class MinecraftServerLogLine(DocumentSchema):
     """ A Minecraft server's log files
     """
 
