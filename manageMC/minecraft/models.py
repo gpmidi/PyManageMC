@@ -355,7 +355,11 @@ class MinecraftServerProperties(Document):
                                default = None,
                                auto_now = True,
                                )
-
+    nc_lastHash = StringProperty(
+                                verbose_name = "Last Hash",
+                                default = None,
+                                required = False,
+                                )
 
     # ## Ones that are important
 

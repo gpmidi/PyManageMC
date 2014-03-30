@@ -86,6 +86,7 @@ def quickCreate(name, port, ip, binLoc, ownerPK = 1, status = 'active', humanNam
 
     init(serverPK = mcServer.pk)
 
+
 @task(expires = 60 * 60)
 def init(serverPK):
     """ Init the given server.  """
@@ -97,6 +98,7 @@ def init(serverPK):
     # Run the init 
     server.localInit()
     
+
 @task(expires = 60 * 60)
 def loadMap(serverPK, mapPK):
     """ Init the given server.  
@@ -112,6 +114,7 @@ def loadMap(serverPK, mapPK):
     # Load the map
     server.localLoadMap(mapSave)
     
+
 @task(expires = 60 * 60 * 24 * 14)
 def save_map(serverPK, name, desc = '', version = '', owner = None):
     """ Save a map. Returns MapSave PK. """    
@@ -126,6 +129,7 @@ def save_map(serverPK, name, desc = '', version = '', owner = None):
     
     return mapPK 
     
+
 @task(expires = 60 * 60 * 24)
 def start(serverPK):
     """ Start a server """
@@ -138,6 +142,7 @@ def start(serverPK):
     
     return server.localStartServer()
     
+
 @task(expires = 60 * 60 * 24)
 def stop(serverPK, warn = True, warnDelaySeconds = 0):
     """ Start a server """
@@ -149,6 +154,7 @@ def stop(serverPK, warn = True, warnDelaySeconds = 0):
     server = stype(mcServer = mcServer)
     
     return server.localStopServer(warn = warn, warnDelaySeconds = warnDelaySeconds)
+
 
 @task(expires = 60 * 60 * 24)
 def restart(serverPK, warn = True, warnDelaySeconds = 0):
@@ -172,6 +178,7 @@ def restart(serverPK, warn = True, warnDelaySeconds = 0):
         results['start'] = start(serverPK = mcServer.pk)
     return results
 
+
 @task(expires = 60 * 60 * 24)
 def say(serverPK, msg):
     """ Start a server """
@@ -184,6 +191,7 @@ def say(serverPK, msg):
     
     return server.localSay(msg = msg)
     
+
 @task(expires = 60 * 60 * 24)
 def status(serverPK):
     """ Start a server """

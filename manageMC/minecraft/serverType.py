@@ -514,6 +514,13 @@ class ServerType(object):
                                 filepath = filePath,
                                 relativepath = relPath,
                                 )
+
+        with open(filePath, 'rb') as f:
+            data = f.read()
+        h = hashlib.new('sha512', data)
+
+        return h.hexdigest().lower()
+
     # Override all var below this point
     
     # The 'name' (both human-readable and allServerTypes's key) for the server
