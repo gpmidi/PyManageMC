@@ -32,7 +32,8 @@ urlpatterns = patterns('',
     
     # General interaction
     url(r'^e/', include('extern.urls')),
-    
+    url(r'^servers/', include('servers.urls')),
+
     # User
     url(r'^accounts/login(?:/)?$', 'django.contrib.auth.views.login',),
     url(r'^accounts/profile(?:/)?$', 'extern.views.userEditProfile', name = "UserProfileEdit"),
