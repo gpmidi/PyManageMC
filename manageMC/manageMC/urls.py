@@ -48,9 +48,6 @@ urlpatterns = patterns('',
     url(r'^servers(?:/)?$', 'minecraft.views.servers.index'),
     url(r'^servers/new(?:/)?$', 'minecraft.views.servers.newserver'),
     url(r'^servers/(\d+)(?:/)?$', 'minecraft.views.servers.view'),
-    
-    # Auth
-    url(r'', include('registration.backends.default.urls')),
 
     # Admin
     url(r'^admin/', include(admin.site.urls)),
