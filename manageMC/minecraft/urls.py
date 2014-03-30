@@ -19,7 +19,7 @@ from django.conf import settings
 
 urlpatterns = patterns('minecraft.views',
     # Server access
-    url(r'^(?:/)?$', 'servers.index'),
-    url(r'^/new(?:/)?$', 'servers.newserver'),
-    url(r'^/(\d+)(?:/)?$', 'servers.view'),
+    url(r'^servers(?:/)?$', 'servers.index'),
+    url(r'^servers/new(?:/)?$', 'servers.newserver'),
+    url(r'^servers/(\d+)(?:/)?$', 'servers.view'),
 )
