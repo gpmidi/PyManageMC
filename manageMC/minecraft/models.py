@@ -361,6 +361,30 @@ class MinecraftServerProperties(Document):
                                 required = False,
                                 )
 
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('server.properties', stream = False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content = str(data),
+                                name = 'server.properties',
+                                )
+
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('server.properties.old', stream = False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content = str(data),
+                                name = 'server.properties.old',
+                                )
+
     # ## Ones that are important
 
 

@@ -79,7 +79,12 @@ class FileType(object):
             ).makeServerID(
                minecraftServerPK = self.minecraftServerObj.pk,
                )
-
+    
+    def getMyModel(self):
+        cls = self.getModelClass()
+        obj = cls.get_or_create(self.getModelClassID())        
+        return (cls,obj)
+    
     def matchFile(self, filePath):
         """ filePath should be relative to the base of the server
         directory. 
@@ -116,14 +121,13 @@ class FileType(object):
         obj.save()
         return self.getModelClassID()
     
-    def writeConfig(self,filepath, relativepath):
-        """ Write this config file data to the given file """
+    def renderConfig(self,relativepath):
         assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
-
+        
         cls = self.getModelClass()
         obj = cls.get_or_create(self.getModelClassID())
 
-        data = render_to_string(
+        return render_to_string(
                               self.TEMPLATE_INIT,
                               dict(
                                    fileType = self,
@@ -132,8 +136,11 @@ class FileType(object):
                                    server = self.minecraftServerObj,
                                    ),
                               )
+            
+    def writeConfig(self,filepath, relativepath):
+        """ Write this config file data to the given file """
         with open(filepath, 'w') as f:
-            f.write(data)
+            f.write(self.renderConfig(relativepath=relativepath))
 
 
 class OverwriteFileType(FileType):
@@ -199,6 +206,41 @@ class ServerType(object):
     # The server model object
     mcServer = None
     
+    class ConfigUpdateResult(object):
+        def __init__(self, oldHashDB, oldHashFS, oldFileDB,oldFileFS, hashType = 'SHA512'):
+            self.oldHashDB = oldHashDB
+            self.oldHashFS = oldHashFS
+            self.oldFileDB=oldFileDB
+            self.oldFileFS=oldFileFS
+            self.hashType = hashType
+
+
+    class SuccessConfigUpdateResult(ConfigUpdateResult):
+        def __init__(self, newHashDB, newFileDB,newHashFS, newFileFS, **kw):
+            ServerType.ConfigUpdateResult.__init__(self, **kw)
+            self.newHashDB = newHashDB
+            self.newFileDB = newFileDB
+            self.newHashFS = newHashFS
+            self.newFileFS = newFileFS
+
+
+    class FailConfigUpdateResult(ConfigUpdateResult):
+        def __init__(self, newHashDB, newFileDB,newHashFS, newFileFS, fileDiff, **kw):
+            ServerType.ConfigUpdateResult.__init__(self, **kw)
+            self.newHashDB = newHashDB
+            self.newFileDB = newFileDB
+            self.newHashFS = newHashFS
+            self.newFileFS = newFileFS
+            self.fileDiff=fileDiff
+
+
+    class ExistsFailConfigUpdateResult(ConfigUpdateResult):
+        def __init__(self, newHashDB, newFileDB, **kw):
+            ServerType.ConfigUpdateResult.__init__(self, **kw)
+            self.newHashDB = newHashDB
+            self.newFileDB = newFileDB
+            
+        
     def __init__(self, mcServer):
         self.mcServer = mcServer
         self.log = logging.getLogger("server.allServerTypes.%s.%s" % (
@@ -482,33 +524,56 @@ class ServerType(object):
                                relativepath = fileTypeObj.FILE_NAME,
                                filedata = confTxt,
                                )
+    @staticmethod
+    def _hashFile(filePath):
+        with open(filePath, 'rb') as f:
+            data = f.read()
+            h = hashlib.new('sha512', data)
+        return (h.hexdigest().lower(),data)
 
-    def localUpdateConfigFile(self, fileTypeObj, preChangeSHA512):
+    def localUpdateConfigFile(self, fileTypeObj, errorOnFail = True):
         """ Update the config file with data from couchdb.
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
         
         filePath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME)
         relPath = fileTypeObj.FILE_NAME
+        dbObj = fileTypeObj.getMyModel()
+
+        results = dict(
+                       oldHashDB = dbObj.nc_lastHash,
+                       oldHashFS = None,
+                       oldFileDB=dbObj.getConfigFile(),
+                       oldFileFS = None,
+                       #hashType='SHA512',
+                       )        
+        
+        if os.path.exists(filePath):
+            results['oldHashFS'],results['oldFileFS']=self._hashFile(filePath)
+
+        newCfg = fileTypeObj.renderConfig(relativepath = relPath)
+        h = hashlib.new('sha512', newCfg)
+        results['newHashDB'] = h.hexdigest().lower()
+        results['newFileDB'] = newCfg
         
         # Make sure the file matches what we were told to expect
-        if preChangeSHA512 is None:
+        if  results['oldHashDB'] is None:
             log.debug("I've been told %r won't exist", fileTypeObj)
             if os.path.exists(filePath):
                 log.info("File %r exists but I was told it wouldn't exist",filePath)
-                raise IOError("File %r exists but I was told it wouldn't exist"%filePath)
+                if errorOnFail:
+                    raise IOError("File %r exists but I was told it wouldn't exist" % filePath)
+                else:
+                    return ServerType.ExistsFailConfigUpdateResult(**results)
             else:
                 log.debug("Config file %r doesn't exist as was expected. ", filePath)
         else:
-            log.debug("I've been told %r will exist and that it's sha512 is %r", fileTypeObj, preChangeSHA512)
-            with open(filePath, 'rb') as f:
-                data = f.read()
-            h = hashlib.new('sha512', data)
-            if h.hexdigest().lower() == preChangeSHA512.lower():
-                log.debug("SHA512 checksums match %r=%r", h.hexdigest(), preChangeSHA512)
+            log.debug("I've been told %r will exist and that it's sha512 is %r", fileTypeObj, results['oldHashDB'])
+            if results['oldHashFS'] == results['oldHashDB']:
+                log.debug("SHA512 checksums match %r=%r", results['oldHashFS'], results['oldHashDB'])
             else:
-                log.info("SHA512 checksums for %r don't match: %r!=%r", filePath, h.hexdigest(), preChangeSHA512)
-                raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, h.hexdigest(), preChangeSHA512)
+                log.info("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
+                raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
             
         fileTypeObj.writeConfig(
                                 filepath = filePath,
