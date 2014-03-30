@@ -650,8 +650,10 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         cls = self.getModelClass()
         obj = cls.get_or_create(self.getModelClassID())
         fileData = {}
+
+        # TODO: May need to fix this.
         for k, v in obj.items():
-            fileData[]=
+            fileData[str(k)] = str(v)
 
         data = render_to_string(
                               self.TEMPLATE_INIT,
