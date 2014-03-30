@@ -72,7 +72,7 @@ def createFile_MCConfig(configPK):
                                           serverDir = server.getServerRoot(),
                                           minecraftServerObj = server,
                                           )
-    server.localUpdateConfigFile(cfg, preChangeSHA512 = None)
+    server.localUpdateConfigFile(cfg, errorOnFail = True)
 
 
 @task(expires = 60 * 60)
@@ -105,14 +105,18 @@ def updateFile_MCConfig(
                                           serverDir = server.getServerRoot(),
                                           minecraftServerObj = server,
                                           )
-    hsh = server.localUpdateConfigFile(cfg, preChangeSHA512 = lastHash)
-    mcp.nc_lastHash = hsh
-    mcp.save()
+    res = server.localUpdateConfigFile(cfg, errorOnFail = False)
+    from minecraft.serverType import ServerType
+    if isinstance(res, ServerType.SuccessConfigUpdateResult):
+        mcp.nc_lastHash = res.newHashFS
+        mcp.putLastConfigFile(res.oldFileFS)
+        mcp.putConfigFile(res.newFileFS)
+        mcp.save()
 
-    if doRestart:
-        from minecraft.tasks.server import restart
-        restart(
-                serverPK = mcServer.pk,
-                **restartKWArgs
-                )
+        if doRestart:
+            from minecraft.tasks.server import restart
+            restart(
+                    serverPK = mcServer.pk,
+                    **restartKWArgs
+                    )
 

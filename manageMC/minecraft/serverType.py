@@ -28,6 +28,7 @@ import re
 import os, os.path, sys, shutil
 import time
 import hashlib
+import difflib
 
 from django.template.loader import render_to_string
 
@@ -538,7 +539,7 @@ class ServerType(object):
         
         filePath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME)
         relPath = fileTypeObj.FILE_NAME
-        dbObj = fileTypeObj.getMyModel()
+        (cls, dbObj) = fileTypeObj.getMyModel()
 
         results = dict(
                        oldHashDB = dbObj.nc_lastHash,
@@ -573,18 +574,25 @@ class ServerType(object):
                 log.debug("SHA512 checksums match %r=%r", results['oldHashFS'], results['oldHashDB'])
             else:
                 log.info("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
-                raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
+                if errorOnFail:
+                    raise ValueError("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
+                else:
+                    results['fileDiff'] = '\n'.join(difflib.unified_diff(
+                                                                         results['oldFileDB'].splitlines(),
+                                                                         results['oldFileFS'].splitlines(),
+                                                                         fromfile = 'oldFileDB',
+                                                                         tofile = 'oldFileFS',
+                                                                         ))
+                    return ServerType.FailConfigUpdateResult(**results)
             
         fileTypeObj.writeConfig(
                                 filepath = filePath,
                                 relativepath = relPath,
                                 )
 
-        with open(filePath, 'rb') as f:
-            data = f.read()
-        h = hashlib.new('sha512', data)
+        results['newHashFS'], results['newFileFS'] = self._hashFile(filePath)
 
-        return h.hexdigest().lower()
+        return ServerType.SuccessConfigUpdateResult(**results)
 
     # Override all var below this point
     
