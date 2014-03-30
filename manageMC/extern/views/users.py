@@ -29,11 +29,11 @@ from django.core.cache import cache
 from django.utils.http import urlquote
 from django.core.exceptions import ObjectDoesNotExist
 
+import hashlib
 import datetime
 
 from extern.models import *
 from extern.forms import UserProfileForm
-from django.utils.hashcompat import md5_constructor
 
 
 # User access
