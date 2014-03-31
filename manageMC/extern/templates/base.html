@@ -36,6 +36,7 @@
 	            <ul class="nav">
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
+	                        <li><a href="/mc/servers/">My Hosted Servers</a></li>
 	                        <li><a href="/accounts/profile/">Edit Profile</a></li>      
 	                        <li><a href="/accounts/password/change/">Change Password</a></li>            
 	                        <li><a href="/accounts/logout/">Logout</a></li>

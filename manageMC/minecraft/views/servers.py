@@ -33,10 +33,11 @@ from minecraft.forms.EditServerForm import *
 @login_required
 def index(req):  #
     """ List all of my servers """
-    servers = MinecraftServer.objects.filter(
+    servers = MinecraftServer.objects.filter(id__in =
+                                             MinecraftServer.objects.filter(
                                              Q(instance__admins = req.user) |
                                              Q(instance__owner = req.user)
-                                             )
+                                             ).values('id'))
     return render_to_response(
                               'servers/index.html',
                               dict(
@@ -51,36 +52,18 @@ def view(req, server_id):
     server = get_object_or_404(MinecraftServer, pk = server_id)
     
     if req.POST:
-        form = EditServerForm(req.POST)
+        form = EditServerForm(req.POST, instance = server)
         if form.is_valid():
             m = form.save(commit = True)
             if server.bin.pk != m.bin.pk:
                 # Change the server exec
                 server.bin = m.bin
                 server.save()
-            for i in server.plugins:
-                if not i in m.plugins:
-                    # Remove a plugin
-                    raise NotImplementedError("FIXME: Need to add support for removing plugins")
-            for i in m.plugins:
-                if not i in server.plugins:
-                    # Add a plugin
-                    raise NotImplementedError("FIXME: Need to add support for adding plugins")
-            if m.owner.pk != server.owner.pk:
-                # Chagne owning group
-                raise NotImplementedError("FIXME: Need to add support for changing owners")
-            
-            if m.listen != server.listen or m.port != server.port:
-                # Change server listening info
-                raise NotImplementedError("FIXME: Need to add support for changing the server's port")
-            if m.auto_save != server.auto_save:
-                # Change auto save
-                raise NotImplementedError("FIXME: Need to add support for changing the server's auto-save policy")            
             server = m
         else:
             pass
     else:
-        form = EditServerForm()
+        form = EditServerForm(instance = server)
     
     return render_to_response(
                               'servers/view.html',

@@ -29,3 +29,4 @@ from minecraft.models import *
 class EditServerForm(ModelForm):
     class Meta:
         model = MinecraftServer
+        exclude = ['created', 'modified', 'instance', 'id']

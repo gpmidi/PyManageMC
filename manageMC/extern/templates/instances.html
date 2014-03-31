@@ -50,19 +50,30 @@
 			                             {{ instance.owner.username }}
 			                         {% endif %}
 		                         </a>
-		                     </div>
+		                 </div>
 	                     <div class="sectionbox">
-		                     <h4>Connection Info</h4>
-		                     <ul>
-		                         {% for info in instance.serverinstanceexternalinfo_set.all %}
-		                             <li>{{ info.host }}:{{ info.port }}</li>
-		                         {% endfor %}
-		                     </ul>
+	                         <div class="sectionbox">
+			                     <h4>Connection Info</h4>
+			                     <ul>
+			                         {% for info in instance.serverinstanceexternalinfo_set.all %}
+			                             <li>{{ info.host }}:{{ info.port }}</li>
+			                         {% endfor %}
+			                     </ul>
+			                 </div>
+		                     {% if instance.minecraftserver %}
+	                             <div class="sectionbox">
+	                                 <h4>Hosted</h4>
+	                                 <ul>
+	                                     <li>Name: {{ instance.minecraftserver.name }}</li>
+	                                     <li>Binary: {{ instance.minecraftserver.bin.typeName }} / {{ instance.minecraftserver.bin.version }}</li>
+	                                     <li><a href="/mc/servers/{{ instance.minecraftserver.pk }}">Management</a></li>
+	                                 </ul>
+	                             </div>
+	                         {% endif %}
 		                 </div>
 	                 </div>
                  </div>
             {% endcache %}
         {% endfor %}
     </div>
-    
 {% endblock %}
