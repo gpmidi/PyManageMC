@@ -30,6 +30,7 @@ from django.contrib.auth.decorators import login_required
 from minecraft.models import *
 from minecraft.forms.EditServerForm import *
 
+
 @login_required
 def index(req):  #
     """ List all of my servers """
@@ -46,6 +47,7 @@ def index(req):  #
                               context_instance = RequestContext(req),
                               )
     
+
 @login_required
 def view(req, server_id):
     """ View/Edit a server """
