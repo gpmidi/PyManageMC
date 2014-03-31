@@ -119,7 +119,7 @@ class MinecraftServer(models.Model):
                             blank = False,
                             max_length = 255,
                             db_index = True,
-                            editable = False,
+                            editable = True,
                             verbose_name = "Name",
                             help_text = "Name of this server",
                             )

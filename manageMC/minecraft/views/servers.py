@@ -31,9 +31,12 @@ from minecraft.models import *
 from minecraft.forms.EditServerForm import *
 
 @login_required
-def index(req):
+def index(req):  #
     """ List all of my servers """
-    servers = MinecraftServer.objects.filter(instance__owner__in = req.user.groups.all())
+    servers = MinecraftServer.objects.filter(
+                                             Q(instance__admins = req.user) |
+                                             Q(instance__owner = req.user)
+                                             )
     return render_to_response(
                               'servers/index.html',
                               dict(

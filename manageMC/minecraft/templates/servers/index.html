@@ -6,19 +6,24 @@
 {% block body %}
 	<table border="1">
 		<tr>
-			<td>Name</td>
-			<td>Server</td>
-			<td>Plugins</td>
-			<td>Owners</td>
-			<td>Listens On</td>
+			<td><b>Instance Name</b></td>
+			<td><b>Links</b></td>
+			<td><b>Server</b></td>
+			<td><b>Status</b></td>
+			<td><b>System</b></td>
+			<td><b>Listens On</b></td>
 		</tr>
 		{% for server in servers %}
 			<tr>
-				<td><a href="/servers/{{ server.pk }}/">{{ server.name }}</a></td>
-				<td><a href="/bins/{{ server.bin.pk }}/">{{ server.bin.name }}</a></td>
-				<td>{{ server.plugins_csv }}</td>
-				<td>{{ server.owner_csv }}</td>
-				<td>{{ server.listen }}:{{ server.port }}</td>
+				<td>{{ server.instance.humanName }}</a></td>
+				<td>
+				    <a href="/mc/servers/{{ server.pk }}/">Server</a>
+				    <a href="/e/instances/instance/{{ server.instance.name }}/">Instance</a>
+				</td>
+				<td><a href="/mc/bins/{{ server.bin.pk }}/">{{ server.bin.typeName }} - {{ server.bin.version }}</a></td>
+				<td>{{ server.instance.status }}</td>
+				<td>{{ server.instance.system }}</td>
+				<td>{{ server.instance.internalIP }}:{{ server.instance.port }}</td>
 			</tr>
 		{% endfor %}
 	</table>

@@ -35,8 +35,8 @@ class MinecraftServerCfgFileAdmin(admin.StackedInline):
 
 class MinecraftServerAdmin(admin.StackedInline):
     model = MinecraftServer
-    fields = ('bin',)
-    readonly_fields = ('name', 'created', 'modified', 'instance',)
+    fields = ('name', 'bin',)
+    readonly_fields = ('created', 'modified', 'instance',)
     inlines = [
                MinecraftServerCfgFileAdmin,
                ]
@@ -44,8 +44,8 @@ class MinecraftServerAdmin(admin.StackedInline):
 
 class MinecraftServerAdminMain(admin.ModelAdmin):
     model = MinecraftServer
-    fields = ('bin',)
-    readonly_fields = ('name', 'created', 'modified', 'instance',)
+    fields = ('name', 'bin',)
+    readonly_fields = ('created', 'modified', 'instance',)
     inlines = [
                MinecraftServerCfgFileAdmin,
                ]
