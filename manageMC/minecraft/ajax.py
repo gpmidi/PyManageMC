@@ -32,7 +32,8 @@ from django.contrib.auth import authenticate, login
 from dajaxice.core import dajaxice_functions  # @UnresolvedImport
 
 from minecraft.models import *
-from minecraft.tasks import *
+from minecraft.tasks.server import *
+
 
 def login_a(req, username, password):
     user = authenticate(username = username, password = password)
@@ -62,6 +63,7 @@ def login_a(req, username, password):
 
 dajaxice_functions.register(login_a)
 
+
 def server_stop(req, server_pk):
     """ Stop a server """
     res = stop.delay(server_pk)
@@ -72,6 +74,7 @@ def server_stop(req, server_pk):
 
 dajaxice_functions.register(server_stop)
 
+
 def server_start(req, server_pk):
     """ Start a server """
     res = start.delay(server_pk)
@@ -81,6 +84,7 @@ def server_start(req, server_pk):
     return dajax.json()
 
 dajaxice_functions.register(server_start)
+
 
 def server_say(req, server_pk, message):
     """ Say something in a server """
