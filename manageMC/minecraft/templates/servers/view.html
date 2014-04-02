@@ -7,7 +7,7 @@
 	<div id="serverstatus">
 	   <h4>Server Status</h4>
 	       <div>
-	           FIXME: Fill this in
+	           <input id="servermessage" type="text" name="servermessage"/>
 	       </div>
 	</div>
 	
@@ -20,6 +20,26 @@
 		<input type="submit" value="submit"/>
 	</form>
     
-    <input id="servermessage" type="text" name="servermessage"/>
+    <h4>Say Something</h4>
+    <script type="text/javascript">    
+    var srvsay = function() {
+    	Dajaxice.minecraft.server_say(
+                function(){},
+                {
+                    'server_pk':{{ server.pk }},
+                    'message':$("#tosay").val()
+                    }
+                );
+    	$("#tosay").val("");
+    };
+    var forEnter = function(event) {
+        if (event.which == 13 || event.keyCode == 13) {
+        	event.preventDefault();
+        	srvsay();
+        };
+    };
+    </script>
+    <input id="tosay" type="text" name="tosay" onkeypress="forEnter(event)"/>
+    <input type="submit" value="say" onclick="srvsay()"/>
     
 {% endblock %}

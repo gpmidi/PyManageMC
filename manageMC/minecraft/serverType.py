@@ -480,7 +480,7 @@ class ServerType(object):
         
     def localSay(self, msg):
         self.log.info("Going to say %r on %r", msg, self)
-        self.localRunCommand(cmd = "say %r" % msg)
+        self.localRunCommand(cmd = "say %s" % str(msg))
         return True
     
     def localStatus(self):
