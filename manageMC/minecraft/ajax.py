@@ -69,7 +69,7 @@ def server_stop(req, server_pk):
     res = stop.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('div#serverstatus', 'innerHTML', 'Stopped')
+    dajax.assign('input#serverstatus', 'innerHTML', 'Stopping')
     return dajax.json()
 
 dajaxice_functions.register(server_stop)
@@ -80,7 +80,7 @@ def server_start(req, server_pk):
     res = start.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('div#serverstatus', 'innerHTML', 'Running')
+    dajax.assign('input#serverstatus', 'innerHTML', 'Starting')
     return dajax.json()
 
 dajaxice_functions.register(server_start)
@@ -90,8 +90,16 @@ def server_say(req, server_pk, message):
     """ Say something in a server """
     res = say.delay(server_pk, message)
     dajax = Dajax()
-    dajax.assign('input#servermessage', 'value', '')
     return dajax.json()
 
 dajaxice_functions.register(server_say)
 
+
+def server_status(req, server_pk):
+    """ Get updated status """
+    res = status.delay(server_pk)
+    dajax = Dajax()
+    dajax.assign('input#servermessage', 'value', str(res))
+    return dajax.json()
+
+dajaxice_functions.register(server_status)
