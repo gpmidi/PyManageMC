@@ -98,8 +98,13 @@ dajaxice_functions.register(server_say)
 def server_status(req, server_pk):
     """ Get updated status """
     res = status.delay(server_pk)
+    res.wait()
+    if res.get():
+        ret = "Online"
+    else:
+        ret = "Offline"
     dajax = Dajax()
-    dajax.assign('input#servermessage', 'value', str(res))
+    dajax.assign('input#servermessage', 'value', ret)
     return dajax.json()
 
 dajaxice_functions.register(server_status)
