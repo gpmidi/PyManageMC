@@ -364,7 +364,7 @@ class ServerInstance(models.Model):
     # @warning: Both the status name and the group name MUST be valid as-is in URLs
     SERVER_STATUS = (
                        ('Active', (
-                            ('active', "Active"),
+                            ('active', "Always Active"),
                             ('ondemand', "On-Demand"),
                             )
                         ),
@@ -480,6 +480,16 @@ class ServerInstance(models.Model):
                     raise ValueError("Reference type must be Pretty or Actual, not %r" % refrenceType)
         raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
     
+
+    def getServer(self):
+        """ Returns the minecraft server object for hosted instances
+        or None if it is not hosted """
+        from minecraft.models import MinecraftServer
+        try:
+            return MinecraftServer.objects.get(pk = self.name)
+        except MinecraftServer.DoesNotExist as e:
+            return None
+
     
     def __str__(self):
         return "Instance %s" % self.name

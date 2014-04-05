@@ -29,14 +29,16 @@ from couchdbkit.ext.django.schema import *
 
 # Load serverType objects
 from minecraft.serverType import loadOtherServerTypes, allServerTypes
-
+from minecraft.validators import *
 
 
 class MinecraftServerBinary(Document):
     typeName = StringProperty(
                               required = True,
                               default = None,
-                              validators = [],
+                              validators = [
+                                            validate_serverInstance,
+                                            ],
                               name = "Name",
                               verbose_name = "Name of the server type",
                               choices = (
@@ -95,6 +97,13 @@ class MinecraftServerBinary(Document):
 
 
 class MinecraftServer(Document):
+    name = StringProperty(
+                          validators = [],
+                          name = "MinecraftServer",
+                          required = True,
+                          default = None,
+                          verbose_name = "Server Instance",
+                          )
     binary = StringProperty(
                               required = True,
                               default = None,
@@ -140,6 +149,15 @@ class MinecraftServer(Document):
         Must NEVER change. 
         """
         return "MC-%d" % self.pk
+
+    def getInstance(self):
+        """ Returns the minecraft server object for hosted instances
+        or None if it is not hosted """
+        from extern.models import ServerInstance
+        try:
+            return ServerInstance.objects.get(pk = self.name)
+        except ServerInstance.DoesNotExist as e:
+            return None
 
 
 # class MinecraftServerBinary(models.Model):

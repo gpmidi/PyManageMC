@@ -29,16 +29,26 @@ from django.contrib.auth.decorators import login_required
 # Mcer
 from minecraft.models import *
 from minecraft.forms.EditServerForm import *
+from extern.models import *
 
 
 @login_required
 def index(req):  #
     """ List all of my servers """
-    servers = MinecraftServer.objects.filter(id__in =
-                                             MinecraftServer.objects.filter(
-                                             Q(instance__admins = req.user) |
-                                             Q(instance__owner = req.user)
-                                             ).values('id'))
+    # Dedup
+    found = ServerInstance.objects.filter(name__in =
+                                             ServerInstance.objects.filter(
+                                                 Q(owner = req.user) |
+                                                 Q(admins__contains = req.user)
+                                             ).values('name'))
+    servers = []
+    for serverInst in found:
+        try:
+            # Hosted server
+            servers.append(MinecraftServer.objects.get(_id = found.name))
+        except MinecraftServer.DoesNotExist as e:
+            # Not a hosted server
+            pass
     return render_to_response(
                               'servers/index.html',
                               dict(
@@ -49,9 +59,10 @@ def index(req):  #
     
 
 @login_required
-def edit(req, server_id):
+def edit(req, instanceName):
     """ View/Edit a server """
-    server = get_object_or_404(MinecraftServer, pk = server_id)
+    server = get_object_or_404(MinecraftServer, _id = instanceName)
+    instance = server.getInstance()
     
     if req.POST:
         form = EditServerForm(req.POST, instance = server)
@@ -71,6 +82,7 @@ def edit(req, server_id):
                               'servers/edit.html',
                               dict(
                                    server = server,
+                                   instance = instance,
                                    form = form,
                                     ),
                               context_instance = RequestContext(req),
@@ -78,16 +90,18 @@ def edit(req, server_id):
 
 
 @login_required
-def view(req, server_id):
+def view(req, instanceName):
     """ View a server """
-    server = get_object_or_404(MinecraftServer, pk = server_id)
+    server = get_object_or_404(MinecraftServer, _id = instanceName)
+    instance = server.getInstance()
 
 
     return render_to_response(
                               'servers/view.html',
                               dict(
                                    server = server,
-                                    ),
+                                   instance = instance,
+                                   ),
                               context_instance = RequestContext(req),
                               )
     

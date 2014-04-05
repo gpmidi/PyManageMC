@@ -127,8 +127,11 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.google.GoogleOpenId',
     'social.backends.google.GoogleOAuth2',
     'social.backends.google.GoogleOAuth',
-    'django.contrib.auth.backends.ModelBackend',
+    'django_couchdb_utils.auth.backends.CouchDBAuthBackend',
 )
+
+SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+SOCIAL_AUTH_FORCE_EMAIL_VALIDATION = False
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -152,6 +155,8 @@ INSTALLED_APPS = (
     'sendfile',
     # External auth
     'social.apps.django_app.default',
+    # CouchDB auth
+    "django_couchdb_utils.auth",
     # A document-based NoSQL ORM
     'couchdbkit.ext.django',
     # Our stuff
@@ -214,7 +219,7 @@ CACHES = {
 #     }
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_ENGINE = "django_couchdb_utils.sessions.couchdb"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 ##################################################################################
