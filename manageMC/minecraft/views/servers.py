@@ -24,7 +24,8 @@ from django.template import RequestContext
 from django.contrib.auth.models import AnonymousUser
 from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.http import Http404
 
 # Mcer
 from minecraft.models import *
@@ -33,19 +34,27 @@ from extern.models import *
 
 
 @login_required
+@permission_required('minecraft.change_serverinstance')
 def index(req):  #
     """ List all of my servers """
-    # Dedup
-    found = ServerInstance.objects.filter(name__in =
-                                             ServerInstance.objects.filter(
-                                                 Q(owner = req.user) |
-                                                 Q(admins__contains = req.user)
-                                             ).values('name'))
+    if req.user.has_perm('view_serverinstance'):
+        found = ServerInstance.objects.all().order_by('owner')
+    else:
+        # Dedup
+        found = ServerInstance.objects.filter(name__in =
+                                                 ServerInstance.objects.filter(
+                                                     Q(owner = req.user) |
+                                                     Q(admins__contains = req.user)
+                                                 ).values('name'))
     servers = []
     for serverInst in found:
         try:
             # Hosted server
-            servers.append(MinecraftServer.objects.get(_id = found.name))
+            srv = MinecraftServer.objects.get(_id = found.name)
+            servers.append((
+                            srv,
+                            srv.getInstance(),
+                            ))
         except MinecraftServer.DoesNotExist as e:
             # Not a hosted server
             pass
@@ -59,11 +68,13 @@ def index(req):  #
     
 
 @login_required
+@permission_required('minecraft.change_serverinstance')
 def edit(req, instanceName):
     """ View/Edit a server """
     server = get_object_or_404(MinecraftServer, _id = instanceName)
-    instance = server.getInstance()
-    
+    if not server.checkUser(req = req, perms = 'admin'):
+        raise Http404()
+
     if req.POST:
         form = EditServerForm(req.POST, instance = server)
         if form.is_valid():
@@ -82,7 +93,7 @@ def edit(req, instanceName):
                               'servers/edit.html',
                               dict(
                                    server = server,
-                                   instance = instance,
+                                   instance = server.getInstance(),
                                    form = form,
                                    ),
                               context_instance = RequestContext(req),
@@ -90,22 +101,25 @@ def edit(req, instanceName):
 
 
 @login_required
+@permission_required('minecraft.change_serverinstance')
 def view(req, instanceName):
     """ View a server """
     server = get_object_or_404(MinecraftServer, _id = instanceName)
-    instance = server.getInstance()
+    if not server.checkUser(req = req, perms = 'admin'):
+        raise Http404()
 
     return render_to_response(
                               'servers/view.html',
                               dict(
                                    server = server,
-                                   instance = instance,
+                                   instance = server.getInstance(),
                                    ),
                               context_instance = RequestContext(req),
                               )
     
     
 @login_required
+@permission_required('minecraft.add_serverinstance')
 def newserver(req):
     """ Create a server """
     

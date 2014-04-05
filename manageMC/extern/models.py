@@ -335,6 +335,10 @@ class ServerInstanceExternalInfo(models.Model):
    
 
 class ServerInstance(models.Model):
+    class Meta:
+        permissions = (
+            ("view_serverinstance", "Can see all instances"),
+            )
     name = models.SlugField(
                             primary_key = True,
                             null = False,
@@ -480,6 +484,12 @@ class ServerInstance(models.Model):
                     raise ValueError("Reference type must be Pretty or Actual, not %r" % refrenceType)
         raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
     
+    
+    def checkUser(self,req,perms='admin'):
+        if req.user in self.admins or req.user == self.owner:
+            return True
+        return False
+
 
     def getServer(self):
         """ Returns the minecraft server object for hosted instances

@@ -36,9 +36,7 @@ class MinecraftServerBinary(Document):
     typeName = StringProperty(
                               required = True,
                               default = None,
-                              validators = [
-                                            validate_serverInstance,
-                                            ],
+                              validators = [],
                               name = "Name",
                               verbose_name = "Name of the server type",
                               choices = (
@@ -98,7 +96,9 @@ class MinecraftServerBinary(Document):
 
 class MinecraftServer(Document):
     name = StringProperty(
-                          validators = [],
+                          validators = [
+                                        validate_serverInstance,
+                                        ],
                           name = "MinecraftServer",
                           required = True,
                           default = None,
@@ -126,13 +126,6 @@ class MinecraftServer(Document):
                                 name = "Date Modified",
                                 verbose_name = "The date that this server bin was last modified",
                                 )
-    instance = StringProperty(
-                              required = True,
-                              default = None,
-                              validators = [],
-                              name = "Server Instance",
-                              # verbose_name = "",
-                              )
 
     def __str__(self):
         return "MCServer_%s_%s" % (self.name, self.getSessionName())
@@ -153,7 +146,6 @@ class MinecraftServer(Document):
     def getInstance(self):
         """ Returns the minecraft server object for hosted instances
         or None if it is not hosted """
-        from extern.models import ServerInstance
         try:
             return ServerInstance.objects.get(pk = self.name)
         except ServerInstance.DoesNotExist as e:
