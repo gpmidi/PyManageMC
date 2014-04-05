@@ -162,6 +162,7 @@ INSTALLED_APPS = (
     # Our stuff
     'extern',
     'minecraft',
+    'mclogs',
 )
 
 # A sample logging configuration. The only tangible logging

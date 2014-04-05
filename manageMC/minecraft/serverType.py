@@ -476,7 +476,7 @@ class ServerType(object):
               self.getSessionName(),
               "-X",
               "eval",
-              # TODO: Validating escaping is working right here
+              # FIXME: Validate escaping is working right here
               "stuff %r\015" % cmd,
               ]
         self._logStartWaitError(args = args, cwd = self.getServerRoot())
@@ -625,7 +625,7 @@ class BannedIPSConfigFileType(ConfigFileType):
 
 class BannedPlayersConfigFileType(ConfigFileType):
     # File match stuff
-    FILE_MATCH = re.compile(r'^players\-ips\.txt$')
+    FILE_MATCH = re.compile(r'^banned\-players\.txt$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
 
