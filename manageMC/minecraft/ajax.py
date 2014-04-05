@@ -36,33 +36,33 @@ from minecraft.models import *
 from minecraft.tasks.server import *
 
 
-def login_a(req, username, password):
-    user = authenticate(username = username, password = password)
-    if user is not None:
-        if user.is_active:
-            login(req, user,)
-            dajax = Dajax()
-            dajax.assign('input#sidebarUsername', 'type', 'hidden')
-            dajax.assign('input#sidebarPassword', 'type', 'hidden')
-            dajax.assign('input#sidebarButton', 'type', 'hidden')
-            dajax.assign('label#sidebarUsernameLabel', 'innerHTML', '')
-            dajax.assign('label#sidebarPasswordLabel', 'innerHTML', '')
-            dajax.assign('p#loginfieldhelp', 'innerHTML', '')
-            dajax.assign('input#crtboxbutton', 'value', 'Save')
-            dajax.assign('input#crtboxbutton', 'disabled', '')
-            dajax.remove('#loginForm')
-            dajax.redirect('/servers/')
-            return dajax.json()
-        else:
-            dajax = Dajax()
-            dajax.assign('p#loginfieldhelp', 'innerHTML', 'Account Disabled!')
-            return dajax.json()
-    else:
-        dajax = Dajax()
-        dajax.assign('p#loginfieldhelp', 'innerHTML', 'Invalid Login!')
-        return dajax.json()
-
-dajaxice_functions.register(login_a)
+# def login_a(req, username, password):
+#     user = authenticate(username = username, password = password)
+#     if user is not None:
+#         if user.is_active:
+#             login(req, user,)
+#             dajax = Dajax()
+#             dajax.assign('input#sidebarUsername', 'type', 'hidden')
+#             dajax.assign('input#sidebarPassword', 'type', 'hidden')
+#             dajax.assign('input#sidebarButton', 'type', 'hidden')
+#             dajax.assign('label#sidebarUsernameLabel', 'innerHTML', '')
+#             dajax.assign('label#sidebarPasswordLabel', 'innerHTML', '')
+#             dajax.assign('p#loginfieldhelp', 'innerHTML', '')
+#             dajax.assign('input#crtboxbutton', 'value', 'Save')
+#             dajax.assign('input#crtboxbutton', 'disabled', '')
+#             dajax.remove('#loginForm')
+#             dajax.redirect('/servers/')
+#             return dajax.json()
+#         else:
+#             dajax = Dajax()
+#             dajax.assign('p#loginfieldhelp', 'innerHTML', 'Account Disabled!')
+#             return dajax.json()
+#     else:
+#         dajax = Dajax()
+#         dajax.assign('p#loginfieldhelp', 'innerHTML', 'Invalid Login!')
+#         return dajax.json()
+#
+# dajaxice_functions.register(login_a)
 
 
 @login_required
