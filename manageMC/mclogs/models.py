@@ -19,10 +19,10 @@ import os.path
 
 # Django
 from django.db import models
-from django.contrib.auth.models import User, Group
 from django.conf import settings
 from django.core.validators import MinLengthValidator, MaxValueValidator
 from django.core.validators import validate_slug, MinValueValidator
+from django.core.cache import caches  # @UnresolvedImport
 
 # CouchDB
 from couchdbkit.ext.django.schema import *
@@ -31,7 +31,55 @@ from couchdbkit.ext.django.schema import *
 from mclog.validators import *
 
 
-class MinecraftServerLogLine(Document):
+
+class MinecraftServerLogFileArchive(Document):
+    """ A Minecraft server's post-rotation log file
+    """
+    class Meta:
+        app_label = 'manageMC.mclogs'
+
+    # Standard In, Out, and Error
+    LOGTYPE_STDIO = "stdio"
+    # A on-disk log file
+    LOGTYPE_FILE = "file"
+    # Unknown
+    LOGTYPE_UNK = "unknown"
+
+    logType = StringProperty(
+                             verbose_name = "Log Type",
+                             default = LOGTYPE_UNK,
+                             required = True,
+                             choices = [
+                                        LOGTYPE_STDIO,
+                                        LOGTYPE_FILE,
+                                        LOGTYPE_UNK,
+                                        ],
+                             )
+
+
+    @classmethod
+    def makeFileID(cls, serverId, start, end,):
+        """ Create the _id used  """
+        # FIXME: Should 'cls' be 'ServerProperitiesConfigFileType'?
+        return "%s-%s" % (cls.__name__, serverId)
+
+    # When
+    created = DateTimeProperty(
+                               verbose_name = "Date Created",
+                               required = True,
+                               auto_now_add = True,
+                               )
+    modified = DateTimeProperty(
+                               verbose_name = "Date Modified",
+                               required = False,
+                               default = None,
+                               auto_now = True,
+                               )
+
+
+
+
+class MinecraftServerLogLines(Document):
     """ A Minecraft server's log files
     """
     class Meta:
