@@ -251,6 +251,11 @@ class ServerType(object):
     def getServerRoot(self):
         return self.mcServer.loc()
     
+    def getCreateServerRoot(self):
+        if not os.path.exists(self.getServerRoot()):
+            os.makedirs(self.getServerRoot(), 0770)
+        return self.getServerRoot()
+
     def getSessionName(self):
         return self.mcServer.getSessionName()
     
@@ -290,7 +295,7 @@ class ServerType(object):
                      self.getScreenRoot(),
                      ]:
             try:
-                os.mkdir(path)
+                os.makedirs(path, 0770)
             except OSError:
                 pass
         
@@ -305,7 +310,6 @@ class ServerType(object):
         self.localUpdateScreenConfig()
     
     def localGetScreenConfig(self):
-        from django.template.loader import render_to_string
         return render_to_string('screen.config',{
                                                  'screenDir':self.getScreenRoot(),
                                                  # TODO: Add ability to change doInitialHardCopy setting
@@ -349,7 +353,7 @@ class ServerType(object):
         """
         from tempfile import mkdtemp
         from django.core.files import File
-        from minecraft.models import MapSave
+        from minecraft.models import MapSave  # @Reimport
 
         if forceSaveBefore:
             self.localForceSave()
