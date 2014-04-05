@@ -14,6 +14,8 @@
 #    You should have received a copy of the GNU General Public License
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
+# Built-in
+
 # Django
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
@@ -23,8 +25,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.contrib.auth.decorators import login_required
-
-# Built-in
 
 # Mcer
 from minecraft.models import *
@@ -84,7 +84,7 @@ def edit(req, instanceName):
                                    server = server,
                                    instance = instance,
                                    form = form,
-                                    ),
+                                   ),
                               context_instance = RequestContext(req),
                               )
 
@@ -94,7 +94,6 @@ def view(req, instanceName):
     """ View a server """
     server = get_object_or_404(MinecraftServer, _id = instanceName)
     instance = server.getInstance()
-
 
     return render_to_response(
                               'servers/view.html',
