@@ -71,7 +71,7 @@ def server_stop(req, server_pk):
     res = stop.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Stopping...')
+    dajax.assign('#adminActionLog', 'innerHTML', 'Stopping server...')
     return dajax.json()
 
 dajaxice_functions.register(server_stop)
@@ -83,7 +83,7 @@ def server_start(req, server_pk):
     res = start.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Starting...')
+    dajax.assign('#adminActionLog', 'innerHTML', 'Starting server...')
     return dajax.json()
 
 dajaxice_functions.register(server_start)
@@ -95,7 +95,7 @@ def server_restart(req, server_pk):
     res = restart.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Restarting...')
+    dajax.assign('#adminActionLog', 'innerHTML', 'Restarting server...')
     return dajax.json()
 
 dajaxice_functions.register(server_start)
@@ -106,6 +106,7 @@ def server_say(req, server_pk, message, cleared = False):
     """ Say something in a server """
     res = say.delay(server_pk, message)
     dajax = Dajax()
+    dajax.prepend('#adminActionLog', 'innerHTML', 'Said %r' % message)
     if not cleared:
         dajax.clear('#tosay', 'value')
     return dajax.json()
@@ -135,8 +136,18 @@ def server_kill(req, server_pk):
     res = kill.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Killing...')
+    dajax.assign('#adminActionLog', 'innerHTML', 'Killing server...')
     return dajax.json()
 
 dajaxice_functions.register(server_kill)
 
+
+@login_required
+def server_cmd(req, server_pk, cmd):
+    """ Run a raw command on a server """
+    res = runCommand.delay(server_pk, cmd)
+    dajax = Dajax()
+    dajax.prepend('#adminActionLog', 'innerHTML', 'Running %r' % cmd)
+    return dajax.json()
+
+dajaxice_functions.register(server_say)

@@ -219,3 +219,16 @@ def status(serverPK):
         return server.localStatus()
     except RuntimeError as e:
         return False
+
+
+@task(expires = 60 * 60 * 24)
+def runCommand(serverPK, cmd):
+    """ Run server command """
+    # Get model objects
+    mcServer = MinecraftServer.objects.get(pk = serverPK)
+    # Get the class type that is the right type
+    stype = getServerFromModel(mcServer = mcServer)
+    # Server interaction object
+    server = stype(mcServer = mcServer)
+
+    return server.localRunCommand(cmd = cmd)
