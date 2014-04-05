@@ -12,8 +12,10 @@ DEBUG = False
 # DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 DAJAXICE_DEBUG = DEBUG
-DAJAXICE_NOTIFY_EXCEPTIONS = False
-# DAJAXICE_NOTIFY_EXCEPTIONS = True
+DAJAXICE_NOTIFY_EXCEPTIONS = DEBUG
+SOCIAL_AUTH_RAISE_EXCEPTIONS = DEBUG
+RAISE_EXCEPTIONS = DEBUG
+
 
 # ADMINS = (
 #     # ('Your Name', 'your_email@example.com'),
@@ -36,7 +38,7 @@ DAJAXICE_NOTIFY_EXCEPTIONS = False
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'America/Chicago'
+TIME_ZONE = 'Etc/UTC'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -121,6 +123,13 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GoogleOpenId',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.google.GoogleOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -141,6 +150,8 @@ INSTALLED_APPS = (
     # Used to help speed up file transfers by offloading the
     # reading and sending to the web server
     'sendfile',
+    # External auth
+    'social.apps.django_app.default',
     # A document-based NoSQL ORM
     'couchdbkit.ext.django',
     # Our stuff
@@ -188,6 +199,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         "django.core.context_processors.tz",
         "django.contrib.messages.context_processors.messages",
         # "django.contrib.messages.context_processors.request",
+        'social.apps.django_app.context_processors.backends',
+        'social.apps.django_app.context_processors.login_redirect',
         "extern.requestPreProcessors.gaProcessor",
         "extern.requestPreProcessors.footerProcessor",
         "extern.requestPreProcessors.siteInfoProcessor",

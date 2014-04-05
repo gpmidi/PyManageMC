@@ -344,16 +344,20 @@ class MinecraftServer(Document):
 class MapSave(Document):
     """ A Minecraft server config file
     """
-    # PK: name = StringProperty
+    name = StringProperty(
+                           verbose_name = "Name of the map save",
+                           default = None,
+                           required = True,
+                           )
     desc =  StringProperty(
                            verbose_name = "Description of the map save",
                            default = '',
-                           required = True,
+                           required = False,
                            )
     version = StringProperty(
                              verbose_name = "Map version identifier for this save",
                              default = '',
-                             required = True,
+                             required = False,
                              )
     owners = StringProperty(
                             verbose_name = "Map Owners",
