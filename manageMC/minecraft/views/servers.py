@@ -49,7 +49,7 @@ def index(req):  #
     
 
 @login_required
-def view(req, server_id):
+def edit(req, server_id):
     """ View/Edit a server """
     server = get_object_or_404(MinecraftServer, pk = server_id)
     
@@ -68,10 +68,25 @@ def view(req, server_id):
         form = EditServerForm(instance = server)
     
     return render_to_response(
-                              'servers/view.html',
+                              'servers/edit.html',
                               dict(
                                    server = server,
                                    form = form,
+                                    ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+@login_required
+def view(req, server_id):
+    """ View a server """
+    server = get_object_or_404(MinecraftServer, pk = server_id)
+
+
+    return render_to_response(
+                              'servers/view.html',
+                              dict(
+                                   server = server,
                                     ),
                               context_instance = RequestContext(req),
                               )
