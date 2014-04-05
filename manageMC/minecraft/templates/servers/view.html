@@ -25,7 +25,7 @@
 	        <input type="submit" value="Kill" onclick="Dajaxice.minecraft.server_kill(Dajax.process,{'server_pk':{{ server.pk }}});"/>
         </li>
     </ul>
-    {# Server status auto update #}
+    {# Various bits we need #}
     <script type="text/javascript">    
 	    (function(){
 	        Dajaxice.minecraft.server_status (
@@ -33,7 +33,25 @@
 	                 {'server_pk':{{ server.pk }}}
 	                     );
 	             setTimeout(arguments.callee, 2500);
-	        })();            
+	        })();   
+	    var srvsay = function() {
+	        Dajaxice.minecraft.server_say(
+	                Dajax.process,
+	                {
+	                    'server_pk':{{ server.pk }},
+	                    'message':$("#tosay").val(),
+	                    'cleared':true
+	                    }
+	                );
+	        $("#tosay").val("");
+	    };
+
+	    var forEnter = function(event) {
+	        if (event.which == 13 || event.keyCode == 13) {
+	            event.preventDefault();
+	            srvsay();
+	        };
+	    };
 	</script>   
     {# Server Commands #}
     <ul class="nav">  

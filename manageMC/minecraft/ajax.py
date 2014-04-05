@@ -102,10 +102,12 @@ dajaxice_functions.register(server_start)
 
 
 @login_required
-def server_say(req, server_pk, message):
+def server_say(req, server_pk, message, cleared = False):
     """ Say something in a server """
     res = say.delay(server_pk, message)
     dajax = Dajax()
+    if not cleared:
+        dajax.clear('#tosay', 'value')
     return dajax.json()
 
 dajaxice_functions.register(server_say)
