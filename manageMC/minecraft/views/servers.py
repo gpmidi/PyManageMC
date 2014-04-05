@@ -101,7 +101,6 @@ def edit(req, instanceName):
 
 
 @login_required
-@permission_required('minecraft.change_serverinstance')
 def view(req, instanceName):
     """ View a server """
     server = get_object_or_404(MinecraftServer, _id = instanceName)

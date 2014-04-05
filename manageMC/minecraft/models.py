@@ -96,9 +96,7 @@ class MinecraftServerBinary(Document):
 
 class MinecraftServer(Document):
     name = StringProperty(
-                          validators = [
-                                        validate_serverInstance,
-                                        ],
+                          validators = [validate_serverInstance, ],
                           name = "MinecraftServer",
                           required = True,
                           default = None,
@@ -107,7 +105,7 @@ class MinecraftServer(Document):
     binary = StringProperty(
                               required = True,
                               default = None,
-                              validators = [],
+                              validators = [validate_serverBinary, ],
                               name = "Binary",
                               verbose_name = "MinecraftServerBinary of the binary",
                               )
@@ -141,7 +139,7 @@ class MinecraftServer(Document):
         """ Returns the screen session name. 
         Must NEVER change. 
         """
-        return "MC-%d" % self.pk
+        return "MC-%s" % self.pk
 
     def getInstance(self):
         """ Returns the minecraft server object for hosted instances
@@ -374,7 +372,11 @@ class MapSave(Document):
                             default = None,
                             required = True,
                             )
-    
+    mapSize = IntegerProperty(
+                               verbose_name = "Map Size",
+                               default = None,
+                               required = True,
+                               )
     
     # When
     created = DateTimeProperty(
@@ -388,6 +390,10 @@ class MapSave(Document):
                                default = None,
                                auto_now = True,
                                )
+
+    def addMap(self, mapFileLoc):
+        raise NotImplementedError("FIXME: Fill in MapSave.addMap")
+
         
 # class MapSave(models.Model):
 #     """ Allow users to save maps. 
