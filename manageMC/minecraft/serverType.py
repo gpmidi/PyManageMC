@@ -273,7 +273,7 @@ class ServerType(object):
 
     @property
     def pk(self):
-        return self.mcServer.pk
+        return self.mcServer._id
 
     def getMapFilenames(self):
         # TODO: Support world names beyond 'world'
@@ -341,7 +341,7 @@ class ServerType(object):
     def _localGenZipName(self, name, version):
         import datetime
         return "%09s_%s_%s_%s.zip" % (
-                                      self.mcServer.pk,
+                                      self.pk,
                                       self.mcServer.bin.typeName,
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
                                       version
@@ -678,7 +678,7 @@ class ServerProperitiesConfigFileType(ConfigFileType):
                 pass
 
         ret['nc_configFileTypeName'] = str(relativepath)
-        ret['nc_minecraftServerPK'] = self.minecraftServerObj.mcServer.pk
+        ret['nc_minecraftServerPK'] = self.minecraftServerObj.pk
         return ret
     
     CT_NONE_VALUES=[

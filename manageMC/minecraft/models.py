@@ -109,12 +109,12 @@ class MinecraftServer(Document):
                               name = "Binary",
                               verbose_name = "MinecraftServerBinary of the binary",
                               )
-
     created = DateTimeProperty(
                                 # default=
                                 required = True,
                                 validators = [],
                                 name = "Date Created",
+                                auto_now_add = True,
                                 verbose_name = "The date that this server bin was first defined",
                                 )
     modified = DateTimeProperty(
@@ -122,6 +122,7 @@ class MinecraftServer(Document):
                                 required = True,
                                 validators = [],
                                 name = "Date Modified",
+                                auto_now = True,
                                 verbose_name = "The date that this server bin was last modified",
                                 )
 
@@ -139,7 +140,7 @@ class MinecraftServer(Document):
         """ Returns the screen session name. 
         Must NEVER change. 
         """
-        return "MC-%s" % self.pk
+        return "MC-%s" % self.name
 
     def getInstance(self):
         """ Returns the minecraft server object for hosted instances
