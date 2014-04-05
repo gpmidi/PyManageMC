@@ -9,6 +9,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
         {% dajaxice_js_import %}        
         <script src="/static/dajax/jquery.dajax.core.js"></script>
+        <script src="/static/base.js"></script>
         {% block imports %}{% endblock %}
         {% if gaAccount %}
 			<script type="text/javascript">
@@ -51,7 +52,7 @@
 	            </ul>
 	            {% if user.is_staff %}
 	                <ul class="nav">
-	                    <li>Administration</li>
+	                    <li>Site Administration</li>
 	                        <li><a href="/admin/">Admin</a></li>
 	                </ul>
 	            {% endif %}

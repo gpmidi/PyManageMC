@@ -30,6 +30,7 @@ import os.path
 from mimetypes import guess_type
 from django.contrib.auth import authenticate, login
 from dajaxice.core import dajaxice_functions  # @UnresolvedImport
+from django.contrib.auth.decorators import login_required
 
 from minecraft.models import *
 from minecraft.tasks.server import *
@@ -64,28 +65,43 @@ def login_a(req, username, password):
 dajaxice_functions.register(login_a)
 
 
+@login_required
 def server_stop(req, server_pk):
     """ Stop a server """
     res = stop.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Stopping')
+    dajax.assign('input#serverstatus', 'innerHTML', 'Stopping...')
     return dajax.json()
 
 dajaxice_functions.register(server_stop)
 
 
+@login_required
 def server_start(req, server_pk):
     """ Start a server """
     res = start.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('input#serverstatus', 'innerHTML', 'Starting')
+    dajax.assign('input#serverstatus', 'innerHTML', 'Starting...')
     return dajax.json()
 
 dajaxice_functions.register(server_start)
 
 
+@login_required
+def server_restart(req, server_pk):
+    """ Restart a server """
+    res = restart.delay(server_pk)
+    res.wait()
+    dajax = Dajax()
+    dajax.assign('input#serverstatus', 'innerHTML', 'Restarting...')
+    return dajax.json()
+
+dajaxice_functions.register(server_start)
+
+
+@login_required
 def server_say(req, server_pk, message):
     """ Say something in a server """
     res = say.delay(server_pk, message)
@@ -95,6 +111,7 @@ def server_say(req, server_pk, message):
 dajaxice_functions.register(server_say)
 
 
+@login_required
 def server_status(req, server_pk):
     """ Get updated status """
     res = status.delay(server_pk)
@@ -108,3 +125,16 @@ def server_status(req, server_pk):
     return dajax.json()
 
 dajaxice_functions.register(server_status)
+
+
+@login_required
+def server_kill(req, server_pk):
+    """ Kill a server """
+    res = kill.delay(server_pk)
+    res.wait()
+    dajax = Dajax()
+    dajax.assign('input#serverstatus', 'innerHTML', 'Killing...')
+    return dajax.json()
+
+dajaxice_functions.register(server_kill)
+

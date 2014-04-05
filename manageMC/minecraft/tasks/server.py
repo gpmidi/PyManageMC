@@ -145,7 +145,7 @@ def start(serverPK):
 
 @task(expires = 60 * 60 * 24)
 def stop(serverPK, warn = True, warnDelaySeconds = 0):
-    """ Start a server """
+    """ Stop a server """
     # Get model objects
     mcServer = MinecraftServer.objects.get(pk = serverPK)
     # Get the class type that is the right type
@@ -177,6 +177,19 @@ def restart(serverPK, warn = True, warnDelaySeconds = 0):
     if results['stop']:
         results['start'] = start(serverPK = mcServer.pk)
     return results
+
+
+@task(expires = 60 * 60 * 24)
+def kill(serverPK, warn = True, warnDelaySeconds = 0):
+    """ Kill a server """
+    # Get model objects
+    mcServer = MinecraftServer.objects.get(pk = serverPK)
+    # Get the class type that is the right type
+    stype = getServerFromModel(mcServer = mcServer)
+    # Server interaction object
+    server = stype(mcServer = mcServer)
+
+    return server.localStopServer(warn = warn, warnDelaySeconds = warnDelaySeconds)
 
 
 @task(expires = 60 * 60 * 24)
