@@ -1,0 +1,8 @@
+<li>
+    <a href="/mc/servers/{{ server_id }}/">Server {{ server_id }}</a>: 
+    {% if url %}
+        <a href="{{ url }}">{{ message }}</a>
+    {% else %}
+        {{ message }}
+    {% endif %}
+</li>

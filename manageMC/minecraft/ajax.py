@@ -22,6 +22,7 @@ Created on Apr 29, 2012
 from dajax.core import Dajax  # @UnresolvedImport
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render_to_response, get_object_or_404
+from django.template.loader import render_to_string
 from django.db.models import Q
 from django.http import Http404
 from django.core.servers.basehttp import FileWrapper
@@ -65,13 +66,25 @@ from minecraft.tasks.server import *
 # dajaxice_functions.register(login_a)
 
 
+def _makeMessage(server_pk, message, url = None):
+    return render_to_string(
+                            'servers/makeMessage.html',
+                            {
+                             'server_id':server_pk,
+                             'message':message,
+                             'url':url,
+                             }
+                            )
+
+
 @login_required
 def server_stop(req, server_pk):
     """ Stop a server """
     res = stop.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('#adminActionLog', 'innerHTML', 'Stopping server...\n')
+    # dajax.assign('#adminActionLog', 'innerHTML', 'Stopping server...\n')
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Stopping server...'))
     return dajax.json()
 
 dajaxice_functions.register(server_stop)
@@ -83,7 +96,8 @@ def server_start(req, server_pk):
     res = start.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('#adminActionLog', 'innerHTML', 'Starting server...\n')
+    # dajax.assign('#adminActionLog', 'innerHTML', 'Starting server...\n')
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Starting server...'))
     return dajax.json()
 
 dajaxice_functions.register(server_start)
@@ -95,7 +109,8 @@ def server_restart(req, server_pk):
     res = restart.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('#adminActionLog', 'innerHTML', 'Restarting server...\n')
+    # dajax.assign('#adminActionLog', 'innerHTML', 'Restarting server...\n')
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Restarting server...'))
     return dajax.json()
 
 dajaxice_functions.register(server_start)
@@ -106,7 +121,8 @@ def server_say(req, server_pk, message, cleared = False):
     """ Say something in a server """
     res = say.delay(server_pk, message)
     dajax = Dajax()
-    dajax.prepend('#adminActionLog', 'innerHTML', 'Said "%s"\n' % message)
+    # dajax.prepend('#adminActionLog', 'innerHTML', 'Said "%s"\n' % message)
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Said "%s"\n' % message))
     if not cleared:
         dajax.clear('#tosay', 'value')
     return dajax.json()
@@ -136,7 +152,8 @@ def server_kill(req, server_pk):
     res = kill.delay(server_pk)
     res.wait()
     dajax = Dajax()
-    dajax.assign('#adminActionLog', 'innerHTML', 'Killing server...\n')
+    # dajax.assign('#adminActionLog', 'innerHTML', 'Killing server...\n')
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Killing server...'))
     return dajax.json()
 
 dajaxice_functions.register(server_kill)
@@ -147,7 +164,8 @@ def server_cmd(req, server_pk, cmd):
     """ Run a raw command on a server """
     res = runCommand.delay(server_pk, cmd)
     dajax = Dajax()
-    dajax.prepend('#adminActionLog', 'innerHTML', 'Running "%s"\n' % cmd)
+    # dajax.prepend('#adminActionLog', 'innerHTML', 'Running "%s"\n' % cmd)
+    dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Running "%s"' % cmd))
     return dajax.json()
 
 dajaxice_functions.register(server_say)
