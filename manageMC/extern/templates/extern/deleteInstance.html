@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load cache %}
+{# Delete an instance #}
+
+{% block body %}
+    <div class="newsbox">
+        <h1>Delete Minecraft Server {{ instance.name }}?</h1>
+        <div class="newspost">
+            <div class="newsheader">
+                <h2 class="NewsTitle">Are You Sure?</h2>
+                <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
+            </div>
+            <div class="News">
+			    <form action="." method="post">
+			        {% csrf_token %}
+			        <input type="hidden" name="confirmed" value="{{ instance.name }}">
+			        <input type="submit" value="Delete"/>
+			    </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

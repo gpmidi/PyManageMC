@@ -89,6 +89,23 @@ def instance(req, instanceSlug):
                               )
 
 
+@permission_required('extern.delete_serverinstance')
+def deleteInstance(req, instanceSlug):
+    """ Display a server instance """
+    inst = get_object_or_404(ServerInstance, name = instanceSlug)
+    if req.method=='POST':
+        if req.POST['confirmed']==inst.name:
+            inst.delete()
+            return redirect('/e/instances/')
+    return render_to_response(
+                              'extern/deleteInstance.html',
+                              dict(
+                                   instance = inst,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
 @permission_required('extern.view_serverinstance')
 def instances(req, statusIs = None, statusIsInGroup = None):
     """ Display all server instances """

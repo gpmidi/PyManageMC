@@ -26,6 +26,7 @@ urlpatterns = patterns('extern.views',
     url(r'^instances/statusgroup/(?P<statusIsInGroup>active|inactive)(?:/)?$', 'instances', name = "ListInstancesOfType"),
     url(r'^instances/status/(?P<statusIs>[a-z0-9]{1,32})(?:/)?$', 'instances', name = "ListInstancesByStatus"),
     url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name = "InstanceObject"),
+    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/delete(?:/)?$', 'deleteInstance', name = "DeleteInstanceObject"),
     
     # Users
     # url(r'^users(?:/)?$','users',name="UserList"),

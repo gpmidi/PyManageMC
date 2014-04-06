@@ -2,6 +2,14 @@
 {% load cache %}
 {# An instance #}
 
+{% block quickMain %}
+    {% cache 3600 deleteInstancesQuick1 user.id %}
+        {% if perms.extern.delete_serverinstance %}
+            <li><a href="delete/">Delete Instance</a></li>
+        {% endif %} 
+    {% endcache %}
+{% endblock %}
+
 {% block body %}
     {% cache 60 instanceBody1 user.is_staff instance.name %}
         <div class="newsbox">
