@@ -50,7 +50,7 @@ def userView(req, userPK = None):
     else:
         user = get_object_or_404(User, pk = userPK)
     return render_to_response(
-                              'user.html',
+                              'extern/user.html',
                               dict(
                                    dUser = user,
                                    ),
@@ -62,7 +62,7 @@ def userView(req, userPK = None):
 def userLogin(req):
     """ Init login """
     return render_to_response(
-                              'login.html',
+                              'extern/login.html',
                               dict(
 
                                    ),
@@ -98,7 +98,7 @@ def userEditProfile(req):
                                 instance = profile
                                 )
     return render_to_response(
-                              'profile_edit.html',
+                              'extern/profile_edit.html',
                               dict(
                                    form = form,
                                    ),
