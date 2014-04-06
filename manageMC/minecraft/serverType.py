@@ -434,6 +434,11 @@ class ServerType(object):
                               self.getServerRoot(),
                               os.path.basename(self.mcServer.bin.exc.name),
                               )
+        managePath = os.path.join(
+                                  os.path.basename(settings.__file__),
+                                  '..',
+                                  'manage.py',
+                                  )
         
         args = [
               "/usr/bin/screen",
@@ -441,6 +446,10 @@ class ServerType(object):
               self.getServerScreenConfig(),
               "-dmS",
               self.getSessionName(),
+              "/usr/bin/python",
+              managePath,
+              '--serverId',
+              self.pk,
               settings.MC_JAVA_LOC,
               "-Xmx%dM" % settings.MC_RAM_X,
               "-Xms%dM" % settings.MC_RAM_S,

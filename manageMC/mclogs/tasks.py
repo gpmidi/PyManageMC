@@ -37,8 +37,14 @@ from celery.contrib.batches import Batches
 
 
 @task(expires = 60 * 60 * 24 * 14)
-def logLineAlert(serverId, line, flow, when = None):
-    """ Notify the admin via Django messages that a error/warn occured """
+def logLineAlert(**kwargs):
+    """ Notify the admin via Django messages that a error/warn occurred """
+
+
+@task(expires = 60 * 60 * 24 * 14)
+def logLineInfo(**kwargs):
+    """ Notify the admin via Django messages that a error/warn/info occurred """
+
 
 
 PARSE_LOG_LINE = re.compile(r'^\[(?P<hour>\d+):(?P<minute>\d+):(?P<second>\d+)\] \[(?P<source>.+)\/(?P<level>[^ ]+)\]\: (?P<message>.*)\s*$')
@@ -75,7 +81,7 @@ def logLine(serverId, line, flow, whenReal = None, when = None, whenCaptured = N
     if parsed:
         d = parsed.groupdict()
         try:
-            kws['whenReal'] = datetime.time(hour = int(d['hour']), minute = int(d['minute']), second = int(d['second']))
+            kws['whenReal'] = datetime.date.utcnow() + datetime.time(hour = int(d['hour']), minute = int(d['minute']), second = int(d['second']))
         except:
             pass
         if 'level' in d:
@@ -91,7 +97,15 @@ def logLine(serverId, line, flow, whenReal = None, when = None, whenCaptured = N
     if kws['when'] is None:
         kws['when'] = kws['whenCaptured']
 
-    aggLogLines.delay(**kws)
+    ret = []
+    if kws['level'] == 'WARN':
+        ret.append(logLineAlert.delay(**kws))
+    elif kws['level'] == 'ERROR':
+        ret.append(logLineAlert.delay(**kws))
+
+    ret.append(logLineInfo.delay(**kws))
+    ret.append(aggLogLines.delay(**kws))
+    return ret
 
 
 @task(
