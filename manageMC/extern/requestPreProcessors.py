@@ -52,13 +52,13 @@ def siteInfoProcessor(request):
     return ret
 
 
-def idStuff(request):
-    """ Add auth stuff """
-    from social.backends.google import GooglePlusAuth  # @UnresolvedImport
-    plus_scope = ' '.join(GooglePlusAuth.DEFAULT_SCOPE)
-    return {
-            'plus_scope':plus_scope,
-            'plus_id':settings.SOCIAL_AUTH_GOOGLE_PLUS_KEY,
-            }
+# def idStuff(request):
+#     """ Add auth stuff """
+#     from social.backends.google import GooglePlusAuth  # @UnresolvedImport
+#     plus_scope = ' '.join(GooglePlusAuth.DEFAULT_SCOPE)
+#     return {
+#             'plus_scope':plus_scope,
+#             'plus_id':settings.SOCIAL_AUTH_GOOGLE_PLUS_KEY,
+#             }
 
 

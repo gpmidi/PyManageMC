@@ -202,7 +202,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         "extern.requestPreProcessors.gaProcessor",
         "extern.requestPreProcessors.footerProcessor",
         "extern.requestPreProcessors.siteInfoProcessor",
-        "extern.requestPreProcessors.idStuff",
     )
 
 CACHES = {

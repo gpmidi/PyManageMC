@@ -2,13 +2,14 @@
 {% load cache %}
 {# User login #}
 
-{% block title %}Login{% endblock %} 
+{% block title %}Login With Google Plus{% endblock %} 
 
 {% block body %}
     {% if user.is_authenticated %}
         You're already logged in!
     {% else %}
-	    <li class="alt">
+        <div>
+            <span>Login With Google Plus: </span>
 	        <script type="text/javascript">
 	            (function () {
 	                var po = document.createElement('script');
@@ -22,7 +23,7 @@
 	        <script type="text/javascript">
 	            var signInCallback = function (result) {
 	                if (result['error']) {
-	                    alert('An error happened:', result['error']);
+	                    //alert('An error happened:', result['error']);
 	                } else {
 	                    $('#code').attr('value', result['code']);
 	                    $('#at').attr('value', result['access_token']);
@@ -45,6 +46,6 @@
 	            <input id="at" type="hidden" name="access_token" value="" />
 	            <input id="code" type="hidden" name="code" value="" />
 	        </form>
-	    </li>
+	    </div>
 	{% endif %}
 {% endblock %}

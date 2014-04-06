@@ -28,6 +28,7 @@ import datetime
 
 from extern.models import *
 
+
 def instance(req, instanceSlug):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = instanceSlug)

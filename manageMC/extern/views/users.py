@@ -34,6 +34,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.decorators.http import require_POST
+from django.contrib.auth import logout as auth_logout
+from django.conf import settings
 
 from social.actions import do_auth, do_complete, do_disconnect  # @UnresolvedImport
 from social.apps.django_app.utils import strategy  # @UnresolvedImport
@@ -61,13 +63,23 @@ def userView(req, userPK = None):
 # User access
 def userLogin(req):
     """ Init login """
+    from social.backends.google import GooglePlusAuth  # @UnresolvedImport
+    plus_scope = ' '.join(GooglePlusAuth.DEFAULT_SCOPE)
     return render_to_response(
                               'extern/login.html',
                               dict(
-
+                                   plus_scope = plus_scope,
+                                   plus_id = settings.SOCIAL_AUTH_GOOGLE_PLUS_KEY,
                                    ),
                               context_instance = RequestContext(req),
                               )
+
+
+# User access
+def userLogout(req):
+    """ Disconnect """
+    auth_logout(req)
+    return redirect('/')
 
 
 @login_required
