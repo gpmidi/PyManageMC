@@ -113,7 +113,7 @@ def server_restart(req, server_pk):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Restarting server...'))
     return dajax.json()
 
-dajaxice_functions.register(server_start)
+dajaxice_functions.register(server_restart)
 
 
 @login_required
@@ -168,4 +168,4 @@ def server_cmd(req, server_pk, cmd):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Running "%s"' % cmd))
     return dajax.json()
 
-dajaxice_functions.register(server_say)
+dajaxice_functions.register(server_cmd)
