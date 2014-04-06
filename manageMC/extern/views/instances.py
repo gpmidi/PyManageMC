@@ -33,7 +33,7 @@ def instance(req, instanceSlug):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = instanceSlug)
     return render_to_response(
-                              'instance.html',
+                              'extern/instance.html',
                               dict(
                                    instance = inst,
                                    ),
@@ -54,7 +54,7 @@ def instances(req, statusIs = None, statusIsInGroup = None):
     groups = ServerInstance.listStatusGroups(forceLowerCase = True)
     statuses = ServerInstance.listStatusFull()
     return render_to_response(
-                              'instances.html',
+                              'extern/instances.html',
                               dict(
                                    serverInstances = inst,
                                    serverStatusGroups = groups,
