@@ -22,5 +22,5 @@ urlpatterns = patterns('minecraft.views',
     url(r'^servers(?:/)?$', 'servers.index'),
     url(r'^server/new(?:/)?$', 'servers.newserver'),
     url(r'^servers/(\d+)(?:/)?$', 'servers.view'),
-    url(r'^servers/(\d+)/edit(?:/)?$', 'servers.edit'),
+    # url(r'^servers/(\d+)/edit(?:/)?$', 'servers.edit'),
 )

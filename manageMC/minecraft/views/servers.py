@@ -67,37 +67,37 @@ def index(req):  #
                               )
     
 
-@login_required
-@permission_required('minecraft.change_serverinstance')
-def edit(req, instanceName):
-    """ View/Edit a server """
-    server = get_object_or_404(MinecraftServer, _id = instanceName)
-    if not server.checkUser(req = req, perms = 'admin'):
-        raise Http404()
-
-    if req.POST:
-        form = EditServerForm(req.POST, instance = server)
-        if form.is_valid():
-            m = form.save(commit = True)
-            if server.bin.pk != m.bin.pk:
-                # Change the server exec
-                server.bin = m.bin
-                server.save()
-            server = m
-        else:
-            pass
-    else:
-        form = EditServerForm(instance = server)
-    
-    return render_to_response(
-                              'servers/edit.html',
-                              dict(
-                                   server = server,
-                                   instance = server.getInstance(),
-                                   form = form,
-                                   ),
-                              context_instance = RequestContext(req),
-                              )
+# @login_required
+# @permission_required('minecraft.change_serverinstance')
+# def edit(req, instanceName):
+#     """ View/Edit a server """
+#     server = get_object_or_404(MinecraftServer, _id = instanceName)
+#     if not server.checkUser(req = req, perms = 'admin'):
+#         raise Http404()
+#
+#     if req.POST:
+#         form = EditServerForm(req.POST, instance = server)
+#         if form.is_valid():
+#             m = form.save(commit = True)
+#             if server.bin.pk != m.bin.pk:
+#                 # Change the server exec
+#                 server.bin = m.bin
+#                 server.save()
+#             server = m
+#         else:
+#             pass
+#     else:
+#         form = EditServerForm(instance = server)
+#
+#     return render_to_response(
+#                               'servers/edit.html',
+#                               dict(
+#                                    server = server,
+#                                    instance = server.getInstance(),
+#                                    form = form,
+#                                    ),
+#                               context_instance = RequestContext(req),
+#                               )
 
 
 @login_required

@@ -19,6 +19,9 @@ Created on Jan 12, 2013
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
+import hashlib
+import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
@@ -28,22 +31,40 @@ from django.contrib import messages
 from django.core.cache import cache
 from django.utils.http import urlquote
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth import login, REDIRECT_FIELD_NAME
+from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.views.decorators.http import require_POST
 
-import hashlib
-import datetime
+from social.actions import do_auth, do_complete, do_disconnect  # @UnresolvedImport
+from social.apps.django_app.utils import strategy  # @UnresolvedImport
 
 from extern.models import *
 from extern.forms import UserProfileForm
 
 
 # User access
-def userView(req, userPK):
+def userView(req, userPK = None):
     """ Show info about a particular user """
-    user = get_object_or_404(User, pk = userPK)
+    if userPK is None and req.user.is_authenticated():
+        user = req.user
+    else:
+        user = get_object_or_404(User, pk = userPK)
     return render_to_response(
                               'user.html',
                               dict(
                                    dUser = user,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+# User access
+def userLogin(req):
+    """ Init login """
+    return render_to_response(
+                              'login.html',
+                              dict(
+
                                    ),
                               context_instance = RequestContext(req),
                               )

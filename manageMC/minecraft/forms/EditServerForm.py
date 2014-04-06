@@ -26,7 +26,7 @@ from django.contrib.auth.models import User
 
 from minecraft.models import *
 
-class EditServerForm(ModelForm):
-    class Meta:
-        model = MinecraftServer
-        exclude = ['created', 'modified', 'instance', 'id']
+# class EditServerForm(ModelForm):
+#     class Meta:
+#         model = MinecraftServer
+#         exclude = ['created', 'modified', 'instance', 'id']

@@ -12,19 +12,16 @@
         <script src="/static/base.js"></script>
         {% block imports %}{% endblock %}
         {% if gaAccount %}
-			<script type="text/javascript">
-			
+		    <script type="text/javascript">
 			  var _gaq = _gaq || [];
 			  _gaq.push(['_setAccount', '{{ gaAccount }}']);
 			  _gaq.push(['_trackPageview']);
-			
 			  (function() {
 			    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
 			    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
 			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
 			  })();
-			
-			</script>
+		    </script>
 		{% endif %}
     </head>
     <body>
@@ -42,12 +39,10 @@
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
 	                        <li><a href="/mc/servers/">My Hosted Servers</a></li>
-	                        <li><a href="/accounts/profile/">Edit Profile</a></li>      
-	                        <li><a href="/accounts/password/change/">Change Password</a></li>            
+	                        <li><a href="/accounts/profile/">Edit Profile</a></li>             
 	                        <li><a href="/accounts/logout/">Logout</a></li>
 	                    {% else %}
-	                            <li class="alt"><a href="/accounts/login/">Login</a></li>
-	                            <li class="alt"><a href="/accounts/reset/">Reset Password</a></li>
+	                        <li><a href="/accounts/login/">Login</a></li>
 	                    {% endif %}
 	            </ul>
 	            {% if user.is_staff %}

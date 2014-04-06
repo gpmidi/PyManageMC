@@ -110,6 +110,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'social.apps.django_app.middleware.SocialAuthExceptionMiddleware',
 )
 
 ROOT_URLCONF = 'manageMC.urls'
@@ -122,16 +123,6 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
-
-AUTHENTICATION_BACKENDS = (
-    'social.backends.google.GoogleOpenId',
-    'social.backends.google.GoogleOAuth2',
-    'social.backends.google.GoogleOAuth',
-    'django_couchdb_utils.auth.backends.CouchDBAuthBackend',
-)
-
-SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
-SOCIAL_AUTH_FORCE_EMAIL_VALIDATION = False
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -157,6 +148,7 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     # CouchDB auth
     "django_couchdb_utils.auth",
+    "django_couchdb_utils.sessions",
     # A document-based NoSQL ORM
     'couchdbkit.ext.django',
     # Our stuff
@@ -210,6 +202,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
         "extern.requestPreProcessors.gaProcessor",
         "extern.requestPreProcessors.footerProcessor",
         "extern.requestPreProcessors.siteInfoProcessor",
+        "extern.requestPreProcessors.idStuff",
     )
 
 CACHES = {
@@ -221,7 +214,47 @@ CACHES = {
 }
 
 SESSION_ENGINE = "django_couchdb_utils.sessions.couchdb"
+# SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
+
+
+##################################################################################
+# Python-Social-Auth
+##################################################################################
+USE_UNIQUE_USER_ID = False
+SOCIAL_AUTH_GOOGLE_OAUTH2_USE_UNIQUE_USER_ID = True
+AUTHENTICATION_BACKENDS = (
+    'social.backends.google.GooglePlusAuth',
+    'social.backends.username.UsernameAuth',
+    'django_couchdb_utils.auth.backends.CouchDBAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = '/login/google-plus/'
+LOGIN_REDIRECT_URL = '/accounts/self/'
+URL_PATH = ''
+SOCIAL_AUTH_STRATEGY = 'social.strategies.django_strategy.DjangoStrategy'
+SOCIAL_AUTH_STORAGE = 'social.apps.django_app.default.models.DjangoStorage'
+SOCIAL_AUTH_GOOGLE_OAUTH_SCOPE = ['https://www.googleapis.com/auth/plus.login',
+                     'https://www.googleapis.com/auth/userinfo.email',
+                     'https://www.googleapis.com/auth/userinfo.profile']
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)
+DEFAULT_DISCONNECT_PIPELINE = (
+    'social.pipeline.disconnect.allowed_to_disconnect',
+    'social.pipeline.disconnect.get_entries',
+    'social.pipeline.disconnect.revoke_tokens',
+    'social.pipeline.disconnect.disconnect'
+)
 
 ##################################################################################
 # PyManageMC

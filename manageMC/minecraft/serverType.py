@@ -448,6 +448,7 @@ class ServerType(object):
               self.getSessionName(),
               "/usr/bin/python",
               managePath,
+              'wrapMinecraft',
               '--serverId',
               self.pk,
               settings.MC_JAVA_LOC,

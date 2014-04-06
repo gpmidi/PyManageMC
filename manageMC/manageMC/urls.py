@@ -38,8 +38,9 @@ urlpatterns = patterns('',
     url(r'^mc/', include('minecraft.urls')),
 
     # User
-#     url(r'^accounts/login(?:/)?$', 'django.contrib.auth.views.login',),
+    url(r'^accounts/login(?:/)?$', 'extern.views.userLogin', name = 'UserLogin'),
     url(r'^accounts/profile(?:/)?$', 'extern.views.userEditProfile', name = "UserProfileEdit"),
+    url(r'^accounts/self(?:/)?$', 'extern.views.userView', name = "UserSelf"),
 #     url(r'^accounts/password/change(?:/)?$', 'django.contrib.auth.views.password_change', name = "password_change"),
 #     url(r'^accounts/password/done(?:/)?$', 'django.contrib.auth.views.password_change_done', name = "password_change_done"),
 #     url(r'^accounts/logout(?:/)?$', 'django.contrib.auth.views.logout_then_login', name = "logout_then_login"),

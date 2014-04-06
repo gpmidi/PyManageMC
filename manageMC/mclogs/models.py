@@ -22,13 +22,12 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import MinLengthValidator, MaxValueValidator
 from django.core.validators import validate_slug, MinValueValidator
-from django.core.cache import caches  # @UnresolvedImport
 
 # CouchDB
 from couchdbkit.ext.django.schema import *
 
 # Load serverType objects
-from mclog.validators import *
+from mclogs.validators import *
 
 
 class MinecraftServerLogFileArchive(Document):
