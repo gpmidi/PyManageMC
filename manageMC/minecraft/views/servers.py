@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import Http404
+from couchdbkit.exceptions import ResourceNotFound
 
 # Mcer
 from minecraft.models import *
@@ -50,12 +51,12 @@ def index(req):  #
     for serverInst in found:
         try:
             # Hosted server
-            srv = MinecraftServer.objects.get(_id = found.name)
+            srv = MinecraftServer.get(serverInst.name)
             servers.append((
                             srv,
                             srv.getInstance(),
                             ))
-        except MinecraftServer.DoesNotExist as e:
+        except ResourceNotFound as e:
             # Not a hosted server
             pass
     return render_to_response(

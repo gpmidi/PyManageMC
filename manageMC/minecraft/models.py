@@ -146,7 +146,7 @@ class MinecraftServer(Document):
         """ Returns the minecraft server object for hosted instances
         or None if it is not hosted """
         try:
-            return ServerInstance.objects.get(pk = self.name)
+            return ServerInstance.get(pk = self.name)
         except ServerInstance.DoesNotExist as e:
             return None
 
