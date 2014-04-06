@@ -19,7 +19,7 @@ Created on Jan 12, 2013
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404
@@ -27,8 +27,56 @@ from django.http import Http404
 import datetime
 
 from extern.models import *
+from extern.forms import *
 
 
+@login_required
+@permission_required('extern.add_serverinstance')
+def newInstanceNonAdmin(req):
+    if req.method=='POST':
+        form = ServerInstanceNonAdminForm(
+                                          req.POST,
+                                          )
+        if form.is_valid():
+            model = form.save(commit = False)
+            model.owner = req.user
+            model.save()
+            return redirect('/e/instances/instance/%s/' % model.name)
+    else:
+        form = ServerInstanceNonAdminForm()
+    return render_to_response(
+                              'extern/newInstance.html',
+                              dict(
+                                   form = form,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+def _isAdmin(user):
+    return user.is_staff
+
+@login_required
+@permission_required('extern.add_serverinstance')
+@user_passes_test(_isAdmin)
+def newInstanceAdmin(req):
+    if req.method == 'POST':
+        form = ServerInstanceAdminForm(req.POST)
+        if form.is_valid():
+            model = form.save()
+            return redirect('/e/instances/instance/%s/' % model.name)
+    else:
+        form = ServerInstanceAdminForm()
+    return render_to_response(
+                              'extern/newInstance.html',
+                              dict(
+                                   form=form,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+    
+
+@permission_required('extern.view_serverinstance')
 def instance(req, instanceSlug):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = instanceSlug)
@@ -41,6 +89,7 @@ def instance(req, instanceSlug):
                               )
 
 
+@permission_required('extern.view_serverinstance')
 def instances(req, statusIs = None, statusIsInGroup = None):
     """ Display all server instances """
     inst = ServerInstance.objects.all()

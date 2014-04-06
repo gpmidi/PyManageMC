@@ -21,6 +21,8 @@ urlpatterns = patterns('extern.views',
     
     # Server instances
     url(r'^instances(?:/)?$', 'instances', name = "ListAllInstances"),
+    url(r'^instances/new(?:/)?$', 'newInstanceNonAdmin', name = "NewInstanceNonAdmin"),
+    url(r'^instances/newAdmin(?:/)?$', 'newInstanceAdmin', name = "NewInstanceAdmin"),
     url(r'^instances/statusgroup/(?P<statusIsInGroup>active|inactive)(?:/)?$', 'instances', name = "ListInstancesOfType"),
     url(r'^instances/status/(?P<statusIs>[a-z0-9]{1,32})(?:/)?$', 'instances', name = "ListInstancesByStatus"),
     url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name = "InstanceObject"),

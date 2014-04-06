@@ -338,6 +338,7 @@ class ServerInstance(models.Model):
     class Meta:
         permissions = (
             ("view_serverinstance", "Can see all instances"),
+            ('make_serverinstance_managed', 'Can make a hosted Minecraft instance'),
             )
     name = models.SlugField(
                             primary_key = True,

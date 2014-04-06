@@ -31,7 +31,9 @@
             <ul class="nav">    
                 <li>Main</li>
                     <li><a href="/" title="Main page">Home</a></li>
-                    <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>                                     
+                    <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>
+                    {% block quickMain %}
+                    {% endblock %}
             </ul>
             {# TODO: Find a way of doing this without triggering a query #}
             {% cache 86400 userNavBar1 user.id %}
@@ -41,23 +43,18 @@
 	                        <li><a href="/mc/servers/">My Hosted Servers</a></li>
 	                        <li><a href="/accounts/profile/">Edit Profile</a></li>             
 	                        <li><a href="/accounts/logout/">Logout</a></li>
+			                {% if user.is_staff %}
+			                    <li><a href="/admin/">Admin</a></li>
+			                {% endif %}    	                        
 	                    {% else %}
 	                        <li><a href="/accounts/login/">Login</a></li>
 	                    {% endif %}
 	            </ul>
-	            {% if user.is_staff %}
-	                <ul class="nav">
-	                    <li>Site Administration</li>
-	                        <li><a href="/admin/">Admin</a></li>
-	                </ul>
-	            {% endif %}
 	        {% endcache %}
 
             {% block quick %}{% endblock %}
-            
         </div>                  
         <div class="rightColumn">
-            
 	        <ul class="messages" id="messageList">
 	            {% if messages %}
 	                {% for message in messages %}

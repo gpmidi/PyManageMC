@@ -2,8 +2,19 @@
 {% load cache %}
 {# Default page #}
 
+{% block quickMain %}
+    {% cache 3600 instancesQuick2 user.id %}
+        {% if perms.extern.add_serverinstance %}
+            <li><a href="/e/instances/new/">New Instance</a></li>
+        {% endif %} 
+        {% if user.is_staff %}
+            <li><a href="/e/instances/newAdmin/">New Instance (Admin)</a></li>
+        {% endif %} 
+    {% endcache %}
+{% endblock %}
+
 {% block quick %}
-    {% cache 60 instancesQuick1 %}
+    {% cache 3600 instancesQuick1 user.id %}
     
         {# Instance Group Listings #}
         <ul class="nav">
@@ -27,8 +38,10 @@
 {% block body %}
     <div class="newsbox">
         <h1>Minecraft Servers</h1>
-        {% for instance in serverInstances %}
-            {% cache 60 bodyInstance2 instance.pk user.is_staff %}
+        
+        {% cache 60 bodyInstance3 user.id %}
+            {% for instance in serverInstances %}
+            
                  <div class="newspost">
 	                 <div class="newsheader">
 	                     <h2 class="newstitle">
@@ -73,7 +86,9 @@
 		                 </div>
 	                 </div>
                  </div>
-            {% endcache %}
-        {% endfor %}
+                 
+            {% endfor %}
+        {% endcache %}
+        
     </div>
 {% endblock %}
