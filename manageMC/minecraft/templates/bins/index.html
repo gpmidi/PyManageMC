@@ -6,10 +6,41 @@
 {% block title %}List Of Server Binaries{% endblock %}
 
 
+{% block quick %}
+    {% cache 3600 binsQuick0 user.id %}
+        {# Bins Menu #}
+        <ul class="nav">
+            <li>New Binaries</li>
+            
+            <li><a href="/mc/bins/new/upload/">Upload New Binary</a></li>
+            <li><a href="/mc/bins/new/byURL/">Download New Binary From URL</a></li>
+            <li><a href="/mc/bins/new/search/">Search For New Binaries</a></li>
+        </ul> 
+    {% endcache %} 
+{% endblock %}
+
+
 {% block body %}
-	{% cache 60 bodyBinariesIndex0 %}
-	   {% for binObj in bins %}
-	       
-	   {% endfor %}
+    {% cache 60 bodyBinariesIndex1 %}
+        {% for typeName,v in gBy.items %}
+            <div class="newsbox">
+                <h1>{{ typeName.0 }} Minecraft Server Binaries</h1>
+                {% for releaseStatus,v2 in v.items %} 
+                    <div class="newspost">
+	                    <div class="newsheader">
+	                        <h2 class="newstitle">{{ releaseStatus.0 }}</h2>
+	                        <span></span>
+	                    </div>
+	                    <div class="news">  
+	                       {% for v3 in v2 %}
+
+		                           {{ v3.key.2 }}: {{ v3.id }}<br/>
+
+	                       {% endfor %}
+		                </div>
+		            </div> 
+                {% endfor %}                
+            </div>
+        {% endfor %}    
 	{% endcache %}
 {% endblock %}

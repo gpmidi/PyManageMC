@@ -33,57 +33,61 @@ from minecraft.validators import *
 
 
 class MinecraftServerBinary(Document):
+    TYPE_NAME_CHOICES = (
+                          # (TYPE string, human name),
+                          ('Stock', 'Stock'),
+                          ('Bukkit', 'Bukkit'),
+                          ('Tekkit', 'Tekkit'),
+                          ('NerdBukkit', 'NerdBukkit'),
+                          ('FTB', "Feed The Beast"),
+                         )
     typeName = StringProperty(
                               required = True,
                               default = None,
                               validators = [],
-                              name = "Name",
+                              name = "typeName",
                               verbose_name = "Name of the server type",
-                              choices = (
-                                          # (TYPE string, human name),
-                                          ('Stock', 'Stock'),
-                                          ('Bukkit', 'Bukkit'),
-                                          ('Tekkit', 'Tekkit'),
-                                          ('NerdBukkit', 'NerdBukkit'),
-                                          ('FTB', "Feed The Beast"),
-                                         ),
+                              choices = TYPE_NAME_CHOICES,
                               )
     version = StringProperty(
                               required = True,
                               default = None,
                               validators = [],
-                              name = "Version",
+                              name = "version",
                               verbose_name = "Version of the binary",
                               )
+    RELEASE_STATUS_CHOICES=(
+                          # (TYPE string, human name),
+                          ('Production Release', 'Production Release'),
+                          ('Dev Build', 'Dev Build'),
+                          ('Mature Release', 'Mature Release'),
+                          ('Nightly Dev Build', 'Nightly Dev Build'),
+                          ('Pre-release', 'Pre-release'),
+                          ('Beta', 'Beta'),
+                          ('Alpha', 'Alpha'),
+                          )
     releaseStatus = StringProperty(
                               required = True,
                               default = None,
                               validators = [],
-                              name = "Name",
+                              name = "releaseStatus",
                               verbose_name = "Name of the server type",
-                              choices = (
-                                              # (TYPE string, human name),
-                                              ('Production Release', 'Production Release'),
-                                              ('Dev Build', 'Dev Build'),
-                                              ('Mature Release', 'Mature Release'),
-                                              ('Nightly Dev Build', 'Nightly Dev Build'),
-                                              ('Pre-release', 'Pre-release'),
-                                              ('Beta', 'Beta'),
-                                              ('Alpha', 'Alpha'),
-                                              ),
+                              choices = RELEASE_STATUS_CHOICES,
                               )
     created = DateTimeProperty(
                                 # default=
                                 required = True,
                                 validators = [],
-                                name = "Date Created",
+                                name = "created",
+                                auto_now_add = True,
                                 verbose_name = "The date that this server bin was first defined",
                                 )
     modified = DateTimeProperty(
                                 # default=
                                 required = True,
                                 validators = [],
-                                name = "Date Modified",
+                                name = "modified",
+                                auto_now = True,
                                 verbose_name = "The date that this server bin was last modified",
                                 )
     

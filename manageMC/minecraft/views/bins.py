@@ -15,10 +15,12 @@
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
 # Built-in
+import urllib
+import itertools
 
 # Django
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.db.models import Q
 from django.template import RequestContext
 from django.contrib.auth.models import AnonymousUser
@@ -30,19 +32,90 @@ from couchdbkit.exceptions import ResourceNotFound
 
 # Mcer
 from minecraft.models import *
-from minecraft.forms.EditServerForm import *
+from minecraft.forms.binaries import *
 from extern.models import *
+
+
+@login_required
+@permission_required('minecraft.upload_minecraftserverbinary')
+def uploadNew(req):
+    """ Upload a new server binary """
+    if req.method == 'POST':
+        form = UploadBinaryForm(req.POST, req.FILES)
+        if form.is_valid():
+            # FIXME: Catch errors here
+            doc = MinecraftServerBinary()
+            doc.typeName = form.cleaned_data['typeName']
+            doc.version = form.cleaned_data['version']
+            doc.releaseStatus = form.cleaned_data['releaseStatus']
+            doc.save()
+            doc.put_attachment(
+                               name = 'binary',
+                               content = req.FILES['binary'],
+                               )
+            if 'helperFiles' in req.FILES:
+                doc.put_attachment(
+                               name = 'helperFiles',
+                               content = req.FILES['helperFiles'],
+                               )
+            if 'helperFilesConfig' in req.FILES:
+                doc.put_attachment(
+                               name = 'helperFilesConfig',
+                               content = req.FILES['helperFilesConfig'],
+                               )
+            doc.save()
+            return redirect('/mc/bins/%s/' % urllib.quote(doc._id))
+    else:
+        form = UploadBinaryForm()
+    return render_to_response(
+                              'bins/uploadNew.html',
+                              dict(
+                                   form = form,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+@login_required
+@permission_required('minecraft.search_minecraftserverbinary')
+def searchNew(req):
+    """ Search new server binaries """
+    raise NotImplementedError()
+    return render_to_response(
+                              'bins/index.html',
+                              dict(
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+@login_required
+@permission_required('minecraft.download_minecraftserverbinary')
+def dlNew(req):
+    """ Download a new server binary from a given URL """
+    raise NotImplementedError()
+    return render_to_response(
+                              'bins/index.html',
+                              dict(
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
 
 
 @login_required
 @permission_required('minecraft.change_serverinstance')
 def index(req):  #
     """ List all of binaries """
-    bins = MinecraftServerBinary.view('minecraft/binariesByStatus')
+    bins = list(MinecraftServerBinary.view('minecraft/binariesAll'))
+    gBy = {}
+    for typeName, v in itertools.groupby(bins, lambda x: (x['key'][0],)):
+        gBy[typeName] = {}
+        for releaseStatus, v2 in itertools.groupby(v, lambda x: (x['key'][1],)):
+            gBy[typeName][releaseStatus] = list(v2)
     return render_to_response(
                               'bins/index.html',
                               dict(
-                                   bins = bins,
+                                   gBy = gBy,
                                    ),
                               context_instance = RequestContext(req),
                               )

@@ -39,7 +39,10 @@ class MinecraftServerDocumentForm(DocumentForm):
 
     binary = CharField(
                        widget = Select(
-                                       choices = map(lambda b: (b._id, str(b)), MinecraftServerBinary.view('minecraft/binaries')),
+                                       choices = map(
+                                                     lambda b: (str(b), repr(b)),
+                                                     MinecraftServerBinary.view('minecraft/binariesAll'),
+                                                     ),
                                        ),
                        required = True,
                        )

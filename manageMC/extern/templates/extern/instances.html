@@ -7,7 +7,7 @@
         {% if perms.extern.add_serverinstance %}
             <li><a href="/e/instances/new/">New Instance</a></li>
         {% endif %} 
-        {% if user.is_staff %}
+        {% if request.user.is_staff %}
             <li><a href="/e/instances/newAdmin/">New Instance (Admin)</a></li>
         {% endif %} 
     {% endcache %}

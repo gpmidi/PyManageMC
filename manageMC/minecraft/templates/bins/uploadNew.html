@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load cache %}
+{# Binaries listing #}
+
+
+{% block title %}Upload New Server Binary{% endblock %}
+
+
+{% block quick %}
+    {% cache 3600 binsUploadQuick0 user.id %}
+        {# Bins Menu #}
+        <ul class="nav">
+            <li>New Binaries</li>
+            
+            <li><a href="/mc/bins/new/upload/">Upload New Binary</a></li>
+            <li><a href="/mc/bins/new/byURL/">Download New Binary From URL</a></li>
+            <li><a href="/mc/bins/new/search/">Search For New Binaries</a></li>
+        </ul> 
+    {% endcache %} 
+{% endblock %}
+
+
+{% block body %}
+    <form enctype="multipart/form-data" method="post" action=".">
+	    {% csrf_token %}
+	    <table border="0">
+	        {{ form.as_table }}
+	    </table>
+	    <input type="submit" value="Create & Upload"/>
+    </form>
+{% endblock %}
