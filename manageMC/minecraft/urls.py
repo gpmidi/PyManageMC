@@ -20,7 +20,10 @@ from django.conf import settings
 urlpatterns = patterns('minecraft.views',
     # Server access
     url(r'^servers(?:/)?$', 'servers.index'),
-    url(r'^server/new(?:/)?$', 'servers.newserver'),
-    url(r'^servers/(\d+)(?:/)?$', 'servers.view'),
+    # url(r'^server/new(?:/)?$', 'servers.newserver'),
+    url(r'^servers/(?P<serverSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'servers.view'),
     # url(r'^servers/(\d+)/edit(?:/)?$', 'servers.edit'),
+
+    url(r'^bins/new(?:/)?$', 'bins.index'),
+    url(r'^bins/(?P<binId>[a-zA-Z0-9\-_]+)(?:/)?$', 'bins.view'),
 )

@@ -23,10 +23,29 @@ from django.forms import ModelForm, Form
 from django import forms
 from django.core import validators
 from django.contrib.auth.models import User
+from django.forms.fields import *
+from django.forms.widgets import *
+
+from couchdbkit.ext.django.forms import DocumentForm
 
 from minecraft.models import *
 
-# class EditServerForm(ModelForm):
-#     class Meta:
-#         model = MinecraftServer
-#         exclude = ['created', 'modified', 'instance', 'id']
+
+class MinecraftServerDocumentForm(DocumentForm):
+    name = CharField(
+                     widget = HiddenInput(),
+                     required = True,
+                     )
+
+    binary = CharField(
+                       widget = Select(
+                                       choices = map(lambda b: (b._id, str(b)), MinecraftServerBinary.view('minecraft/binaries')),
+                                       ),
+                       required = True,
+                       )
+
+    class Meta:
+        document = MinecraftServer
+        fields = (
+                   'binary',
+                   )

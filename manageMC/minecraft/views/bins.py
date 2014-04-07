@@ -37,36 +37,34 @@ from extern.models import *
 @login_required
 @permission_required('minecraft.change_serverinstance')
 def index(req):  #
-    """ List all of my servers """
-    if req.user.has_perm('view_serverinstance'):
-        found = ServerInstance.objects.all().order_by('owner')
-    else:
-        # Dedup
-        found = ServerInstance.objects.filter(name__in =
-                                                 ServerInstance.objects.filter(
-                                                     Q(owner = req.user) |
-                                                     Q(admins__contains = req.user)
-                                                 ).values('name'))
-    servers = []
-    for serverInst in found:
-        try:
-            # Hosted server
-            srv = MinecraftServer.get(serverInst.name)
-            servers.append((
-                            srv,
-                            srv.getInstance(),
-                            ))
-        except ResourceNotFound as e:
-            # Not a hosted server
-            pass
+    """ List all of binaries """
+    bins = MinecraftServerBinary.view('minecraft/binariesByStatus')
     return render_to_response(
-                              'servers/index.html',
+                              'bins/index.html',
                               dict(
-                                   servers = servers,
-                                    ),
+                                   bins = bins,
+                                   ),
                               context_instance = RequestContext(req),
                               )
     
+
+@login_required
+@permission_required('minecraft.change_serverinstance')
+def view(req, binId):
+    """ View a binary """
+    try:
+        binObj = MinecraftServerBinary.get(binId)
+    except ResourceNotFound as e:
+        raise Http404("Binary not found")
+
+    return render_to_response(
+                              'bins/view.html',
+                              dict(
+                                   binObj = binObj,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
 
 # @login_required
 # @permission_required('minecraft.change_serverinstance')
@@ -101,23 +99,6 @@ def index(req):  #
 #                               )
 
 
-@login_required
-def view(req, serverSlug):
-    """ View a server """
-    inst = get_object_or_404(ServerInstance, name = serverSlug)
-    server = get_object_or_404(MinecraftServer, _id = MinecraftServer.makeSessionName(serverSlug))
-    if not server.checkUser(req = req, perms = 'admin'):
-        raise Http404()
-
-    return render_to_response(
-                              'servers/view.html',
-                              dict(
-                                   server = server,
-                                   instance = inst,
-                                   ),
-                              context_instance = RequestContext(req),
-                              )
-    
     
 # @login_required
 # @permission_required('minecraft.add_serverinstance')

@@ -19,15 +19,20 @@ Created on Jan 12, 2013
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
+import urllib
+import datetime
+
 from django.contrib.auth.decorators import permission_required, login_required, user_passes_test
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.template import RequestContext
 from django.http import Http404
 
-import datetime
+from couchdbkit.exceptions import ResourceNotFound
 
 from extern.models import *
 from extern.forms import *
+from minecraft.models import *
+from minecraft.forms import *
 
 
 @login_required
@@ -41,7 +46,7 @@ def newInstanceNonAdmin(req):
             model = form.save(commit = False)
             model.owner = req.user
             model.save()
-            return redirect('/e/instances/instance/%s/' % model.name)
+            return redirect('/e/instances/instance/%s/' % urllib.quote(model.name))
     else:
         form = ServerInstanceNonAdminForm()
     return render_to_response(
@@ -64,7 +69,7 @@ def newInstanceAdmin(req):
         form = ServerInstanceAdminForm(req.POST)
         if form.is_valid():
             model = form.save()
-            return redirect('/e/instances/instance/%s/' % model.name)
+            return redirect('/e/instances/instance/%s/' % urllib.quote(model.name))
     else:
         form = ServerInstanceAdminForm()
     return render_to_response(
@@ -80,10 +85,15 @@ def newInstanceAdmin(req):
 def instance(req, instanceSlug):
     """ Display a server instance """
     inst = get_object_or_404(ServerInstance, name = instanceSlug)
+    try:
+        srv = MinecraftServer.get(inst.name)
+    except ResourceNotFound as e:
+        srv = None
     return render_to_response(
                               'extern/instance.html',
                               dict(
                                    instance = inst,
+                                   srv = srv,
                                    ),
                               context_instance = RequestContext(req),
                               )
@@ -101,6 +111,37 @@ def deleteInstance(req, instanceSlug):
                               'extern/deleteInstance.html',
                               dict(
                                    instance = inst,
+                                   ),
+                              context_instance = RequestContext(req),
+                              )
+
+
+@permission_required('extern.make_serverinstance_managed')
+def defineInstance(req, instanceSlug):
+    """ Define a server instance """
+    inst = get_object_or_404(ServerInstance, name = instanceSlug)
+    try:
+        srv = MinecraftServer.get(inst.name)
+        raise Http404("An instance of this server already exists")
+    except ResourceNotFound as e:
+        pass
+
+    if req.method == 'POST':
+        form = MinecraftServerDocumentForm(req.POST)
+        if form.is_valid():
+            srv = form.save(commit = False)
+            srv.name = inst.name
+            srv._id = inst.getSessionName()
+            srv.save()
+            return redirect('/mc/servers/%s/' % urllib.quote(inst.name))
+
+    else:
+        form = MinecraftServerDocumentForm()
+    return render_to_response(
+                              'extern/defineInstance.html',
+                              dict(
+                                   instance = inst,
+                                   form = form,
                                    ),
                               context_instance = RequestContext(req),
                               )
@@ -125,6 +166,7 @@ def instances(req, statusIs = None, statusIsInGroup = None):
                                    serverInstances = inst,
                                    serverStatusGroups = groups,
                                    serverStatuses = statuses,
+                                   
                                    ),
                               context_instance = RequestContext(req),
                               )

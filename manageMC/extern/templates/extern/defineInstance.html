@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load cache %}
+{# Define a new instance #}
+
+{% block body %}
+    <div class="newsbox">
+        <h1>Create Minecraft Server For {{ instance.name }}?</h1>
+        <div class="newspost">
+            <div class="newsheader">
+                <h2 class="NewsTitle">Enter Details</h2>
+                <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
+            </div>
+            <div class="News">
+			    <form action="." method="post">
+			        {% csrf_token %}
+			        <table border="0">
+			            {{ form.as_table }}
+			        </table>
+			        <input type="submit" value="Create"/>
+			    </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

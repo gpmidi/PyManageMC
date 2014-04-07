@@ -15,3 +15,5 @@
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
 
+from EditServerForm import *
+

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load cache %}
+{# Binaries listing #}
+
+
+{% block title %}List Of Server Binaries{% endblock %}
+
+
+{% block body %}
+	{% cache 60 bodyBinariesIndex0 %}
+	   {% for binObj in bins %}
+	       
+	   {% endfor %}
+	{% endcache %}
+{% endblock %}

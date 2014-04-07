@@ -50,7 +50,7 @@ def userView(req, userPK = None):
     if userPK is None and req.user.is_authenticated():
         user = req.user
     else:
-        user = get_object_or_404(User, pk = userPK)
+        return redirect('/accounts/login/')
     return render_to_response(
                               'extern/user.html',
                               dict(

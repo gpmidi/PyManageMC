@@ -2,13 +2,18 @@
 {% load cache %}
 {# An instance #}
 
+
 {% block quickMain %}
-    {% cache 3600 deleteInstancesQuick1 user.id %}
+    {% cache 3600 deleteInstancesQuickMain0 user.id instance.name %}
         {% if perms.extern.delete_serverinstance %}
             <li><a href="delete/">Delete Instance</a></li>
-        {% endif %} 
+        {% endif %}
+        {% if perms.extern.make_serverinstance_managed and not srv %}
+            <li><a href="define/" title="Create a new server from this instance">Define Server</a></li>
+        {% endif %}        
     {% endcache %}
 {% endblock %}
+
 
 {% block body %}
     {% cache 60 instanceBody1 user.is_staff instance.name %}

@@ -142,6 +142,13 @@ class MinecraftServer(Document):
         """
         return "MC-%s" % self.name
 
+    @classmethod
+    def makeSessionName(cls, name):
+        """ Returns the screen session name. 
+        Must NEVER change. 
+        """
+        return "MC-%s" % name
+
     def getInstance(self):
         """ Returns the minecraft server object for hosted instances
         or None if it is not hosted """
