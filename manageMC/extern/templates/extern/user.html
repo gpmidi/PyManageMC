@@ -13,23 +13,24 @@
         <div class="newsbox">
             <h1>User Info</h1>
             <div class="newspost">
-                <div>
+                <div class="newsheader">
                     <h2 class="NewsTitle">
                         {% if dUser.get_profile.screenname %}   
-                            {{ dUser.get_profile.screenname }}
+                            {{ dUser.get_profile.publicName }} ({{ dUser.get_profile.screenname }})
                         {% else %}
-                            {{ dUser.username }}
+                            {{ dUser.username }} ({{ dUser.get_profile.publicName }})
                         {% endif %}
                     </h2>
-                    <span>{{ dUser.get_profile.publicName }}</span>
+                    <span></span>
                 </div>
                 <div class="News">
-                    <b>Site Username: </b>{{ dUser.username }}<br />
+                    <b>Name: </b>{{ dUser.get_profile.publicName }}<br />
                     <b>Account Active: </b>{{ dUser.is_active|yesno }}<br />
                     <b>Staff: </b>{{ dUser.is_staff|yesno }}<br />
                     <b>Date Joined: </b>{{ dUser.date_joined }}<br />
                     
-                    {% if user.is_staff %}                        
+                    {% if user.is_staff %}    
+                        <br />                    
                         <b>Username: </b>{{ dUser.username }}<br />
                         <b>Given Name: </b>{{ dUser.get_full_name }}<br />
                         <b>Email: </b>{{ dUser.email }}<br />
