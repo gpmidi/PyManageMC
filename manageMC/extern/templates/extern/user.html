@@ -16,9 +16,9 @@
                 <div class="newsheader">
                     <h2 class="NewsTitle">
                         {% if dUser.get_profile.screenname %}   
-                            {{ dUser.get_profile.publicName }} ({{ dUser.get_profile.screenname }})
+                            {{ dUser.get_profile.publicName|default:"Unnamed" }} ({{ dUser.get_profile.screenname }})
                         {% else %}
-                            {{ dUser.username }} ({{ dUser.get_profile.publicName }})
+                            {{ dUser.username|default:"Unnamed" }} ({{ dUser.get_profile.publicName }})
                         {% endif %}
                     </h2>
                     <span></span>
