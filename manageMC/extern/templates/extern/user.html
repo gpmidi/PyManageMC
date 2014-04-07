@@ -27,15 +27,15 @@
                     <b>Name: </b>{{ dUser.get_profile.publicName }}<br />
                     <b>Account Active: </b>{{ dUser.is_active|yesno }}<br />
                     <b>Staff: </b>{{ dUser.is_staff|yesno }}<br />
-                    <b>Date Joined: </b>{{ dUser.date_joined }}<br />
-                    
+                                        
                     {% if user.is_staff %}    
                         <br />                    
                         <b>Username: </b>{{ dUser.username }}<br />
                         <b>Given Name: </b>{{ dUser.get_full_name }}<br />
                         <b>Email: </b>{{ dUser.email }}<br />
-                        <b>Last Login: </b>{{ dUser.last_login }}<br />
                         <b>Site Admin: </b>{{ dUser.is_superuser|yesno }}<br />
+                        <b>Last Login: </b>{{ dUser.last_login }}<br />
+                        <b>Date Joined: </b>{{ dUser.date_joined }}<br />
                     {% endif %}
                     <br />
                     
