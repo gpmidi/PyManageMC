@@ -3,11 +3,11 @@
 {# view a bin #}
 
 
-{% block title %}{% cache 60 bodyBinariesViewTitle0 %}{{ binObj.typeName }} Binary - {{ binObjId|truncatechars:11 }}{% endcache %}{% endblock %}
+{% block title %}{% cache 10 bodyBinariesViewTitle0 %}{{ binObj.typeName }} Binary - {{ binObjId|truncatechars:11 }}{% endcache %}{% endblock %}
 
 
 {% block quick %}
-    {% cache 60 bodyBinariesViewQuick0 %}
+    {% cache 10 bodyBinariesViewQuick0 %}
         <ul class="nav">
             <li>Binary Actions</li>
             <li><a href="/mc/bins/{{ binObjId|urlize }}/delete/">Delete {{ binObjId|truncatechars:11 }}</a></li>
@@ -17,7 +17,7 @@
 
 
 {% block body %}	
-    {% cache 60 bodyBinariesView0 %}
+    {% cache 10 bodyBinariesView0 %}
         <div class="newsbox">
             <h1>Minecraft Server</h1>
             <div class="newspost">
