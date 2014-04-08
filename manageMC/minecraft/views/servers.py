@@ -105,8 +105,11 @@ def index(req):  #
 def view(req, serverSlug):
     """ View a server """
     inst = get_object_or_404(ServerInstance, name = serverSlug)
-    server = get_object_or_404(MinecraftServer, _id = MinecraftServer.makeSessionName(serverSlug))
-    if not server.checkUser(req = req, perms = 'admin'):
+    server = inst.getServer()
+    if server is None:
+        raise Http404()
+
+    if not inst.checkUser(req = req, perms = 'admin'):
         raise Http404()
 
     return render_to_response(

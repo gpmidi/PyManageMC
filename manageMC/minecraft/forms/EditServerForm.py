@@ -31,24 +31,13 @@ from couchdbkit.ext.django.forms import DocumentForm
 from minecraft.models import *
 
 
-class MinecraftServerDocumentForm(DocumentForm):
-    name = CharField(
-                     widget = HiddenInput(),
-                     required = True,
-                     )
-
+class MinecraftServerForm(forms.Form):
     binary = CharField(
-                       widget = Select(
-                                       choices = map(
-                                                     lambda b: (str(b), repr(b)),
-                                                     MinecraftServerBinary.view('minecraft/binariesAll'),
-                                                     ),
-                                       ),
-                       required = True,
-                       )
-
-    class Meta:
-        document = MinecraftServer
-        fields = (
-                   'binary',
-                   )
+           widget = Select(
+               choices = map(
+                     lambda b: (b['id'], '{0} Minecraft Server | Version {2} | Type {1}'.format(*b['key'][:])),
+                     MinecraftServerBinary.view('minecraft/binariesAll').all(),
+                     ),
+               ),
+           required = True,
+           )

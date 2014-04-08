@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 {% load cache %}
-{# Define a new instance #}
+{# Define a new instance of a server #}
+
 
 {% block body %}
     <div class="newsbox">
-        <h1>Create Minecraft Server For {{ instance.name }}?</h1>
+        <h1>Create Minecraft Server For {{ instance.name }}</h1>
         <div class="newspost">
             <div class="newsheader">
-                <h2 class="NewsTitle">Enter Details</h2>
+                <h2 class="NewsTitle">Create Minecraft Server For {{ instance.name }}</h2>
                 <span>{{ instance.name }} / {{ instance.get_status_display }}</span>
             </div>
             <div class="News">

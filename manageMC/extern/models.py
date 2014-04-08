@@ -487,7 +487,7 @@ class ServerInstance(models.Model):
     
     
     def checkUser(self,req,perms='admin'):
-        if req.user in self.admins or req.user == self.owner:
+        if req.user in self.admins.all() or req.user == self.owner:
             return True
         return False
 
@@ -497,7 +497,7 @@ class ServerInstance(models.Model):
         or None if it is not hosted """
         from minecraft.models import MinecraftServer
         try:
-            return MinecraftServer.objects.get(pk = self.name)
+            return MinecraftServer.get(MinecraftServer.makeSessionName(self.name))
         except MinecraftServer.DoesNotExist as e:
             return None
 

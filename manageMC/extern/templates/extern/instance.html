@@ -4,7 +4,7 @@
 
 
 {% block quick %}
-    {% cache 3600 QuickInstancesMain1 user.id instance.name %}
+    {% cache 60 QuickInstancesMain2 user.id instance.name %}
         {% if perms.extern.delete_serverinstance or perms.extern.make_serverinstance_managed and not srv %}
 	        <ul class="nav">
 	            <li>Instance Tools</li>
@@ -12,7 +12,9 @@
 		            <li><a href="delete/">Delete Instance</a></li>
 		        {% endif %}
 		        {% if perms.extern.make_serverinstance_managed and not srv %}
-		            <li><a href="define/" title="Create a new server from this instance">Define Server</a></li>
+		            <li><a href="define/" title="Create a new server from this instance">Define This Server</a></li>
+		        {% else %}
+		            <li><a href="/mc/servers/{{ instance.name|urlize }}/" title="Manage this instance's server">Manage This Server</a></li>
 		        {% endif %}
 	        </ul>
 	    {% endif %}
@@ -42,7 +44,7 @@
 	                    <h4>Status: </h4>
 	                    {{ instance.get_status_display }}
 	                    <h4>Owner: </h4>
-	                    <a href="/e/users/{{ instance.owner.pk }}/" title="User Info">
+	                    <a href="/e/users/{{ instance.owner.pk|urlize }}/" title="User Info">
 				            {% if instance.owner.get_profile.screenname %}   
 				                {{ instance.owner.get_profile.screenname }}
 				            {% else %}
@@ -72,7 +74,7 @@
 	                    <h4>Server Admins: </h4>
 	                    <ul>
 	                        {% for admin in instance.admins.all %}
-	                            <li><a href="/e/users/{{ admin.pk }}/" title="User Info">
+	                            <li><a href="/e/users/{{ admin.pk|urlize }}/" title="User Info">
 	                                {% if admin.get_profile.screenname %}   
 	                                    {{ admin.get_profile.screenname }}
 	                                {% else %}

@@ -84,11 +84,10 @@ def newInstanceAdmin(req):
 @permission_required('extern.view_serverinstance')
 def instance(req, instanceSlug):
     """ Display a server instance """
+
     inst = get_object_or_404(ServerInstance, name = instanceSlug)
-    try:
-        srv = MinecraftServer.get(inst.name)
-    except ResourceNotFound as e:
-        srv = None
+    srv = inst.getServer()
+
     return render_to_response(
                               'extern/instance.html',
                               dict(
@@ -127,16 +126,17 @@ def defineInstance(req, instanceSlug):
         pass
 
     if req.method == 'POST':
-        form = MinecraftServerDocumentForm(req.POST)
+        form = MinecraftServerForm(req.POST)
         if form.is_valid():
-            srv = form.save(commit = False)
+            srv = MinecraftServer()
             srv.name = inst.name
-            srv._id = inst.getSessionName()
+            srv._id = MinecraftServer.makeSessionName(inst.name)
+            srv.binary = form.cleaned_data['binary']
             srv.save()
             return redirect('/mc/servers/%s/' % urllib.quote(inst.name))
-
     else:
-        form = MinecraftServerDocumentForm()
+        form = MinecraftServerForm()
+
     return render_to_response(
                               'extern/defineInstance.html',
                               dict(
