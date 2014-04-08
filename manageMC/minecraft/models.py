@@ -92,7 +92,7 @@ class MinecraftServerBinary(Document):
                                 )
     
     def __str__(self):
-        return "MCServerBin %s_%s" % (self.typeName, self.version)
+        return "%s Minecraft Server Version %s" % (self.typeName, self.version)
 
     def __repr__(self):
         return "<MCServerBin_%s_%s>" % (self.typeName, self.version)

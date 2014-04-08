@@ -134,6 +134,7 @@ def view(req, binId):
                               'bins/view.html',
                               dict(
                                    binObj = binObj,
+                                   binObjId = binId,
                                    ),
                               context_instance = RequestContext(req),
                               )

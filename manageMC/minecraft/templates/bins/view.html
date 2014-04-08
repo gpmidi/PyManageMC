@@ -1,11 +1,40 @@
 {% extends "base.html" %}
 {% load cache %}
-{# view/edit/manage a bin #}
+{# view a bin #}
 
 
-{% block title %}Binary - FIXME{% endblock %}
+{% block title %}{% cache 60 bodyBinariesViewTitle0 %}{{ binObj.typeName }} Binary - {{ binObjId|truncatechars:11 }}{% endcache %}{% endblock %}
+
+
+{% block quick %}
+    {% cache 60 bodyBinariesViewQuick0 %}
+        <ul class="nav">
+            <li>Binary Actions</li>
+            <li><a href="/mc/bins/{{ binObjId|urlize }}/delete/">Delete {{ binObjId|truncatechars:11 }}</a></li>
+        </ul>
+    {% endcache %}
+{% endblock %}
 
 
 {% block body %}	
-
+    {% cache 60 bodyBinariesView0 %}
+        <div class="newsbox">
+            <h1>Minecraft Server</h1>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="newstitle">{{ binObj.typeName }}</h2>
+                    <span>{{ binObj.version }}</span>
+                </div> 
+                <div class="news">  
+                    <ul>
+                        <li><b>ID:</b> {{ binObjId }}</li>
+                        <li><b>Release Status:</b> {{ binObj.releaseStatus }}</li>
+                        <li><b>Version:</b> {{ binObj.version }}</li>
+                        <li><b>Created:</b> {{ binObj.created }}</li>
+                        <li><b>Modified:</b> {{ binObj.modified }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div> 
+    {% endcache %}
 {% endblock %}
