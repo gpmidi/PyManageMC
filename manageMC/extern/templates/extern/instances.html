@@ -2,20 +2,21 @@
 {% load cache %}
 {# Default page #}
 
-{% block quickMain %}
-    {% cache 3600 instancesQuick2 user.id %}
-        {% if perms.extern.add_serverinstance %}
-            <li><a href="/e/instances/new/">New Instance</a></li>
-        {% endif %} 
-        {% if request.user.is_staff %}
-            <li><a href="/e/instances/newAdmin/">New Instance (Admin)</a></li>
-        {% endif %} 
-    {% endcache %}
-{% endblock %}
 
 {% block quick %}
-    {% cache 3600 instancesQuick1 user.id %}
-    
+    {% cache 3600 instancesQuick3 user.id %}
+        {% if perms.extern.add_serverinstance or user.is_staff %}
+	        <ul class="nav">
+	            <li>Instance Tools</li>
+		        {% if perms.extern.add_serverinstance %}
+		            <li><a href="/e/instances/new/">New Instance</a></li>
+		        {% endif %} 
+		        {% if user.is_staff %}
+		            <li><a href="/e/instances/newAdmin/">New Instance (Admin)</a></li>
+		        {% endif %}         
+	        </ul>
+	    {% endif %}
+        
         {# Instance Group Listings #}
         <ul class="nav">
 		    <li>By Availability</li>
@@ -34,6 +35,7 @@
         
     {% endcache %}
 {% endblock %}
+
 
 {% block body %}
     <div class="newsbox">

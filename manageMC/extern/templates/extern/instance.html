@@ -3,20 +3,25 @@
 {# An instance #}
 
 
-{% block quickMain %}
-    {% cache 3600 deleteInstancesQuickMain0 user.id instance.name %}
-        {% if perms.extern.delete_serverinstance %}
-            <li><a href="delete/">Delete Instance</a></li>
-        {% endif %}
-        {% if perms.extern.make_serverinstance_managed and not srv %}
-            <li><a href="define/" title="Create a new server from this instance">Define Server</a></li>
-        {% endif %}        
+{% block quick %}
+    {% cache 3600 QuickInstancesMain1 user.id instance.name %}
+        {% if perms.extern.delete_serverinstance or perms.extern.make_serverinstance_managed and not srv %}
+	        <ul class="nav">
+	            <li>Instance Tools</li>
+		        {% if perms.extern.delete_serverinstance %}
+		            <li><a href="delete/">Delete Instance</a></li>
+		        {% endif %}
+		        {% if perms.extern.make_serverinstance_managed and not srv %}
+		            <li><a href="define/" title="Create a new server from this instance">Define Server</a></li>
+		        {% endif %}
+	        </ul>
+	    {% endif %}
     {% endcache %}
 {% endblock %}
 
 
 {% block body %}
-    {% cache 60 instanceBody1 user.is_staff instance.name %}
+    {% cache 60 instanceBody2 user.is_staff instance.name %}
         <div class="newsbox">
             <h1>Minecraft Server {{ instance.name }}</h1>
             <div class="newspost">
