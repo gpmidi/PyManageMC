@@ -28,10 +28,32 @@
                 <div class="news">  
                     <ul>
                         <li><b>ID:</b> {{ binObjId }}</li>
+                        
                         <li><b>Release Status:</b> {{ binObj.releaseStatus }}</li>
                         <li><b>Version:</b> {{ binObj.version }}</li>
                         <li><b>Created:</b> {{ binObj.created }}</li>
                         <li><b>Modified:</b> {{ binObj.modified }}</li>
+                        
+                        {% if binary %}
+                            <li><b>Server Jar {{ binaryHash.0 }}:</b> {{ binaryHash.1 }}</li>
+                            <li><b>Server Jar Size:</b> {{ binaryLength|filesizeformat }}</li>
+                        {% else %}
+                            <li><b>No Server Jar</b></li>
+                        {% endif %}
+                        
+                        {% if helper %}
+                            <li><b>Helper Files ZIP MD5:</b> {{ helperHash }}</li>
+                            <li><b>Helper Files ZIP Size:</b> {{ helperLength|filesizeformat }}</li>
+                        {% else %}
+                            <li><b>No Helper Files</b></li>
+                        {% endif %}
+                        
+                        {% if helperCfg %}
+                            <li><b>Helper Config Files ZIP MD5:</b> {{ helperCfgHash }}</li>
+                            <li><b>Helper Config Files ZIP Size:</b> {{ helperCfgLength|filesizeformat }}</li>
+                        {% else %}
+                            <li><b>No Helper Config Files</b></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

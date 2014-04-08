@@ -130,11 +130,27 @@ def view(req, binId):
     except ResourceNotFound as e:
         raise Http404("Binary not found")
 
+    import base64
+    import binascii
+    def convHash(hsh):
+        htype, hsh = hsh.split('-')
+        hx = binascii.hexlify(base64.b64decode(hsh))
+        return (htype.upper(), hx)
+
     return render_to_response(
                               'bins/view.html',
                               dict(
                                    binObj = binObj,
                                    binObjId = binId,
+                                   binary = lambda: 'binary' in binObj._attachments,
+                                   binaryHash = lambda: convHash(binObj._attachments['binary']['digest']),
+                                   binaryLength = lambda: binObj._attachments['binary']['length'],
+                                   helper = lambda: 'helperFiles' in binObj._attachments,
+                                   helperHash = lambda: convHash(binObj._attachments['helperFiles']['digest']),
+                                   helperLength = lambda: binObj._attachments['helperFiles']['length'],
+                                   helperCfg = lambda: 'helperFilesConfig' in binObj._attachments,
+                                   helperCfgHash = lambda: convHash(binObj._attachments['helperFilesConfig']['digest']),
+                                   helperCfgLength = lambda: binObj._attachments['helperFilesConfig']['length'],
                                    ),
                               context_instance = RequestContext(req),
                               )
