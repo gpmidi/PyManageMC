@@ -18,7 +18,7 @@
 
 # Django
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.db.models import Q
 from django.template import RequestContext
 from django.contrib.auth.models import AnonymousUser
@@ -99,6 +99,24 @@ def index(req):  #
 #                                    ),
 #                               context_instance = RequestContext(req),
 #                               )
+
+
+@login_required
+def viewByServer(req, serverId):
+    """ View a server """
+    try:
+        server = MinecraftServer.get(serverId)
+    except ResourceNotFound as e:
+        raise Http404()
+
+    inst = server.getInstance()
+    if not inst:
+        raise Http404()
+
+    if not inst.checkUser(req = req, perms = 'admin'):
+        raise Http404()
+
+    return redirect('/mc/servers/%s/' % inst.name)
 
 
 @login_required

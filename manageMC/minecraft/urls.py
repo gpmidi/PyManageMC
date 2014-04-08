@@ -22,6 +22,7 @@ urlpatterns = patterns('minecraft.views',
     url(r'^servers(?:/)?$', 'servers.index'),
     # url(r'^server/new(?:/)?$', 'servers.newserver'),
     url(r'^servers/(?P<serverSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'servers.view'),
+    url(r'^serversById/(?P<serverId>MC\-[a-zA-Z0-9\-_]+)(?:/)?$', 'servers.viewByServer'),
     # url(r'^servers/(\d+)/edit(?:/)?$', 'servers.edit'),
 
     url(r'^bins/new/upload(?:/)?$', 'bins.uploadNew'),
