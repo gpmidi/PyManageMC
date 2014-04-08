@@ -104,7 +104,7 @@ def index(req):  #
 
 @login_required
 def viewByServer(req, serverId):
-    """ View a server """
+    """ View a server by its full ID (well, redirect to it at least) """
     try:
         server = MinecraftServer.get(serverId)
     except ResourceNotFound as e:
