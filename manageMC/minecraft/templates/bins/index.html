@@ -21,7 +21,7 @@
 
 
 {% block body %}
-    {% cache 60 bodyBinariesIndex1 %}
+    {% cache 60 bodyBinariesIndex2 %}
         {% for typeName,v in gBy.items %}
             <div class="newsbox">
                 <h1>{{ typeName.0 }} Minecraft Server Binaries</h1>
@@ -32,11 +32,16 @@
 	                        <span></span>
 	                    </div>
 	                    <div class="news">  
-	                       {% for v3 in v2 %}
-
-		                           {{ v3.key.2 }}: {{ v3.id }}<br/>
-
-	                       {% endfor %}
+	                        {% for v3 in v2 %}
+			                    <h3><a href="/mc/bins/{{ v3.id|urlize }}/">Version {{ v3.key.2 }}</a></h3>			                        
+		                        <ul>
+			                        <li><a href="/mc/bins/{{ v3.id|urlize }}/">Manage {{ v3.id|truncatechars:11 }}</a></li>
+			                        <li><b>ID:</b> {{ v3.id }}</li>
+                                    <li><b>Release Status:</b> {{ releaseStatus.0 }}</li>
+                                    <li><b>Release Type:</b> {{ typeName.0 }}</li>
+			                        <li><b>Version:</b> {{ v3.key.2 }}</li>
+			                    </ul>
+		                    {% endfor %}
 		                </div>
 		            </div> 
                 {% endfor %}                
