@@ -35,7 +35,7 @@
 	                        {% for v3 in v2 %}
 			                    <h3><a href="/mc/bins/{{ v3.id|urlize }}/">Version {{ v3.key.2 }}</a></h3>			                        
 		                        <ul>
-			                        <li><a href="/mc/bins/{{ v3.id|urlize }}/">Manage {{ v3.id|truncatechars:11 }}</a></li>
+			                        <li><i><a href="/mc/bins/{{ v3.id|urlize }}/">Manage {{ v3.id|slice:"-8:" }}</a></i></li>
 			                        <li><b>ID:</b> {{ v3.id }}</li>
                                     <li><b>Release Status:</b> {{ releaseStatus.0 }}</li>
                                     <li><b>Release Type:</b> {{ typeName.0 }}</li>

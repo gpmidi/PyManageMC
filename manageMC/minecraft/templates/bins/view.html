@@ -3,14 +3,14 @@
 {# view a bin #}
 
 
-{% block title %}{% cache 10 bodyBinariesViewTitle0 %}{{ binObj.typeName }} Binary - {{ binObjId|truncatechars:11 }}{% endcache %}{% endblock %}
+{% block title %}{% cache 10 bodyBinariesViewTitle0 %}{{ binObj.typeName }} Binary - {{ binObjId|slice:"-8:" }}{% endcache %}{% endblock %}
 
 
 {% block quick %}
     {% cache 10 bodyBinariesViewQuick0 %}
         <ul class="nav">
             <li>Binary Actions</li>
-            <li><a href="/mc/bins/{{ binObjId|urlize }}/delete/">Delete {{ binObjId|truncatechars:11 }}</a></li>
+            <li><a href="/mc/bins/{{ binObjId|urlize }}/delete/">Delete {{ binObjId|slice:"-8:" }}</a></li>
         </ul>
     {% endcache %}
 {% endblock %}
