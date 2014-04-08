@@ -14,12 +14,15 @@
 #    You should have received a copy of the GNU General Public License
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
 #===============================================================================
-
 from django.db import models
 from django.contrib.auth.models import User, Group
-from extern.validators import validateHostIP
 from django.core.validators import MinLengthValidator, MaxValueValidator
 from django.core.validators import validate_slug, MinValueValidator
+
+from couchdbkit.exceptions import ResourceNotFound
+
+from extern.validators import validateHostIP
+
 
 class News(models.Model):
     verbose_name = "news"
@@ -498,7 +501,7 @@ class ServerInstance(models.Model):
         from minecraft.models import MinecraftServer
         try:
             return MinecraftServer.get(MinecraftServer.makeSessionName(self.name))
-        except MinecraftServer.DoesNotExist as e:
+        except ResourceNotFound as e:
             return None
 
     

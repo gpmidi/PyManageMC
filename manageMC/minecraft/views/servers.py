@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_page
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import Http404
+
 from couchdbkit.exceptions import ResourceNotFound
 
 # Mcer
