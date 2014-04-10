@@ -36,14 +36,14 @@ from minecraft.models import *
 from minecraft.serverType import getServerFromModel
 
 
-@task(expires = 60 * 60)
+@task(expires=60 * 60)
 def init(serverPK):
     """ Init the given server.  """
-    mcServer = MinecraftServer.objects.get(pk = serverPK)
+    mcServer = MinecraftServer.objects.get(pk=serverPK)
     # Get the class type that is the right type
-    stype = getServerFromModel(mcServer = mcServer)
+    stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
-    server = stype(mcServer = mcServer)
+    server = stype(mcServer=mcServer)
     # Run the init 
     server.localInit()
     

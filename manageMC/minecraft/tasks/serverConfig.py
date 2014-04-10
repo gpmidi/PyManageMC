@@ -36,76 +36,76 @@ from minecraft.models import *
 from minecraft.serverType import getServerFromModel, ServerProperitiesConfigFileType
 
 
-@task(expires = 60 * 60)
+@task(expires=60 * 60)
 def updateDB_MCConfig(configPK):
     """ Update the given DB config with the real server.properties """
-    mcp = MinecraftServerProperties.get(docid = configPK)
+    mcp = MinecraftServerProperties.get(docid=configPK)
 
-    mcServer = MinecraftServer.objects.get(pk = mcp.nc_minecraftServerPK)
+    mcServer = MinecraftServer.objects.get(pk=mcp.nc_minecraftServerPK)
     # Get the class type that is the right type
-    stype = getServerFromModel(mcServer = mcServer)
+    stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
-    server = stype(mcServer = mcServer)
+    server = stype(mcServer=mcServer)
 #     # Run the init
 #     server.localInit()
     cfg = ServerProperitiesConfigFileType(
-                                          serverDir = server.getServerRoot(),
-                                          minecraftServerObj = server,
+                                          serverDir=server.getServerRoot(),
+                                          minecraftServerObj=server,
                                           )
     server.localUpdateDBConfigFile(cfg)
 
 
-@task(expires = 60 * 60)
+@task(expires=60 * 60)
 def createFile_MCConfig(configPK):
     """ Create the given server.properties config file  """
     # FIXME: Add in file locking to prevent race conditions around this
-    mcp = MinecraftServerProperties.get(docid = configPK)
+    mcp = MinecraftServerProperties.get(docid=configPK)
 
-    mcServer = MinecraftServer.objects.get(pk = mcp.nc_minecraftServerPK)
+    mcServer = MinecraftServer.objects.get(pk=mcp.nc_minecraftServerPK)
     # Get the class type that is the right type
-    stype = getServerFromModel(mcServer = mcServer)
+    stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
-    server = stype(mcServer = mcServer)
+    server = stype(mcServer=mcServer)
 #     # Run the init
 #     server.localInit()
     cfg = ServerProperitiesConfigFileType(
-                                          serverDir = server.getServerRoot(),
-                                          minecraftServerObj = server,
+                                          serverDir=server.getServerRoot(),
+                                          minecraftServerObj=server,
                                           )
-    server.localUpdateConfigFile(cfg, errorOnFail = True)
+    server.localUpdateConfigFile(cfg, errorOnFail=True)
 
 
-@task(expires = 60 * 60)
+@task(expires=60 * 60)
 def updateFile_MCConfig(
-                        configPK, 
-                        hashOverride = None, 
-                        doRestart = False,
-                        restartKWArgs = {
+                        configPK,
+                        hashOverride=None,
+                        doRestart=False,
+                        restartKWArgs={
                                         'warn':'True',
                                         'warnDelaySeconds':'0',
                                         }
                         ):
     """ Update the given server.properties config file  """
     # FIXME: Add in file locking to prevent race conditions around this
-    mcp = MinecraftServerProperties.get(docid = configPK)
+    mcp = MinecraftServerProperties.get(docid=configPK)
 
     if hashOverride:
         lastHash = hashOverride
     else:
         lastHash = mcp.nc_lastHash
 
-    mcServer = MinecraftServer.objects.get(pk = mcp.nc_minecraftServerPK)
+    mcServer = MinecraftServer.objects.get(pk=mcp.nc_minecraftServerPK)
     # Get the class type that is the right type
-    stype = getServerFromModel(mcServer = mcServer)
+    stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
-    server = stype(mcServer = mcServer)
+    server = stype(mcServer=mcServer)
 #     # Run the init
 #     server.localInit()
     cfg = ServerProperitiesConfigFileType(
-                                          serverDir = server.getServerRoot(),
-                                          minecraftServerObj = server,
+                                          serverDir=server.getServerRoot(),
+                                          minecraftServerObj=server,
                                           )
-    res = server.localUpdateConfigFile(cfg, errorOnFail = False)
+    res = server.localUpdateConfigFile(cfg, errorOnFail=False)
     from minecraft.serverType import ServerType
     if isinstance(res, ServerType.SuccessConfigUpdateResult):
         mcp.nc_lastHash = res.newHashFS
@@ -116,7 +116,7 @@ def updateFile_MCConfig(
         if doRestart:
             from minecraft.tasks.server import restart
             restart(
-                    serverPK = mcServer.pk,
+                    serverPK=mcServer.pk,
                     **restartKWArgs
                     )
         return True

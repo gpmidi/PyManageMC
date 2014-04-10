@@ -12,9 +12,9 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
-''' A type of server such as "stock" or "bukkit". 
+''' A type of server such as "stock" or "bukkit".
 Created on Aug 11, 2012
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
@@ -25,20 +25,20 @@ log = logging.getLogger("server.allServerTypes." + __name__)
 
 import subprocess
 import re
-import os, os.path, sys, shutil
+import os, os.path, sys, shutil  # @UnusedImport
 import time
 import hashlib
 import difflib
 
 from django.template.loader import render_to_string
 
-from minecraft.models import *
+from minecraft.models import *  # @UnusedWildImport
 
 allServerTypes = {}
 
 fileTypeRegister = {}
-    
-    
+
+
 class _fileType(type):
     def __init__(cls, name, bases, dct):
         super(_fileType, cls).__init__(name, bases, dct)
@@ -52,22 +52,22 @@ class _fileType(type):
 
 class FileType(object):
     __metaclass__ = _fileType
-    """ Represent a type of file and how to handle it 
+    """ Represent a type of file and how to handle it
     when installing/upgrading/modifying
     """
     # ServerType TYPE value
     SERVERTYPE = None
-    
+
     # The file may be changed by something other than this code
-    MAY_EXTERNAL_UPDATE = False 
-    
+    MAY_EXTERNAL_UPDATE = False
+
     # Overwrite on dup
     OVERWRITE = None
-    
-    # Regex used to match the file. May not be needed if matchFile is overridden. 
+
+    # Regex used to match the file. May not be needed if matchFile is overridden.
     # Must be a compiled regex
     FILE_MATCH = None
-    
+
     # The template to use when the file doesn't already exist
     TEMPLATE_INIT = None
 
@@ -78,17 +78,17 @@ class FileType(object):
     def getModelClassID(self):
         return self.getModelClass(
             ).makeServerID(
-               minecraftServerPK = self.minecraftServerObj.pk,
+               minecraftServerPK=self.minecraftServerObj.pk,
                )
-    
+
     def getMyModel(self):
         cls = self.getModelClass()
-        obj = cls.get_or_create(self.getModelClassID())        
-        return (cls,obj)
-    
+        obj = cls.get_or_create(self.getModelClassID())
+        return (cls, obj)
+
     def matchFile(self, filePath):
         """ filePath should be relative to the base of the server
-        directory. 
+        directory.
         """
         assert filePath[0] != '/'
         return self.FILE_MATCH.match(filePath)
@@ -100,14 +100,14 @@ class FileType(object):
                 filepath = os.path.join(dirpath, filename)
                 filerel = os.path.relpath(filepath, self.serverDir)
                 if self.matchFile(filerel):
-                    yield dict(filepath = filepath, relativepath = filerel)
-    
-    def parseConfig(self,filepath,relativepath,filedata):
+                    yield dict(filepath=filepath, relativepath=filerel)
+
+    def parseConfig(self, filepath, relativepath, filedata):
         """ Parse the given config file and return a dict of strings
         that should be saved to the DB.
-        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
+        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method.
         """
-        return dict(filepath = filepath, relativepath = relativepath, filedata = filedata)
+        return dict(filepath=filepath, relativepath=relativepath, filedata=filedata)
 
     def saveConfig(self, filepath, relativepath, filedata):
         """ Parse the given config file and then save the results to
@@ -121,24 +121,24 @@ class FileType(object):
 
         obj.save()
         return self.getModelClassID()
-    
-    def renderConfig(self,relativepath):
+
+    def renderConfig(self, relativepath):
         assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
-        
+
         cls = self.getModelClass()
         obj = cls.get_or_create(self.getModelClassID())
 
         return render_to_string(
                               self.TEMPLATE_INIT,
                               dict(
-                                   fileType = self,
-                                   fileRelPath = relativepath,
-                                   fileData = obj,
-                                   server = self.minecraftServerObj,
+                                   fileType=self,
+                                   fileRelPath=relativepath,
+                                   fileData=obj,
+                                   server=self.minecraftServerObj,
                                    ),
                               )
-            
-    def writeConfig(self,filepath, relativepath):
+
+    def writeConfig(self, filepath, relativepath):
         """ Write this config file data to the given file """
         with open(filepath, 'wb') as f:
             f.write(self.renderConfig(relativepath=relativepath))
@@ -155,10 +155,10 @@ class NoOverwriteFileType(FileType):
     occurs """
     OVERWRITE = False
 
-    
+
 class ConfigFileType(NoOverwriteFileType):
-    """ A special type of file that should never be overwritten 
-    but may be modified by the user. May also be automatically 
+    """ A special type of file that should never be overwritten
+    but may be modified by the user. May also be automatically
     updated by the server process
     """
 
@@ -175,49 +175,49 @@ class _serverTypeType(type):
 
 import threading
 class _IOLoggerThread(threading.Thread):
-    
-    def __init__(self, stream, prg, name = 'Unnamed', loglevel = 20):
+
+    def __init__(self, stream, prg, name='Unnamed', loglevel=20):
         threading.Thread.__init__(self)
         self.level = loglevel
         self.stream = stream
         self.prg = prg
         self.streamname = name
-        self.setName(name = "IOReaderThread-%s" % name)
+        self.setName(name="IOReaderThread-%s" % name)
         self.log = logging.getLogger("server.allServerTypes." + name)
         self.log.debug("Creating IO logger %r (%r)" % (name, self.getName()))
         self.setDaemon(True)
-        
+
     def run(self):
         rc = self.prg.poll()
         while rc is None:
             line = self.stream.readline()
             if line != '' and line != '\n':
-                self.log.log(self.level, "Read: " + line)            
+                self.log.log(self.level, "Read: " + line)
             rc = self.prg.poll()
         line = self.stream.read()
         self.log.log(self.level, "Read: " + line)
         self.log.log(self.level, "-- Completed with a return code of %r --" % rc)
-        
+
 
 class ServerType(object):
-    """ Represent a stock server. 
-        
+    """ Represent a stock server.
+
     """
     __metaclass__ = _serverTypeType
     # The server model object
     mcServer = None
-    
+
     class ConfigUpdateResult(object):
-        def __init__(self, oldHashDB, oldHashFS, oldFileDB,oldFileFS, hashType = 'SHA512'):
+        def __init__(self, oldHashDB, oldHashFS, oldFileDB, oldFileFS, hashType='SHA512'):
             self.oldHashDB = oldHashDB
             self.oldHashFS = oldHashFS
-            self.oldFileDB=oldFileDB
-            self.oldFileFS=oldFileFS
+            self.oldFileDB = oldFileDB
+            self.oldFileFS = oldFileFS
             self.hashType = hashType
 
 
     class SuccessConfigUpdateResult(ConfigUpdateResult):
-        def __init__(self, newHashDB, newFileDB,newHashFS, newFileFS, **kw):
+        def __init__(self, newHashDB, newFileDB, newHashFS, newFileFS, **kw):
             ServerType.ConfigUpdateResult.__init__(self, **kw)
             self.newHashDB = newHashDB
             self.newFileDB = newFileDB
@@ -230,7 +230,7 @@ class ServerType(object):
             ServerType.ConfigUpdateResult.__init__(self, **kw)
             self.newHashDB = newHashDB
             self.newFileDB = newFileDB
-            self.fileDiff=fileDiff
+            self.fileDiff = fileDiff
 
 
     class ExistsFailConfigUpdateResult(ConfigUpdateResult):
@@ -238,8 +238,8 @@ class ServerType(object):
             ServerType.ConfigUpdateResult.__init__(self, **kw)
             self.newHashDB = newHashDB
             self.newFileDB = newFileDB
-            
-        
+
+
     def __init__(self, mcServer):
         self.mcServer = mcServer
         self.log = logging.getLogger("server.allServerTypes.%s.%s" % (
@@ -247,10 +247,10 @@ class ServerType(object):
                                                                       self.mcServer.name,
                                                                       ))
         self.log.debug("Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
-        
+
     def getServerRoot(self):
         return self.mcServer.loc()
-    
+
     def getCreateServerRoot(self):
         if not os.path.exists(self.getServerRoot()):
             os.makedirs(self.getServerRoot(), 0770)
@@ -258,7 +258,7 @@ class ServerType(object):
 
     def getSessionName(self):
         return self.mcServer.getSessionName()
-    
+
     def getScreenRoot(self):
         return os.path.join(
                             self.getServerRoot(),
@@ -283,12 +283,12 @@ class ServerType(object):
                 # os.path.join(self.getServerRoot(), 'world_nether'),
                 # os.path.join(self.getServerRoot(), 'world_the_end'),
                 ]
-    
+
     # Tasks that should only be performed by the locally running Celery daemon
     def localInit(self):
         """ Perform first-round initialization tasks """
         from shutil import copyfile
-        
+
         for path in [
                      # Needs to be before most others as they are subdirectories
                      self.getServerRoot(),
@@ -298,7 +298,7 @@ class ServerType(object):
                 os.makedirs(path, 0770)
             except OSError:
                 pass
-        
+
         copyfile(
                  self.mcServer.bin.exc.path,
                  os.path.join(
@@ -308,36 +308,36 @@ class ServerType(object):
                  )
 
         self.localUpdateScreenConfig()
-    
+
     def localGetScreenConfig(self):
-        return render_to_string('screen.config',{
+        return render_to_string('screen.config', {
                                                  'screenDir':self.getScreenRoot(),
                                                  # TODO: Add ability to change doInitialHardCopy setting
                                                  'doInitialHardCopy':True,
                                                  },)
-    
+
     def localUpdateScreenConfig(self):
         # Do this first so we don't spend ages with the file empty
         toWrite = self.localGetScreenConfig()
-        with open(self.getServerScreenConfig(),'wb') as f:
+        with open(self.getServerScreenConfig(), 'wb') as f:
             f.write(toWrite)
-    
+
     def localLoadMap(self, mapSave):
         """ Load a saved map into the server. Overwrite if one already exists """
         # Remove old world
         worlds = self.getMapFilenames()
         for world in worlds:
             try:
-                shutil.rmtree(world, ignore_errors = True)
+                shutil.rmtree(world, ignore_errors=True)
             except Exception, e:
                 self.log.exception("Failed to remove %r with %r", world, e)
-        
+
         from zipfile import ZipFile
         zipLoc = os.path.join(settings.MC_MAP_SAVE_PATH, mapSave.zipName)
         zipF = ZipFile(zipLoc, 'r')
         zipF.extractall(self.getServerRoot())
         zipF.close()
-    
+
     def _localGenZipName(self, name, version):
         import datetime
         return "%09s_%s_%s_%s.zip" % (
@@ -345,11 +345,11 @@ class ServerType(object):
                                       self.mcServer.bin.typeName,
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
                                       version
-                                      )    
+                                      )
 
-    def localSaveMap(self, name, desc = '', version = '', owner = None, forceSaveBefore = True):
-        """ Save the map in the map archive 
-        @param forceSaveBefore: If True, run 'save-all' on the server prior to making a ZIP of the map files on disk.  
+    def localSaveMap(self, name, desc='', version='', owner=None, forceSaveBefore=True):
+        """ Save the map in the map archive
+        @param forceSaveBefore: If True, run 'save-all' on the server prior to making a ZIP of the map files on disk.
         """
         from tempfile import mkdtemp
         from django.core.files import File
@@ -360,17 +360,17 @@ class ServerType(object):
 
         zipName = self._localGenZipName(name, version)
         mapsave = MapSave(
-                          name = name,
-                          desc = desc,
-                          version = version,
-                          owners = owner,
+                          name=name,
+                          desc=desc,
+                          version=version,
+                          owners=owner,
                           )
 
         orgMapPaths = []
         for mapPath in self.getMapFilenames():
             assert os.access(mapPath, os.R_OK | os.W_OK), "Lacking sufficient access to the map files in %r" % mapPath
-            orgMapPaths.append(os.path.relpath(mapPath,self.getServerRoot()))
-        
+            orgMapPaths.append(os.path.relpath(mapPath, self.getServerRoot()))
+
         tmpdir = mkdtemp()
         try:
             zipTmpPath = os.path.join(tmpdir, zipName)
@@ -379,53 +379,53 @@ class ServerType(object):
                     '-r',
                     zipTmpPath,
                     ] + orgMapPaths
-            self._logStartWait(args = args, cwd = self.getServerRoot())
+            self._logStartWait(args=args, cwd=self.getServerRoot())
 
             mapsave.zip.save(os.path.basename(zipName), File(open(zipTmpPath, 'rb')))
             mapsave.save()
-            
+
             return mapsave.pk
         finally:
             self.log.debug("Cleaning up %r", tmpdir)
-            shutil.rmtree(tmpdir, ignore_errors = True)
-    
+            shutil.rmtree(tmpdir, ignore_errors=True)
+
     def _simpleStartWait(self, args):
         """ Run the requested app. Collect all output and RC. """
-        prg = subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE)
-        stdout, stderr = prg.communicate()        
+        prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        stdout, stderr = prg.communicate()
         return dict(
-                    rc = prg.returncode,
-                    stdout = stdout,
-                    stderr = stderr,
+                    rc=prg.returncode,
+                    stdout=stdout,
+                    stderr=stderr,
                     )
-        
-    def _logStartWait(self, args, cwd = None):
+
+    def _logStartWait(self, args, cwd=None):
         """ Run the requested app. Log all output and RC. """
         self.log.debug("Running %r in %r", args, cwd)
         # Run it
-        prg = subprocess.Popen(args, stderr = subprocess.PIPE, stdout = subprocess.PIPE, cwd = cwd)
+        prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd)
         # Log IO
-        r = _IOLoggerThread(stream = prg.stdout, prg = prg, name = "%s.stdout" % args[0])
+        r = _IOLoggerThread(stream=prg.stdout, prg=prg, name="%s.stdout" % args[0])
         r.start()
-        r = _IOLoggerThread(stream = prg.stderr, prg = prg, name = "%s.stderr" % args[0])
+        r = _IOLoggerThread(stream=prg.stderr, prg=prg, name="%s.stderr" % args[0])
         r.start()
-        
+
         rc = prg.poll()
         while rc is None:
             self.log.debug("Still waiting for %r to complete" % args)
             rc = prg.poll()
         self.log.debug("RC from %r is %r", args, rc)
         return rc
-    
-    def _logStartWaitError(self, args, cwd = None):
+
+    def _logStartWaitError(self, args, cwd=None):
         """ Run the requested app. Log all output and RC. Generate an error if RC!=0. """
-        rc = self._logStartWait(args = args, cwd = cwd)
+        rc = self._logStartWait(args=args, cwd=cwd)
         if rc != 0:
             self.log.debug("Command %r failed with an RC of %r", args, rc)
             raise RuntimeError("Return code from %r non-zero: %r" % (args, rc))
         return rc
-    
-    def localStartServer(self):       
+
+    def localStartServer(self):
         """ Start a server
         @return: True=Start OK, False=Start Failed
         """
@@ -439,7 +439,7 @@ class ServerType(object):
                                   '..',
                                   'manage.py',
                                   )
-        
+
         args = [
               "/usr/bin/screen",
               '-c',
@@ -458,22 +458,22 @@ class ServerType(object):
               jarPath,
               self.getSessionName(),
               ]
-        
-        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+
+        self._logStartWaitError(args=args, cwd=self.getServerRoot())
         return True
-    
-    def localStopServer(self, warn = True, warnDelaySeconds = 0):
+
+    def localStopServer(self, warn=True, warnDelaySeconds=0):
         self.log.info("Going to stop %r", self)
         if warn:
             # Tell the users we are shutting down
-            self.localSay(msg = "SERVER SHUTDOWN REQUESTED")
+            self.localSay(msg="SERVER SHUTDOWN REQUESTED")
             if warnDelaySeconds and warnDelaySeconds > 0:
                 time.sleep(warnDelaySeconds)
         # Gracefully stop the server
-        self.localRunCommand(cmd = "stop")
+        self.localRunCommand(cmd="stop")
         # Success
         return True
-    
+
     def localRunCommand(self, cmd):
         """ Run a server command. """
         self.log.debug("Going to run %r on %r", cmd, self)
@@ -489,91 +489,91 @@ class ServerType(object):
               # FIXME: Validate escaping is working right here
               "stuff %r\015" % cmd,
               ]
-        self._logStartWaitError(args = args, cwd = self.getServerRoot())
+        self._logStartWaitError(args=args, cwd=self.getServerRoot())
         return True
-        
+
     def localSay(self, msg):
         self.log.info("Going to say %r on %r", msg, self)
-        self.localRunCommand(cmd = "say %s" % str(msg))
+        self.localRunCommand(cmd="say %s" % str(msg))
         return True
-    
+
     def localStatus(self):
         self.log.info("Going to run 'list' on %r", self)
-        self.localRunCommand(cmd = "list")
+        self.localRunCommand(cmd="list")
         return True
-    
+
     def localForceSave(self):
         self.log.info("Going to run 'save-all' on %r", self)
-        self.localRunCommand(cmd = "save-all")
+        self.localRunCommand(cmd="save-all")
         return True
-    
+
     def localEnableAutoSave(self):
         self.log.info("Going to run 'save-on' on %r", self)
-        self.localRunCommand(cmd = "save-on")
+        self.localRunCommand(cmd="save-on")
         return True
-    
+
     def localDisableAutoSave(self):
         self.log.info("Going to run 'save-off' on %r", self)
-        self.localRunCommand(cmd = "save-off")
+        self.localRunCommand(cmd="save-off")
         return True
-    
+
     def localGetConfigFile(self, filename):
-        """ Return the current contents of the given file. The 
-        filename should be relitiave to the server root. 
+        """ Return the current contents of the given file. The
+        filename should be relitiave to the server root.
         """
         with open(os.path.join(self.getServerRoot(), filename), 'r') as f:
             return f.read()
 
     def localUpdateDBConfigFile(self, fileTypeObj):
-        """ Update couchdb with the current contents of the 
+        """ Update couchdb with the current contents of the
         requested config file.
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
 
-        confTxt = self.localGetConfigFile(filename = fileTypeObj.FILE_NAME)
-        
+        confTxt = self.localGetConfigFile(filename=fileTypeObj.FILE_NAME)
+
         pk = fileTypeObj.saveConfig(
-                               filepath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME),
-                               relativepath = fileTypeObj.FILE_NAME,
-                               filedata = confTxt,
+                               filepath=os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME),
+                               relativepath=fileTypeObj.FILE_NAME,
+                               filedata=confTxt,
                                )
     @staticmethod
     def _hashFile(filePath):
         with open(filePath, 'rb') as f:
             data = f.read()
             h = hashlib.new('sha512', data)
-        return (h.hexdigest().lower(),data)
+        return (h.hexdigest().lower(), data)
 
-    def localUpdateConfigFile(self, fileTypeObj, errorOnFail = True):
+    def localUpdateConfigFile(self, fileTypeObj, errorOnFail=True):
         """ Update the config file with data from couchdb.
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
-        
+
         filePath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME)
         relPath = fileTypeObj.FILE_NAME
         (cls, dbObj) = fileTypeObj.getMyModel()
 
         results = dict(
-                       oldHashDB = dbObj.nc_lastHash,
-                       oldHashFS = None,
+                       oldHashDB=dbObj.nc_lastHash,
+                       oldHashFS=None,
                        oldFileDB=dbObj.getConfigFile(),
-                       oldFileFS = None,
-                       #hashType='SHA512',
-                       )        
-        
-        if os.path.exists(filePath):
-            results['oldHashFS'],results['oldFileFS']=self._hashFile(filePath)
+                       oldFileFS=None,
+                       # hashType='SHA512',
+                       )
 
-        newCfg = fileTypeObj.renderConfig(relativepath = relPath)
+        if os.path.exists(filePath):
+            results['oldHashFS'], results['oldFileFS'] = self._hashFile(filePath)
+
+        newCfg = fileTypeObj.renderConfig(relativepath=relPath)
         h = hashlib.new('sha512', newCfg)
         results['newHashDB'] = h.hexdigest().lower()
         results['newFileDB'] = newCfg
-        
+
         # Make sure the file matches what we were told to expect
         if  results['oldHashDB'] is None:
             log.debug("I've been told %r won't exist", fileTypeObj)
             if os.path.exists(filePath):
-                log.info("File %r exists but I was told it wouldn't exist",filePath)
+                log.info("File %r exists but I was told it wouldn't exist", filePath)
                 if errorOnFail:
                     raise IOError("File %r exists but I was told it wouldn't exist" % filePath)
                 else:
@@ -593,16 +593,16 @@ class ServerType(object):
                         results['fileDiff'] = '\n'.join(difflib.unified_diff(
                              results['oldFileDB'].splitlines(),
                              results['oldFileFS'].splitlines(),
-                             fromfile = 'oldFileDB',
-                             tofile = 'oldFileFS',
+                             fromfile='oldFileDB',
+                             tofile='oldFileFS',
                              ))
                     else:
                         results['fileDiff'] = None
                     return ServerType.FailConfigUpdateResult(**results)
-            
+
         fileTypeObj.writeConfig(
-                                filepath = filePath,
-                                relativepath = relPath,
+                                filepath=filePath,
+                                relativepath=relPath,
                                 )
 
         results['newHashFS'], results['newFileFS'] = self._hashFile(filePath)
@@ -611,16 +611,16 @@ class ServerType(object):
         return ServerType.SuccessConfigUpdateResult(**results)
 
     # Override all var below this point
-    
+
     # The 'name' (both human-readable and allServerTypes's key) for the server
     TYPE = None
-    
+
     # Override all methods below this point
 
-    
+
 class StockServerType(ServerType):
     TYPE = "Stock"
-    
+
     def __init__(self, *args, **kw):
         log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
         ServerType.__init__(self, *args, **kw)
@@ -660,11 +660,11 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     def getModelClass(self):
         from minecraft.models import MinecraftServerProperties
         return MinecraftServerProperties
-    
-    def parseConfig(self,filepath,relativepath,filedata):
+
+    def parseConfig(self, filepath, relativepath, filedata):
         """ Parse the given config file and return a dict of strings
         that should be saved to the DB.
-        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method. 
+        @note: This call may not always be used; The saveConfig method may be overridden in a way that doesn't use this method.
         """
         ret = self.rawParseConfig(filedata)
         for k, v in ret.items():
@@ -675,13 +675,13 @@ class ServerProperitiesConfigFileType(ConfigFileType):
             assert len(found) <= 1, "Found more than one property with the right name: %r / %r / %r" % (found, k, v)
             if len(found) == 1:
                 found = map(lambda x: dict(
-                                           propName = x[1].name,
-                                           attrName = x[0],
-                                           obj = x[1],
-                                           dataType = x[1].data_type,
+                                           propName=x[1].name,
+                                           attrName=x[0],
+                                           obj=x[1],
+                                           dataType=x[1].data_type,
                                            ), found)[0]
                 ret[k] = self.convertType(
-                                           strValue = v,
+                                           strValue=v,
                                            **found
                                            )
             else:
@@ -690,31 +690,31 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         ret['nc_configFileTypeName'] = str(relativepath)
         ret['nc_minecraftServerPK'] = self.minecraftServerObj.pk
         return ret
-    
-    CT_NONE_VALUES=[
+
+    CT_NONE_VALUES = [
                     'null',
                     'none',
                     ]
-    CT_TRUE_VALUES=[
+    CT_TRUE_VALUES = [
                     'true',
                     '1',
-                    'y',                   
+                    'y',
                     ]
-    CT_FALSE_VALUES=[
+    CT_FALSE_VALUES = [
                     'false',
                     '0',
-                    'n',                   
+                    'n',
                     ]
-    def convertType(self,propName,attrName,strValue, obj,dataType):
-        assert isinstance(strValue,str)
-        strValue=strValue.lower()
-                
+    def convertType(self, propName, attrName, strValue, obj, dataType):
+        assert isinstance(strValue, str)
+        strValue = strValue.lower()
+
         # Handle Nulls
-        if len(strValue)==0:
+        if len(strValue) == 0:
             return None
         if strValue in self.CT_NONE_VALUES:
             return None
-                
+
         if dataType is bool:
             if strValue in self.CT_TRUE_VALUES:
                 return True
@@ -729,11 +729,11 @@ class ServerProperitiesConfigFileType(ConfigFileType):
             return int(strValue)
 
         raise ValueError("%r is not %r.%r" % (strValue, dataType, obj))
-        
-    
-    RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$',re.MULTILINE)
+
+
+    RE_PARSE_CONFIG = re.compile(r'^\s*([a-zA-Z0-9\-]+)\s*=(?:\s*?(.*)\s*?)?$', re.MULTILINE)
     @classmethod
-    def rawParseConfig(cls,fileContents):
+    def rawParseConfig(cls, fileContents):
         ret = {}
         for k, v in cls.RE_PARSE_CONFIG.findall(fileContents):
             ret[k] = v
@@ -754,10 +754,10 @@ class ServerProperitiesConfigFileType(ConfigFileType):
         data = render_to_string(
                               self.TEMPLATE_INIT,
                               dict(
-                                   fileType = self,
-                                   fileRelPath = relativepath,
-                                   fileData = fileData,
-                                   server = self.minecraftServerObj,
+                                   fileType=self,
+                                   fileRelPath=relativepath,
+                                   fileData=fileData,
+                                   server=self.minecraftServerObj,
                                    ),
                               )
         with open(filepath, 'w') as f:
@@ -776,12 +776,12 @@ def getServerFromModel(mcServer):
         return allServerTypes[mcServer.bin.typeName]
     else:
         raise IndexError, "Server type %r not found" % mcServer.bin.typeName
- 
- 
+
+
 def loadOtherServerTypes():
     """ Load server allServerTypes from other modules """
     # load the config
-    from django.conf import settings    
+    from django.conf import settings
     # Load any serverType modules
     for app in settings.INSTALLED_APPS:
         try:

@@ -31,15 +31,15 @@ from extern.models import *
 def index(req):
     """ Main page"""
     news = News.objects.filter(
-                               published = True,
-                               frontpage = True,
+                               published=True,
+                               frontpage=True,
                                ).filter(
-                                        modified__gt = datetime.datetime.now() - datetime.timedelta(days = 7),
+                                        modified__gt=datetime.datetime.now() - datetime.timedelta(days=7),
                                         ).order_by('-created')[:3]
     return render_to_response(
                               'index.html',
                               dict(
-                                   news = news,
+                                   news=news,
                                     ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )

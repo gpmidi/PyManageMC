@@ -20,16 +20,16 @@ urlpatterns = patterns('extern.views',
     url(r'^(?:/)?$', 'index'),
     
     # Server instances
-    url(r'^instances(?:/)?$', 'instances', name = "ListAllInstances"),
-    url(r'^instances/new(?:/)?$', 'newInstanceNonAdmin', name = "NewInstanceNonAdmin"),
-    url(r'^instances/newAdmin(?:/)?$', 'newInstanceAdmin', name = "NewInstanceAdmin"),
-    url(r'^instances/statusgroup/(?P<statusIsInGroup>active|inactive)(?:/)?$', 'instances', name = "ListInstancesOfType"),
-    url(r'^instances/status/(?P<statusIs>[a-z0-9]{1,32})(?:/)?$', 'instances', name = "ListInstancesByStatus"),
-    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name = "InstanceObject"),
-    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/delete(?:/)?$', 'deleteInstance', name = "DeleteInstanceObject"),
-    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/define(?:/)?$', 'defineInstance', name = "DefineInstanceObject"),
+    url(r'^instances(?:/)?$', 'instances', name="ListAllInstances"),
+    url(r'^instances/new(?:/)?$', 'newInstanceNonAdmin', name="NewInstanceNonAdmin"),
+    url(r'^instances/newAdmin(?:/)?$', 'newInstanceAdmin', name="NewInstanceAdmin"),
+    url(r'^instances/statusgroup/(?P<statusIsInGroup>active|inactive)(?:/)?$', 'instances', name="ListInstancesOfType"),
+    url(r'^instances/status/(?P<statusIs>[a-z0-9]{1,32})(?:/)?$', 'instances', name="ListInstancesByStatus"),
+    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name="InstanceObject"),
+    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/delete(?:/)?$', 'deleteInstance', name="DeleteInstanceObject"),
+    url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/define(?:/)?$', 'defineInstance', name="DefineInstanceObject"),
     
     # Users
     # url(r'^users(?:/)?$','users',name="UserList"),
-    url(r'^users/(?P<userPK>\d+)(?:/)?$', 'userView', name = "User"),
+    url(r'^users/(?P<userPK>\d+)(?:/)?$', 'userView', name="User"),
 )

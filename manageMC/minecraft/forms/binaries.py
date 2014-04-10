@@ -41,33 +41,33 @@ from minecraft.models import *
 
 class UploadBinaryForm(forms.Form):
     typeName = ChoiceField(
-                           required = True,
-                           choices = MinecraftServerBinary.TYPE_NAME_CHOICES,
-                           initial = 'Stock',
-                           label = 'Type Of Binary',
+                           required=True,
+                           choices=MinecraftServerBinary.TYPE_NAME_CHOICES,
+                           initial='Stock',
+                           label='Type Of Binary',
                            )
     releaseStatus = ChoiceField(
-                           required = True,
-                           choices = MinecraftServerBinary.RELEASE_STATUS_CHOICES,
-                           initial = 'Production Release',
-                           label = 'Type Of Release',
+                           required=True,
+                           choices=MinecraftServerBinary.RELEASE_STATUS_CHOICES,
+                           initial='Production Release',
+                           label='Type Of Release',
                            )
     version = CharField(
-                        required = True,
-                        initial = None,
-                        label = "Version",
+                        required=True,
+                        initial=None,
+                        label="Version",
                         )
     binary = FileField(
-                       required = True,
-                       label = "Minecraft JAR",
+                       required=True,
+                       label="Minecraft JAR",
                        )
     helperFiles = FileField(
-                           required = False,
-                           label = "Helper Files (Overwrite)",
+                           required=False,
+                           label="Helper Files (Overwrite)",
                            )
     helperFilesConfig = FileField(
-                               required = False,
-                               label = "Helper Files (Configs)",
+                               required=False,
+                               label="Helper Files (Configs)",
                                )
     
     

@@ -43,10 +43,10 @@ def index(req):  #
         found = ServerInstance.objects.all().order_by('owner')
     else:
         # Dedup
-        found = ServerInstance.objects.filter(name__in =
+        found = ServerInstance.objects.filter(name__in=
                                                  ServerInstance.objects.filter(
-                                                     Q(owner = req.user) |
-                                                     Q(admins__contains = req.user)
+                                                     Q(owner=req.user) | 
+                                                     Q(admins__contains=req.user)
                                                  ).values('name'))
     servers = []
     for serverInst in found:
@@ -63,9 +63,9 @@ def index(req):  #
     return render_to_response(
                               'servers/index.html',
                               dict(
-                                   servers = servers,
+                                   servers=servers,
                                     ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
     
 
@@ -114,7 +114,7 @@ def viewByServer(req, serverId):
     if not inst:
         raise Http404()
 
-    if not inst.checkUser(req = req, perms = 'admin'):
+    if not inst.checkUser(req=req, perms='admin'):
         raise Http404()
 
     return redirect('/mc/servers/%s/' % inst.name)
@@ -123,21 +123,21 @@ def viewByServer(req, serverId):
 @login_required
 def view(req, serverSlug):
     """ View a server """
-    inst = get_object_or_404(ServerInstance, name = serverSlug)
+    inst = get_object_or_404(ServerInstance, name=serverSlug)
     server = inst.getServer()
     if server is None:
         raise Http404()
 
-    if not inst.checkUser(req = req, perms = 'admin'):
+    if not inst.checkUser(req=req, perms='admin'):
         raise Http404()
 
     return render_to_response(
                               'servers/view.html',
                               dict(
-                                   server = server,
-                                   instance = inst,
+                                   server=server,
+                                   instance=inst,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
     
     

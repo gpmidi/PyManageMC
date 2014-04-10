@@ -26,7 +26,7 @@ log = logging.getLogger('mclogs.tasks')
 
 # Built-in
 import os, os.path, sys
-import datetime,time
+import datetime, time
 import re
 
 # External
@@ -36,12 +36,12 @@ from celery.contrib.batches import Batches
 # Ours
 
 
-@task(expires = 60 * 60 * 24 * 14)
+@task(expires=60 * 60 * 24 * 14)
 def logLineAlert(**kwargs):
     """ Notify the admin via Django messages that a error/warn occurred """
 
 
-@task(expires = 60 * 60 * 24 * 14)
+@task(expires=60 * 60 * 24 * 14)
 def logLineInfo(**kwargs):
     """ Notify the admin via Django messages that a error/warn/info occurred """
 
@@ -54,40 +54,40 @@ MC_LOG_LEVELS = {
               'WARN':'Warning',
               'ERROR':'Error',
               }
-@task(expires = 60 * 60 * 24 * 14)
-def logLine(serverId, line, flow, whenReal = None, when = None, whenCaptured = None, **kwargs):
+@task(expires=60 * 60 * 24 * 14)
+def logLine(serverId, line, flow, whenReal=None, when=None, whenCaptured=None, **kwargs):
     if whenCaptured is None:
         whenCaptured = datetime.datetime.utcnow()
 
     kws = dict(
-               serverId = serverId,
-               line = line,
-               message = line,
+               serverId=serverId,
+               line=line,
+               message=line,
                source=None,
-               flow = flow,
+               flow=flow,
                # When the line was captured. May be fairly inaccurate.
-               whenCaptured = whenCaptured,
+               whenCaptured=whenCaptured,
                # Guaranteed to be accurate
-               whenReal = whenReal,
+               whenReal=whenReal,
                # Best guess as to when
-               when = when,
+               when=when,
                # Log priority level
-               level = None,
+               level=None,
                )
     for k, v in kwargs.items():
         kws[k] = v
     
-    parsed=PARSE_LOG_LINE.match(line)
+    parsed = PARSE_LOG_LINE.match(line)
     if parsed:
         d = parsed.groupdict()
         try:
-            kws['whenReal'] = datetime.date.utcnow() + datetime.time(hour = int(d['hour']), minute = int(d['minute']), second = int(d['second']))
+            kws['whenReal'] = datetime.date.utcnow() + datetime.time(hour=int(d['hour']), minute=int(d['minute']), second=int(d['second']))
         except:
             pass
         if 'level' in d:
             kws['level'] = MC_LOG_LEVELS.get(d['level'], None)
         if 'message' in d:
-            kws['message']=d['message']
+            kws['message'] = d['message']
         if 'source' in d:
             kws['source'] = d['source']
 
@@ -109,10 +109,10 @@ def logLine(serverId, line, flow, whenReal = None, when = None, whenCaptured = N
 
 
 @task(
-      expires = 60 * 60 * 24 * 14,
-      base = Batches,
-      flush_every = 1024 * 128,
-      flush_interval = 60 * 5,
+      expires=60 * 60 * 24 * 14,
+      base=Batches,
+      flush_every=1024 * 128,
+      flush_interval=60 * 5,
       )
 def aggLogLines(requests):
     """ Accept log lines from one or more minecraft servers and then record them in CouchDB """
@@ -133,6 +133,6 @@ def aggLogLines(requests):
                                             when=when,
                                             ))
     count = 0
-    for serverId,lines in linesByServer.items():
+    for serverId, lines in linesByServer.items():
         count += 1
 

@@ -34,5 +34,5 @@ def index(req):
                               'mcer/index.html',
                               dict(
                                     ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )

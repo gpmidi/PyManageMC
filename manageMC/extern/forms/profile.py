@@ -36,19 +36,19 @@ class UserProfileForm(forms.ModelForm):
                   'miscContactInfo',
                   )
     first_name = forms.CharField(
-                                 max_length = 255,
-                                 min_length = 0,
-                                 required = False,
-                                 label = "First Name",
-                                 help_text = "Your first name - Only visible to Admins - Optional",
+                                 max_length=255,
+                                 min_length=0,
+                                 required=False,
+                                 label="First Name",
+                                 help_text="Your first name - Only visible to Admins - Optional",
                                  )
         
     last_name = forms.CharField(
-                                 max_length = 255,
-                                 min_length = 0,
-                                 required = False,
-                                 label = "Last Name",
-                                 help_text = "Your last name - Only visible to Admins - Optional",
+                                 max_length=255,
+                                 min_length=0,
+                                 required=False,
+                                 label="Last Name",
+                                 help_text="Your last name - Only visible to Admins - Optional",
                                  )
 
 #    email = forms.EmailField(

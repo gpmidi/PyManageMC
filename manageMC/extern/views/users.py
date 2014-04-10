@@ -45,7 +45,7 @@ from extern.forms import UserProfileForm
 
 
 # User access
-def userView(req, userPK = None):
+def userView(req, userPK=None):
     """ Show info about a particular user """
     if userPK is None and req.user.is_authenticated():
         user = req.user
@@ -54,9 +54,9 @@ def userView(req, userPK = None):
     return render_to_response(
                               'extern/user.html',
                               dict(
-                                   dUser = user,
+                                   dUser=user,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -68,10 +68,10 @@ def userLogin(req):
     return render_to_response(
                               'extern/login.html',
                               dict(
-                                   plus_scope = plus_scope,
-                                   plus_id = settings.SOCIAL_AUTH_GOOGLE_PLUS_KEY,
+                                   plus_scope=plus_scope,
+                                   plus_id=settings.SOCIAL_AUTH_GOOGLE_PLUS_KEY,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -87,11 +87,11 @@ def userEditProfile(req):
     try:
         profile = req.user.get_profile()
     except ObjectDoesNotExist, e:
-        profile = UserProfile(user = req.user)
+        profile = UserProfile(user=req.user)
         profile.save()
     
     if req.method == "POST":
-        form = UserProfileForm(req.POST, instance = profile)
+        form = UserProfileForm(req.POST, instance=profile)
         if form.is_valid():
             req.user.first_name = form.cleaned_data['first_name']
             req.user.last_name = form.cleaned_data['last_name']
@@ -102,17 +102,17 @@ def userEditProfile(req):
         else:
             messages.info(req, 'No changes made - Invalid data')
     else:
-        form = UserProfileForm(initial = dict(
-                                    first_name = req.user.first_name,
-                                    last_name = req.user.last_name,
+        form = UserProfileForm(initial=dict(
+                                    first_name=req.user.first_name,
+                                    last_name=req.user.last_name,
                                     # email = req.user.email,
                                     ),
-                                instance = profile
+                                instance=profile
                                 )
     return render_to_response(
                               'extern/profile_edit.html',
                               dict(
-                                   form = form,
+                                   form=form,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )

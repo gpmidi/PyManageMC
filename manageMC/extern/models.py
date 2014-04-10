@@ -28,40 +28,40 @@ class News(models.Model):
     verbose_name = "news"
     verbose_name_plural = "news"
     title = models.CharField(
-                            null = False,
-                            max_length = 1024,
-                            verbose_name = "Title",
-                            help_text = "Title of the post",
+                            null=False,
+                            max_length=1024,
+                            verbose_name="Title",
+                            help_text="Title of the post",
                             )
     body = models.TextField(
-                            null = False,
-                            blank = True,
-                            verbose_name = "Body",
-                            help_text = "",
+                            null=False,
+                            blank=True,
+                            verbose_name="Body",
+                            help_text="",
                             )
     published = models.BooleanField(
-                                    null = False,
-                                    default = True,
-                                    verbose_name = "Published",
-                                    help_text = "Visible to external users",
+                                    null=False,
+                                    default=True,
+                                    verbose_name="Published",
+                                    help_text="Visible to external users",
                                     )
     frontpage = models.BooleanField(
-                                    null = False,
-                                    default = True,
-                                    verbose_name = "Front Page?",
-                                    help_text = "Visible on the front page",
+                                    null=False,
+                                    default=True,
+                                    verbose_name="Front Page?",
+                                    help_text="Visible on the front page",
                                     )
     created = models.DateTimeField(
-                                   auto_now_add = True,
-                                   null = False,
-                                   verbose_name = "Created",
-                                   help_text = "",
+                                   auto_now_add=True,
+                                   null=False,
+                                   verbose_name="Created",
+                                   help_text="",
                                    )
     modified = models.DateTimeField(
-                                   auto_now = True,
-                                   null = False,
-                                   verbose_name = "Last Modified",
-                                   help_text = "",
+                                   auto_now=True,
+                                   null=False,
+                                   verbose_name="Last Modified",
+                                   help_text="",
                                    )
     def __str__(self):
         return "News %r...(%s)" % (self.title[:75], self.created)
@@ -73,7 +73,7 @@ class ExtraUserEmail(models.Model):
     verbose_name_plural = "user emails"
     profile = models.ForeignKey(
                                 'UserProfile',
-                                null = False,
+                                null=False,
                                 )
     EMAIL_TYPES = (
                    (0, "Other"),
@@ -83,26 +83,26 @@ class ExtraUserEmail(models.Model):
                    (4, "Automated Notifications"),
                    )
     emailType = models.SmallIntegerField(
-                                         null = False,
-                                         default = "Other",
-                                         choices = EMAIL_TYPES,
-                                         verbose_name = "Email Use",
+                                         null=False,
+                                         default="Other",
+                                         choices=EMAIL_TYPES,
+                                         verbose_name="Email Use",
                                          )
     email = models.EmailField(
-                              null = False,
-                              verbose_name = "Email Address",
+                              null=False,
+                              verbose_name="Email Address",
                               )
     private = models.BooleanField(
-                                null = False,
-                                default = True,
-                                verbose_name = "Private",
-                                help_text = "Allow only superusers to see this",
+                                null=False,
+                                default=True,
+                                verbose_name="Private",
+                                help_text="Allow only superusers to see this",
                                 )
     public = models.BooleanField(
-                                null = False,
-                                default = False,
-                                verbose_name = "Public",
-                                help_text = "Allow unauthenticated users to see this",
+                                null=False,
+                                default=False,
+                                verbose_name="Public",
+                                help_text="Allow unauthenticated users to see this",
                                 )
     
     def __str__(self):
@@ -115,30 +115,30 @@ class MinecraftUsername(models.Model):
     verbose_name_plural = "minecraft usernames"
     profile = models.ForeignKey(
                                 'UserProfile',
-                                null = False,
+                                null=False,
                                 )
     username = models.CharField(
-                                 null = False,
-                                 verbose_name = "Minecraft Username",
-                                 max_length = 255,
+                                 null=False,
+                                 verbose_name="Minecraft Username",
+                                 max_length=255,
                                  )
     private = models.BooleanField(
-                                null = False,
-                                default = True,
-                                verbose_name = "Private",
-                                help_text = "Allow only superusers to see this",
+                                null=False,
+                                default=True,
+                                verbose_name="Private",
+                                help_text="Allow only superusers to see this",
                                 )
     public = models.BooleanField(
-                                null = False,
-                                default = False,
-                                verbose_name = "Public",
-                                help_text = "Allow unauthenticated users to see this",
+                                null=False,
+                                default=False,
+                                verbose_name="Public",
+                                help_text="Allow unauthenticated users to see this",
                                 )
     verified = models.BooleanField(
-                                   null = False,
-                                   default = False,
-                                   verbose_name = "Verified",
-                                   help_text = "Has this address been verified",
+                                   null=False,
+                                   default=False,
+                                   verbose_name="Verified",
+                                   help_text="Has this address been verified",
                                    )
     def __str__(self):
         return "MC %s" % self.username
@@ -149,7 +149,7 @@ class UserPhoneNumber(models.Model):
     verbose_name_plural = "phone numbers"
     profile = models.ForeignKey(
                                 'UserProfile',
-                                null = False,
+                                null=False,
                                 )
     PHONE_TYPES = (
                    (0, "Personal Cell"),
@@ -159,29 +159,29 @@ class UserPhoneNumber(models.Model):
                    (4, "Work Land Line"),
                    )
     phoneType = models.SmallIntegerField(
-                                         null = False,
-                                         default = "Personal Cell",
-                                         choices = PHONE_TYPES,
-                                         verbose_name = "Phone number Type",
+                                         null=False,
+                                         default="Personal Cell",
+                                         choices=PHONE_TYPES,
+                                         verbose_name="Phone number Type",
                                          )
     phoneNumber = models.CharField(
-                                   null = False,
-                                   blank = False,
-                                   max_length = 64,
-                                   verbose_name = "Phone Number",
-                                   help_text = "The phone number, including area code and country code",
+                                   null=False,
+                                   blank=False,
+                                   max_length=64,
+                                   verbose_name="Phone Number",
+                                   help_text="The phone number, including area code and country code",
                                    )
     private = models.BooleanField(
-                                null = False,
-                                default = True,
-                                verbose_name = "Private",
-                                help_text = "Allow only superusers to see this",
+                                null=False,
+                                default=True,
+                                verbose_name="Private",
+                                help_text="Allow only superusers to see this",
                                 )
     public = models.BooleanField(
-                                null = False,
-                                default = False,
-                                verbose_name = "Public",
-                                help_text = "Allow unauthenticated users to see this",
+                                null=False,
+                                default=False,
+                                verbose_name="Public",
+                                help_text="Allow unauthenticated users to see this",
                                 )
     def __str__(self):
         return "Phone Number %s" % self.phoneNumber    
@@ -193,32 +193,32 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(
                                 User,
-                                primary_key = True,
-                                null = False,
-                                verbose_name = "User",
-                                editable = False,
+                                primary_key=True,
+                                null=False,
+                                verbose_name="User",
+                                editable=False,
                                 )
     screenname = models.SlugField(
-                            unique = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Screen Name",
-                            help_text = "The user's screenname. May only included letters, numbers, underscores, and hyphens. ",
-                            validators = [ validate_slug, ],
+                            unique=True,
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            db_index=True,
+                            verbose_name="Screen Name",
+                            help_text="The user's screenname. May only included letters, numbers, underscores, and hyphens. ",
+                            validators=[ validate_slug, ],
                             )
     publicName = models.CharField(
-                                  null = True,
-                                  blank = True,
-                                  max_length = 255,
-                                  verbose_name = "The user's publicly visible name. Should NOT be a screenname. Optional. ",
+                                  null=True,
+                                  blank=True,
+                                  max_length=255,
+                                  verbose_name="The user's publicly visible name. Should NOT be a screenname. Optional. ",
                                   )
     miscContactInfo = models.TextField(
-                                       null = True,
-                                       blank = True,
-                                       max_length = 65536,
-                                       verbose_name = "Miscellaneous Contact Info",
+                                       null=True,
+                                       blank=True,
+                                       max_length=65536,
+                                       verbose_name="Miscellaneous Contact Info",
                                        )
     
     def __str__(self):
@@ -230,22 +230,22 @@ class ServerSystemIPs(models.Model):
     verbose_name = "system ip"
     verbose_name_plural = "system ip"
     name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "IP Name",
-                            help_text = "A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
-                            validators = [ validate_slug, ],
+                            primary_key=True,
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            db_index=True,
+                            verbose_name="IP Name",
+                            help_text="A short, computer friendly name for this IP. May only included letters, numbers, underscores, and hyphens. ",
+                            validators=[ validate_slug, ],
                             )
     ip = models.IPAddressField(
-                               null = False,
-                               verbose_name = "IP",
+                               null=False,
+                               verbose_name="IP",
                                )
     system = models.ForeignKey(
                                'ServerSystem',
-                               verbose_name = "System",
+                               verbose_name="System",
                                )
     def __str__(self):
         return "System IP %s(%s)" % (self.name, self.ip)
@@ -256,29 +256,29 @@ class ServerSystem(models.Model):
     verbose_name = "system"
     verbose_name_plural = "systems"
     name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "System Name",
-                            help_text = "A short, computer friendly name for this system/server/box. May only included letters, numbers, underscores, and hyphens. ",
-                            validators = [ validate_slug, ],
+                            primary_key=True,
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            db_index=True,
+                            verbose_name="System Name",
+                            help_text="A short, computer friendly name for this system/server/box. May only included letters, numbers, underscores, and hyphens. ",
+                            validators=[ validate_slug, ],
                             )
     admins = models.ManyToManyField(
                                     User,
-                                    related_name = "serveradmins",
-                                    null = False,
-                                    verbose_name = "Admins",
-                                    help_text = "Users who have administrative access to this server",
+                                    related_name="serveradmins",
+                                    null=False,
+                                    verbose_name="Admins",
+                                    help_text="Users who have administrative access to this server",
                                     )
     owner = models.ForeignKey(
                               User,
-                              related_name = "serverowners",
-                              null = False,
-                              blank = False,
-                              verbose_name = "Owner",
-                              help_text = "The user that is ultimately responsible for this server",
+                              related_name="serverowners",
+                              null=False,
+                              blank=False,
+                              verbose_name="Owner",
+                              help_text="The user that is ultimately responsible for this server",
                               )
     
     def __str__(self):
@@ -291,47 +291,47 @@ class ServerInstanceExternalInfo(models.Model):
     verbose_name = "external info"
     verbose_name_plural = "external info"
     name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Name/Description",
-                            help_text = "A short, computer friendly name for the access info. May only included letters, numbers, underscores, and hyphens. ",
-                            validators = [ validate_slug, ],
+                            primary_key=True,
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            db_index=True,
+                            verbose_name="Name/Description",
+                            help_text="A short, computer friendly name for the access info. May only included letters, numbers, underscores, and hyphens. ",
+                            validators=[ validate_slug, ],
                             )
     host = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 8192,
-                            verbose_name = "Host/IP",
-                            help_text = "The hostname or IP address used by remote users",
-                            validators = [
+                            null=False,
+                            blank=False,
+                            max_length=8192,
+                            verbose_name="Host/IP",
+                            help_text="The hostname or IP address used by remote users",
+                            validators=[
                                           validateHostIP,
                                           MinLengthValidator(2),
                                           ],
                             )
     ip = models.IPAddressField(
-                            null = False,
-                            blank = False,
-                            verbose_name = "IP",
-                            help_text = 'The external IP address used to access the server. If an IP is given for "Host/IP", it should match this. ',
+                            null=False,
+                            blank=False,
+                            verbose_name="IP",
+                            help_text='The external IP address used to access the server. If an IP is given for "Host/IP", it should match this. ',
                             )
     port = models.IntegerField(
-                               null = False,
-                               default = 25565,
-                               verbose_name = "Port",
-                               help_text = "The TCP port that users connect to",
-                               validators = [
+                               null=False,
+                               default=25565,
+                               verbose_name="Port",
+                               help_text="The TCP port that users connect to",
+                               validators=[
                                              MinValueValidator(1),
                                              MaxValueValidator(65535),
                                              ],
                                )
     instance = models.ForeignKey(
                                  'ServerInstance',
-                                 null = False,
-                                 verbose_name = "Server Instance",
-                                 help_text = "The server instance that this access is for",
+                                 null=False,
+                                 verbose_name="Server Instance",
+                                 help_text="The server instance that this access is for",
                                  )
     def __str__(self):
         return "ExternalInfo %s" % self.name
@@ -344,29 +344,29 @@ class ServerInstance(models.Model):
             ('make_serverinstance_managed', 'Can make a hosted Minecraft instance'),
             )
     name = models.SlugField(
-                            primary_key = True,
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            db_index = True,
-                            verbose_name = "Instance Name",
-                            help_text = "A short, computer friendly name for the server instance. May only included letters, numbers, underscores, and hyphens. ",
-                            validators = [ validate_slug, ],
+                            primary_key=True,
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            db_index=True,
+                            verbose_name="Instance Name",
+                            help_text="A short, computer friendly name for the server instance. May only included letters, numbers, underscores, and hyphens. ",
+                            validators=[ validate_slug, ],
                             )
     admins = models.ManyToManyField(
                                     User,
-                                    null = False,
-                                    related_name = "instanceadmins",
-                                    verbose_name = "Admins",
-                                    help_text = "Users who have administrative access to this server instance",
+                                    null=False,
+                                    related_name="instanceadmins",
+                                    verbose_name="Admins",
+                                    help_text="Users who have administrative access to this server instance",
                                     )
     owner = models.ForeignKey(
                               User,
-                              null = False,
-                              related_name = "instanceowners",
-                              blank = False,
-                              verbose_name = "Owner",
-                              help_text = "The user that is ultimately responsible for this server instance",
+                              null=False,
+                              related_name="instanceowners",
+                              blank=False,
+                              verbose_name="Owner",
+                              help_text="The user that is ultimately responsible for this server instance",
                               )
     
     # @warning: Both the status name and the group name MUST be valid as-is in URLs
@@ -386,44 +386,44 @@ class ServerInstance(models.Model):
                         ),
                    )
     status = models.CharField(
-                              null = False,
-                              default = "created",
-                              max_length = 32,
-                              choices = SERVER_STATUS,
-                              verbose_name = "Status",
+                              null=False,
+                              default="created",
+                              max_length=32,
+                              choices=SERVER_STATUS,
+                              verbose_name="Status",
                               )
     humanName = models.CharField(
-                            null = False,
-                            blank = False,
-                            max_length = 255,
-                            verbose_name = "Human Name",
-                            help_text = "A short, human friendly name for this server",
+                            null=False,
+                            blank=False,
+                            max_length=255,
+                            verbose_name="Human Name",
+                            help_text="A short, human friendly name for this server",
                             )
     description = models.TextField(
-                                   null = False,
-                                   blank = True,
-                                   default = '',
-                                   max_length = 8192,
-                                   verbose_name = "Description",
-                                   help_text = "A description and other useful info",
+                                   null=False,
+                                   blank=True,
+                                   default='',
+                                   max_length=8192,
+                                   verbose_name="Description",
+                                   help_text="A description and other useful info",
                                    )
     system = models.ForeignKey(
                                ServerSystem,
-                               null = False,
-                               verbose_name = "System",
-                               help_text = "The server/system/box/etc that this Minecraft server instance runs on",
+                               null=False,
+                               verbose_name="System",
+                               help_text="The server/system/box/etc that this Minecraft server instance runs on",
                                )
     internalIP = models.IPAddressField(
-                               null = False,
-                               verbose_name = "Internal IP",
-                               help_text = "The internal IP address of the server",
+                               null=False,
+                               verbose_name="Internal IP",
+                               help_text="The internal IP address of the server",
                                )
     port = models.IntegerField(
-                               null = False,
-                               default = 25565,
-                               verbose_name = "Internal Port",
-                               help_text = "The TCP port that the server listens on internally",
-                               validators = [
+                               null=False,
+                               default=25565,
+                               verbose_name="Internal Port",
+                               help_text="The TCP port that the server listens on internally",
+                               validators=[
                                              MinValueValidator(1),
                                              MaxValueValidator(65535),
                                              ],
@@ -431,7 +431,7 @@ class ServerInstance(models.Model):
     
     
     @classmethod
-    def listStatusGroups(cls, forceLowerCase = False):
+    def listStatusGroups(cls, forceLowerCase=False):
         """ List out all status groups """
         groups = []
         for group, statuses in cls.SERVER_STATUS:
@@ -443,7 +443,7 @@ class ServerInstance(models.Model):
     
     
     @classmethod
-    def listStatuses(cls, forceLowerCase = False, retActualName = False):
+    def listStatuses(cls, forceLowerCase=False, retActualName=False):
         """ List out all statuses 
         @param forceLowerCase: All returned data should be in lowercase
         @param retActualName: Return the name stored in the DB, not the "Pretty" name  
@@ -473,7 +473,7 @@ class ServerInstance(models.Model):
     
     
     @classmethod
-    def statusGroup(cls, group, refrenceType = "Pretty", exactCase = False):
+    def statusGroup(cls, group, refrenceType="Pretty", exactCase=False):
         groups = []
         for checkGroup, statuses in cls.SERVER_STATUS:
             groups.append(checkGroup)
@@ -489,7 +489,7 @@ class ServerInstance(models.Model):
         raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
     
     
-    def checkUser(self,req,perms='admin'):
+    def checkUser(self, req, perms='admin'):
         if req.user in self.admins.all() or req.user == self.owner:
             return True
         return False

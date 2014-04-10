@@ -33,11 +33,11 @@ from minecraft.models import *
 
 class MinecraftServerForm(forms.Form):
     binary = CharField(
-           widget = Select(
-               choices = map(
+           widget=Select(
+               choices=map(
                      lambda b: (b['id'], '{0} Minecraft Server | Version {2} | Type {1}'.format(*b['key'][:])),
                      MinecraftServerBinary.view('minecraft/binariesAll').all(),
                      ),
                ),
-           required = True,
+           required=True,
            )

@@ -38,12 +38,12 @@ from minecraft.forms import *
 @login_required
 @permission_required('extern.add_serverinstance')
 def newInstanceNonAdmin(req):
-    if req.method=='POST':
+    if req.method == 'POST':
         form = ServerInstanceNonAdminForm(
                                           req.POST,
                                           )
         if form.is_valid():
-            model = form.save(commit = False)
+            model = form.save(commit=False)
             model.owner = req.user
             model.save()
             return redirect('/e/instances/instance/%s/' % urllib.quote(model.name))
@@ -52,9 +52,9 @@ def newInstanceNonAdmin(req):
     return render_to_response(
                               'extern/newInstance.html',
                               dict(
-                                   form = form,
+                                   form=form,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -77,7 +77,7 @@ def newInstanceAdmin(req):
                               dict(
                                    form=form,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
     
 
@@ -85,40 +85,40 @@ def newInstanceAdmin(req):
 def instance(req, instanceSlug):
     """ Display a server instance """
 
-    inst = get_object_or_404(ServerInstance, name = instanceSlug)
+    inst = get_object_or_404(ServerInstance, name=instanceSlug)
     srv = inst.getServer()
 
     return render_to_response(
                               'extern/instance.html',
                               dict(
-                                   instance = inst,
-                                   srv = srv,
+                                   instance=inst,
+                                   srv=srv,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
 @permission_required('extern.delete_serverinstance')
 def deleteInstance(req, instanceSlug):
     """ Display a server instance """
-    inst = get_object_or_404(ServerInstance, name = instanceSlug)
-    if req.method=='POST':
-        if req.POST['confirmed']==inst.name:
+    inst = get_object_or_404(ServerInstance, name=instanceSlug)
+    if req.method == 'POST':
+        if req.POST['confirmed'] == inst.name:
             inst.delete()
             return redirect('/e/instances/')
     return render_to_response(
                               'extern/deleteInstance.html',
                               dict(
-                                   instance = inst,
+                                   instance=inst,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
 @permission_required('extern.make_serverinstance_managed')
 def defineInstance(req, instanceSlug):
     """ Define a server instance """
-    inst = get_object_or_404(ServerInstance, name = instanceSlug)
+    inst = get_object_or_404(ServerInstance, name=instanceSlug)
     try:
         srv = MinecraftServer.get(inst.name)
         raise Http404("An instance of this server already exists")
@@ -140,33 +140,33 @@ def defineInstance(req, instanceSlug):
     return render_to_response(
                               'extern/defineInstance.html',
                               dict(
-                                   instance = inst,
-                                   form = form,
+                                   instance=inst,
+                                   form=form,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
 @permission_required('extern.view_serverinstance')
-def instances(req, statusIs = None, statusIsInGroup = None):
+def instances(req, statusIs=None, statusIsInGroup=None):
     """ Display all server instances """
     inst = ServerInstance.objects.all()
     if statusIs is not None:
-        inst = inst.filter(status = statusIs)
+        inst = inst.filter(status=statusIs)
     if statusIsInGroup is not None:
         try:
-            inst = inst.filter(status__in = ServerInstance.statusGroup(statusIsInGroup, refrenceType = "Actual", exactCase = False))
+            inst = inst.filter(status__in=ServerInstance.statusGroup(statusIsInGroup, refrenceType="Actual", exactCase=False))
         except ValueError, e:
             raise Http404("Invalid group %r" % statusIsInGroup)
-    groups = ServerInstance.listStatusGroups(forceLowerCase = True)
+    groups = ServerInstance.listStatusGroups(forceLowerCase=True)
     statuses = ServerInstance.listStatusFull()
     return render_to_response(
                               'extern/instances.html',
                               dict(
-                                   serverInstances = inst,
-                                   serverStatusGroups = groups,
-                                   serverStatuses = statuses,
+                                   serverInstances=inst,
+                                   serverStatusGroups=groups,
+                                   serverStatuses=statuses,
                                    
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
