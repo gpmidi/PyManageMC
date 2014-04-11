@@ -1,1 +1,0 @@
-This directory is for storing the newly created docker configs. 
