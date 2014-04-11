@@ -29,3 +29,13 @@ def validate_serverBinary(value):
             raise ValidationError("Server binary %r doesn't exist" % value)
     except ResourceNotFound as e:
         raise ValidationError("Server binary %r doesn't exist" % value)
+
+def validate_serverImage(value):
+    try:
+        from mcdocker.models import DockerImage
+        si = DockerImage.get(value)
+        if not si:
+            raise ValidationError("OS image %r doesn't exist" % value)
+    except ResourceNotFound as e:
+        raise ValidationError("OS image %r doesn't exist" % value)
+

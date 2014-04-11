@@ -61,6 +61,7 @@ def _validateSSHKeyList(value):
         if not _validatePackageListRE.match(value):
             raise ValidationError(u'%s is not a valid SSH public key' % value)
 
+
 class DockerImage(Document):
     """ """
     humanName = StringProperty(
@@ -112,6 +113,26 @@ class DockerImage(Document):
                           required=True,
                           default="Ubuntu:13.10",
                           verbose_name="Docker Image Parent Image",
+                          )
+    dockerMemoryLimitMB = IntegerProperty(
+                          validators=[
+                                      MinValueValidator(64),
+                                      MaxValueValidator(1024 * 32),
+                                      ],
+                          name="dockerMemoryLimitMB",
+                          required=True,
+                          default=512,
+                          verbose_name="Max Docker Memory",
+                          )
+    dockerCPUShare = IntegerProperty(
+                          validators=[
+                                      MinValueValidator(1),
+                                      MaxValueValidator(1024 * 1024),
+                                      ],
+                          name="dockerCPUShare",
+                          required=True,
+                          default=64,
+                          verbose_name="Docker CPU Share",
                           )
 
     def getFullDockerName(self):

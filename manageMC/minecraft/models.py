@@ -15,24 +15,25 @@
 #    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Built-in
-import os.path
+import os.path  # @UnusedImport
 
 # Django
-from django.db import models
-from django.contrib.auth.models import User, Group
-from django.conf import settings
-from django.core.validators import MinLengthValidator, MaxValueValidator
-from django.core.validators import validate_slug, MinValueValidator
+from django.db import models  # @UnusedImport
+from django.contrib.auth.models import User, Group  # @UnusedImport
+from django.conf import settings  # @UnusedImport
+from django.core.validators import MinLengthValidator, MaxValueValidator  # @UnusedImport
+from django.core.validators import validate_slug, MinValueValidator  # @UnusedImport
 
 # CouchDB
-from couchdbkit.ext.django.schema import *
+from couchdbkit.ext.django.schema import *  # @UnusedWildImport
 
 # Load serverType objects
-from minecraft.serverType import loadOtherServerTypes, allServerTypes
-from minecraft.validators import *
+from minecraft.serverType import loadOtherServerTypes, allServerTypes  # @UnusedImport
+from minecraft.validators import *  # @UnusedWildImport
 
 
 class MinecraftServerBinary(Document):
+    # TODO: Move this to a doc
     TYPE_NAME_CHOICES = (
                           # (TYPE string, human name),
                           ('Stock', 'Stock'),
@@ -113,6 +114,14 @@ class MinecraftServer(Document):
                               name="Binary",
                               verbose_name="MinecraftServerBinary of the binary",
                               )
+    image = StringProperty(
+                              required=True,
+                              default=None,
+                              validators=[validate_serverImage, ],
+                              name="Image",
+                              verbose_name="OS Image",
+                              )
+
     created = DateTimeProperty(
                                 # default=
                                 required=True,
