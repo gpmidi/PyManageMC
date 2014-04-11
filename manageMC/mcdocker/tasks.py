@@ -144,13 +144,3 @@ def buildImage(dockerImageID):
 
     return image
 
-
-
-
-
-
-
-
-
-
-
