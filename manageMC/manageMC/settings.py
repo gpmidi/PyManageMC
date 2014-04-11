@@ -1,4 +1,4 @@
-''' PyManageMC specific defaults for Django and other related modules. 
+''' PyManageMC specific defaults for Django and other related modules.
 
 settings.py = Defaults and recommended settings for PyManageMC
 local_settings.py = Your settings
@@ -313,7 +313,10 @@ RPC4DJANGO_RESTRICT_RPCTEST = True
 ##################################################################################
 # Local Settings & Overrides
 ##################################################################################
-from manageMC.local_settings import *
+try:
+    from manageMC.local_settings import *
+except ImportError as e:
+    pass
 
 
 
