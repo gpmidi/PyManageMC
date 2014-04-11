@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Built-in
 import os.path
@@ -90,7 +90,7 @@ class MinecraftServerBinary(Document):
                                 auto_now=True,
                                 verbose_name="The date that this server bin was last modified",
                                 )
-    
+
     def __str__(self):
         return "%s Minecraft Server Version %s" % (self.typeName, self.version)
 
@@ -141,15 +141,15 @@ class MinecraftServer(Document):
         return os.path.join(settings.MC_SERVER_PATH, str(self.getSessionName()))
 
     def getSessionName(self):
-        """ Returns the screen session name. 
-        Must NEVER change. 
+        """ Returns the screen session name.
+        Must NEVER change.
         """
         return "MC-%s" % self.name
 
     @classmethod
     def makeSessionName(cls, name):
-        """ Returns the screen session name. 
-        Must NEVER change. 
+        """ Returns the screen session name.
+        Must NEVER change.
         """
         return "MC-%s" % name
 
@@ -301,8 +301,8 @@ class MinecraftServer(Document):
 
 
 # class PublicMapSave(models.Model):
-#    """ Allow users to save maps. 
-#    Note: Map files are NOT private. 
+#    """ Allow users to save maps.
+#    Note: Map files are NOT private.
 #    Note: The zip must be in the following structure
 #    FIXME: Does it have to be named world? Any support for importing ones not named world?
 #        /world/<map data>
@@ -389,7 +389,7 @@ class MapSave(Document):
                                default=None,
                                required=True,
                                )
-    
+
     # When
     created = DateTimeProperty(
                                verbose_name="Date Created",
@@ -406,10 +406,10 @@ class MapSave(Document):
     def addMap(self, mapFileLoc):
         raise NotImplementedError("FIXME: Fill in MapSave.addMap")
 
-        
+
 # class MapSave(models.Model):
-#     """ Allow users to save maps. 
-#     Note: Map files are NOT private. 
+#     """ Allow users to save maps.
+#     Note: Map files are NOT private.
 #     Note: The zip must be in the following structure
 #         /world/<map data>
 #         /world_nether/<map data>         ** optional **

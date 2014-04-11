@@ -1,14 +1,26 @@
 {% autoescape off %}
-FROM {{ parent }}
-MAINTAINER {{ firstname}} {{ lastname }}, {{ email }}
+FROM {{ image.parent }}
+MAINTAINER {{ image.firstName }} {{ image.lastName }}, {{ image.email }}
+
+# Image Name: {{ image.humanName }}
+# Image Type: {{ image.imageType }}
+# Image Docker Name: {{ image.getFullDockerName() }}
+
+{# Don't include spaces or other formatting #}
+{% if image.description %}
+# Image Description:
+{% for line in image.getSplitDescription %}
+# {{ line }}
+{% endfor %}
+{% endif %}
 
 # Sane umask
 RUN umask 0022
 ONBUILD RUN umask 0022
 
-{% if proxy %}
+{% if image.proxy %}
     # Proxy setup
-    RUN echo "Acquire::http::Proxy \"{{ proxy }}\";" > /etc/apt/apt.conf.d/99proxy
+    RUN echo "Acquire::http::Proxy \"{{ image.proxy }}\";" > /etc/apt/apt.conf.d/99proxy
 {% endif %}
 
 # Do an initial update
@@ -24,7 +36,14 @@ RUN apt-get install -y \
   python-setuptools python-pip wget curl libssl-dev \
   openjdk-7-jre-headless rdiff-backup python-openssl \
   supervisor logrotate cron man openssh-server vim \
-  screen {{ extraPackages }}
+  screen
+
+{% if image.extraPackages %}
+    # User defined packages
+    {% for pkg in image.extraPackages %}
+        RUN apt-get install -y {{ pkg }}
+    {% endfor %}
+{% endif %}
 
 # Various configs
 ADD ./DockerFiles/supervisord.d/sshd.conf /etc/supervisor/conf.d/sshd.conf

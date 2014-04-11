@@ -1,4 +1,4 @@
 {% autoescape off %}
-{% for key in keys %}
+{% for key in image.sshKeysMinecraft %}
     {{ key }}
 {% endfor %}
