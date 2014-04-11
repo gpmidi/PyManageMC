@@ -67,3 +67,5 @@ CMD [ \
     "--logfile_maxbytes=1GB", \
     "--logfile_backups=0" \
     ]
+
+{% endautoescape %}
