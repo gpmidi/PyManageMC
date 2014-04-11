@@ -46,9 +46,9 @@ RUN apt-get install -y \
 {% endif %}
 
 # Various configs
-ADD ./DockerFiles/supervisord.d/sshd.conf /etc/supervisor/conf.d/sshd.conf
-ADD ./DockerFiles/supervisord.d/cron.conf /etc/supervisor/conf.d/cron.conf
-ADD ./DockerFiles/logrotate.d/supervisord.conf /etc/logrotate.d/supervisord.conf
+ADD ./supervisord.d/sshd.conf /etc/supervisor/conf.d/sshd.conf
+ADD ./supervisord.d/cron.conf /etc/supervisor/conf.d/cron.conf
+ADD ./logrotate.d/supervisord.conf /etc/logrotate.d/supervisord.conf
 
 # 22=ssh
 # 9001=supervisord

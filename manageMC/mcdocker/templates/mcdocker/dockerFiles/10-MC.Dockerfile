@@ -37,10 +37,10 @@ RUN  mkdir -p /var/log/supervisor \
   && mkdir -p /var/run/sshd /root/.ssh /var/lib/minecraft/.ssh \
 
 # Various configs
-ADD ./DockerFiles/supervisord.d/minecraft.conf /etc/supervisor/conf.d/minecraft.conf
-ADD ./DockerFiles/supervisord.conf /etc/supervisor/supervisord.conf
-ADD ./DockerFiles/root.authorized_keys /root/.ssh/authorized_keys
-ADD ./DockerFiles/minecraft.authorized_keys /var/lib/minecraft/.ssh/authorized_keys
+ADD ./supervisord.d/minecraft.conf /etc/supervisor/conf.d/minecraft.conf
+ADD ./supervisord.conf /etc/supervisor/supervisord.conf
+ADD ./root.authorized_keys /root/.ssh/authorized_keys
+ADD ./minecraft.authorized_keys /var/lib/minecraft/.ssh/authorized_keys
 
 # Fix perms for root's and minecraft's home
 RUN  chown -R root:root /root \
