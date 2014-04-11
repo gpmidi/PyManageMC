@@ -37,9 +37,9 @@ class MinecraftServerLogFileArchive(Document):
         app_label = 'manageMC.mclogs'
 
     serverId = StringProperty(
-                             verbose_name = 'Server ID',
-                             default = None,
-                             required = True,
+                             verbose_name='Server ID',
+                             default=None,
+                             required=True,
                              )
     FLOW_TYPES = (
                   ('STDIN', 'STDIN'),
@@ -49,26 +49,26 @@ class MinecraftServerLogFileArchive(Document):
                   ('UNK', 'Unknown'),
                   )
     flow = StringProperty(
-                         verbose_name = 'Flow Type',
-                         default = 'UNK',
-                         required = True,
-                         choices = FLOW_TYPES,
+                         verbose_name='Flow Type',
+                         default='UNK',
+                         required=True,
+                         choices=FLOW_TYPES,
                          )
     LOG_TYPES = (
-                 ('stdio','stdio'),
-                 ('file','file'),
-                 ('unknown','unknown'),
+                 ('stdio', 'stdio'),
+                 ('file', 'file'),
+                 ('unknown', 'unknown'),
                  )
     logType = StringProperty(
-                             verbose_name = 'Log File Type',
-                             default = 'unknown',
-                             required = True,
-                             choices = LOG_TYPES,
+                             verbose_name='Log File Type',
+                             default='unknown',
+                             required=True,
+                             choices=LOG_TYPES,
                              )
     filename = StringProperty(
-                             verbose_name = 'Log File Name',
-                             default = None,
-                             required = True,
+                             verbose_name='Log File Name',
+                             default=None,
+                             required=True,
                              )
     COMPRESSION_TYPES = (
                          ('None', 'None'),
@@ -78,33 +78,33 @@ class MinecraftServerLogFileArchive(Document):
                          ('ZIP', 'ZIP'),
                          )
     compression = StringProperty(
-                             verbose_name = 'Log File Compression Type',
-                             default = 'None',
-                             required = True,
-                             choices = COMPRESSION_TYPES,
+                             verbose_name='Log File Compression Type',
+                             default='None',
+                             required=True,
+                             choices=COMPRESSION_TYPES,
                              )
     begining = DateTimeProperty(
-                                verbose_name = 'Timestamp of first log',
-                                required = False,
-                                default = None,
+                                verbose_name='Timestamp of first log',
+                                required=False,
+                                default=None,
                                 )
     ending = DateTimeProperty(
-                                verbose_name = 'Timestamp of last log',
-                                required = False,
-                                default = None,
+                                verbose_name='Timestamp of last log',
+                                required=False,
+                                default=None,
                                 )
 
     # When
     created = DateTimeProperty(
-                               verbose_name = "Date Created",
-                               required = True,
-                               auto_now_add = True,
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
                                )
     modified = DateTimeProperty(
-                               verbose_name = "Date Modified",
-                               required = False,
-                               default = None,
-                               auto_now = True,
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
                                )
 
 

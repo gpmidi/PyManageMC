@@ -66,7 +66,7 @@ from minecraft.tasks.server import *
 # dajaxice_functions.register(login_a)
 
 
-def _makeMessage(server_pk, message, url = None):
+def _makeMessage(server_pk, message, url=None):
     return render_to_string(
                             'servers/makeMessage.html',
                             {
@@ -117,7 +117,7 @@ dajaxice_functions.register(server_restart)
 
 
 @login_required
-def server_say(req, server_pk, message, cleared = False):
+def server_say(req, server_pk, message, cleared=False):
     """ Say something in a server """
     res = say.delay(server_pk, message)
     dajax = Dajax()

@@ -25,7 +25,7 @@ import logging
 log = logging.getLogger('mclogs.management.commands.wrapMinecraft')
 
 # Built-in
-import os,os.path,sys
+import os, os.path, sys
 import threading
 from optparse import make_option
 import subprocess
@@ -43,15 +43,15 @@ class WatchStreamThread(threading.Thread):
     """ Log the IO for the given stream
     """
     
-    def __init__(self, serverId, stream, prg, streamType, name = 'Unnamed', loglevel = logging.INFO):
+    def __init__(self, serverId, stream, prg, streamType, name='Unnamed', loglevel=logging.INFO):
         threading.Thread.__init__(self)
         self.streamType = streamType
         self.level = loglevel
-        self.serverId=serverId
+        self.serverId = serverId
         self.stream = stream
         self.prg = prg
         self.streamname = name
-        self.setName(name = "WatchStreamThread-%s" % name)
+        self.setName(name="WatchStreamThread-%s" % name)
         self.log = logging.getLogger("server.allServerTypes." + name)
         self.log.debug("Creating IO logger %r (%r)" % (name, self.getName()))
         self.setDaemon(False)
@@ -63,11 +63,11 @@ class WatchStreamThread(threading.Thread):
         if len(self.lastTen) > 10:
             self.lastTen.pop(0)
         logLine.delay(
-                      serverId = self.serverId,
-                      line=line, 
+                      serverId=self.serverId,
+                      line=line,
                       flow=self.streamname,
-                      whenCaptured = datetime.datetime.now(), 
-                      streamType = self.streamType,
+                      whenCaptured=datetime.datetime.now(),
+                      streamType=self.streamType,
                       )
         caches['status'].set(
                              'SERVER-%s-RECENT' % self.serverId,
@@ -80,11 +80,11 @@ class WatchStreamThread(threading.Thread):
         while rc is None:
             line = self.stream.readline().rstrip('\n')
             if line != '' and line != '\n':
-                self._logMessage(line = line)
+                self._logMessage(line=line)
             rc = self.prg.poll()
         time.sleep(5)
         for line in self.stream.read().splitlines():
-            self._logMessage(line = line)
+            self._logMessage(line=line)
         self.log.log(self.level, "-- Completed with a return code of %r --" % rc)
         
 
@@ -93,33 +93,33 @@ class Command(BaseCommand):
     help = 'Start an MC server'
     option_list = BaseCommand.option_list + (
         make_option('--serverId',
-            action = 'store',
-            dest = 'serverId',
-            default = None,
-            help = 'Server ID'),
+            action='store',
+            dest='serverId',
+            default=None,
+            help='Server ID'),
         )
 
     def handle(self, *args, **opts):
         prg = subprocess.Popen(
-                               args = args,
-                               stderr = subprocess.PIPE,
-                               stdout = subprocess.PIPE,
-                               cwd = os.getcwd(),
+                               args=args,
+                               stderr=subprocess.PIPE,
+                               stdout=subprocess.PIPE,
+                               cwd=os.getcwd(),
                                )
         stderr = WatchStreamThread(
-                                   serverId = opts.serverId,
+                                   serverId=opts.serverId,
                                    stream=prg.stderr,
                                    prg=prg,
-                                   name='%s.stderr'%args[0],
-                                   streamType = 'STDERR',
+                                   name='%s.stderr' % args[0],
+                                   streamType='STDERR',
                                    )
         stderr.start()
         stdout = WatchStreamThread(
-                                   serverId = opts.serverId,
-                                   stream = prg.stdout,
-                                   prg = prg,
-                                   name = '%s.stdout' % args[0],
-                                   streamType = 'STDOUT',
+                                   serverId=opts.serverId,
+                                   stream=prg.stdout,
+                                   prg=prg,
+                                   name='%s.stdout' % args[0],
+                                   streamType='STDOUT',
                                    )
         stdout.start()
         

@@ -293,7 +293,7 @@ CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 # Don't keep any celery results longer than 1h to keep
 # them from using up a lot of rabbitmq memory
 from datetime import timedelta
-TASK_RESULT_EXPIRES = timedelta(hours = 1)
+TASK_RESULT_EXPIRES = timedelta(hours=1)
 
 import djcelery  # @UnresolvedImport
 djcelery.setup_loader()

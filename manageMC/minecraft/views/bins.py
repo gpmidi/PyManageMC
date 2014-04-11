@@ -50,18 +50,18 @@ def uploadNew(req):
             doc.releaseStatus = form.cleaned_data['releaseStatus']
             doc.save()
             doc.put_attachment(
-                               name = 'binary',
-                               content = req.FILES['binary'],
+                               name='binary',
+                               content=req.FILES['binary'],
                                )
             if 'helperFiles' in req.FILES:
                 doc.put_attachment(
-                               name = 'helperFiles',
-                               content = req.FILES['helperFiles'],
+                               name='helperFiles',
+                               content=req.FILES['helperFiles'],
                                )
             if 'helperFilesConfig' in req.FILES:
                 doc.put_attachment(
-                               name = 'helperFilesConfig',
-                               content = req.FILES['helperFilesConfig'],
+                               name='helperFilesConfig',
+                               content=req.FILES['helperFilesConfig'],
                                )
             doc.save()
             return redirect('/mc/bins/%s/' % urllib.quote(doc._id))
@@ -70,9 +70,9 @@ def uploadNew(req):
     return render_to_response(
                               'bins/uploadNew.html',
                               dict(
-                                   form = form,
+                                   form=form,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -85,7 +85,7 @@ def searchNew(req):
                               'bins/index.html',
                               dict(
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -98,7 +98,7 @@ def dlNew(req):
                               'bins/index.html',
                               dict(
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
@@ -115,9 +115,9 @@ def index(req):  #
     return render_to_response(
                               'bins/index.html',
                               dict(
-                                   gBy = gBy,
+                                   gBy=gBy,
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
     
 
@@ -140,19 +140,19 @@ def view(req, binId):
     return render_to_response(
                               'bins/view.html',
                               dict(
-                                   binObj = binObj,
-                                   binObjId = binId,
-                                   binary = lambda: 'binary' in binObj._attachments,
-                                   binaryHash = lambda: convHash(binObj._attachments['binary']['digest']),
-                                   binaryLength = lambda: binObj._attachments['binary']['length'],
-                                   helper = lambda: 'helperFiles' in binObj._attachments,
-                                   helperHash = lambda: convHash(binObj._attachments['helperFiles']['digest']),
-                                   helperLength = lambda: binObj._attachments['helperFiles']['length'],
-                                   helperCfg = lambda: 'helperFilesConfig' in binObj._attachments,
-                                   helperCfgHash = lambda: convHash(binObj._attachments['helperFilesConfig']['digest']),
-                                   helperCfgLength = lambda: binObj._attachments['helperFilesConfig']['length'],
+                                   binObj=binObj,
+                                   binObjId=binId,
+                                   binary=lambda: 'binary' in binObj._attachments,
+                                   binaryHash=lambda: convHash(binObj._attachments['binary']['digest']),
+                                   binaryLength=lambda: binObj._attachments['binary']['length'],
+                                   helper=lambda: 'helperFiles' in binObj._attachments,
+                                   helperHash=lambda: convHash(binObj._attachments['helperFiles']['digest']),
+                                   helperLength=lambda: binObj._attachments['helperFiles']['length'],
+                                   helperCfg=lambda: 'helperFilesConfig' in binObj._attachments,
+                                   helperCfgHash=lambda: convHash(binObj._attachments['helperFilesConfig']['digest']),
+                                   helperCfgLength=lambda: binObj._attachments['helperFilesConfig']['length'],
                                    ),
-                              context_instance = RequestContext(req),
+                              context_instance=RequestContext(req),
                               )
 
 
