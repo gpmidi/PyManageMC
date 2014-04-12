@@ -1,0 +1,47 @@
+{% extends "mcdocker/dockerMgmt/base.html" %}
+{% load cache %}
+{# OS listings #}
+
+{% block title %}List Of Your OS Images - Minecraft OS Manager{% endblock %}
+
+{% block body %}
+    <h1>User Images</h1>
+    <table border="1">
+        <tr>
+            <td><b>OS Image Name</b></td>
+            <td><b>Image ID</b></td>
+            <td><b>Docker Name</b></td>
+            <td><b>Repo</b></td>
+            <td><b>Tag</b></td>
+        </tr>
+        {% for image in userImages %}
+            <tr>
+                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.humanName }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.imageID }}</a></td>
+                <td>{{ image.dockerName }}</td>
+                <td>{{ image.repo }}</td>
+                <td>{{ image.tag }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <h1>Base Images</h1>
+    <table border="1">
+        <tr>
+            <td><b>OS Image Name</b></td>
+            <td><b>Image ID</b></td>
+            <td><b>Docker Name</b></td>
+            <td><b>Repo</b></td>
+            <td><b>Tag</b></td>
+        </tr>
+        {% for image in baseImages %}
+            <tr>
+                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.humanName }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.imageID }}</a></td>
+                <td>{{ image.dockerName }}</td>
+                <td>{{ image.repo }}</td>
+                <td>{{ image.tag }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

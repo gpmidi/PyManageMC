@@ -1,0 +1,9 @@
+{% extends "mcdocker/dockerMgmt/base.html" %}
+{% load cache %}
+{# OS Image Add #}
+
+{% block title %}Add - Minecraft OS Manager{% endblock %}
+
+{% block body %}
+
+{% endblock %}

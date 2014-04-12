@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 from django.conf.urls import patterns, include, url
 from django.conf import settings
@@ -32,10 +32,11 @@ urlpatterns = patterns('',
     # /
     url(r'^(?:/)?$', 'extern.views.index'),
     url(r'^index(?:\.html)?(?:/)?$', 'extern.views.index'),
-    
+
     # General interaction
     url(r'^e/', include('extern.urls')),
     url(r'^mc/', include('minecraft.urls')),
+    url(r'^mcOS/', include('mcdocker.urls')),
 
     # User
     url(r'^accounts/login(?:/)?$', 'extern.views.userLogin', name='UserLogin'),
