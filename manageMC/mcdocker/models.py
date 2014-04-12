@@ -324,6 +324,15 @@ class DockerImage(Document):
                           default=_getAdmin()[2],
                           verbose_name="Docker Maintainer's Email Address",
                           )
+    # Volumes to export/save
+    volumes = DictProperty(
+                           validators=[],
+                           name='volumes',
+                           required=True,
+                           default=settings.MINECRAFT_BASE_VOLUME_TYPES,
+                           verbose_name="Volumes To Export",
+                           )
+
     # Minecraft server's java info
     javaArgs = StringListProperty(
                           validators=[ ],

@@ -277,6 +277,16 @@ MC_RAM_S = 1024
 # MC_SERVER_PATH = "/path/to/servers/directory"
 # MC_MAP_SAVE_PATH = "/path/to/maps/directory"
 
+# Default volumes to export/save for a given server
+# (NAME,PATH),
+MINECRAFT_BASE_VOLUME_TYPES = dict(
+                                   minecraft='/var/lib/minecraft',
+                                   syslog='/var/log',
+                                   sshconf='/etc/ssh',
+                                   home='/home',
+                                   )
+
+
 
 ##################################################################################
 # Celery

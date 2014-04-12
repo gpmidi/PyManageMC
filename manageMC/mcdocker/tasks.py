@@ -34,6 +34,7 @@ from celery.task import task  # @UnresolvedImport
 import docker
 from django.conf import settings
 from django.template.loader import render_to_string
+from couchdbkit.exceptions import ResourceNotFound
 
 # Ours
 from mcdocker.models import *  # @UnusedWildImport
@@ -143,4 +144,54 @@ def buildImage(dockerImageID):
     log.debug("Logs for %r: %r", image, logs)
 
     return image
+
+
+@task(expires=60 * 60 * 24)
+def inspectDockerContainer(containerID, client=None):
+    if client is None:
+        client = getClient()
+    return client.inspect_image(containerID)
+
+
+@task(expires=60 * 60 * 24)
+def inspectDockerImage(imageID, client=None):
+    if client is None:
+        client = getClient()
+    return client.inspect_image(imageID)
+
+
+@task(expires=60 * 60 * 24)
+def getRealVolumeLocation(containerID, dockerImageId, volumeId, client=None):
+    image = DockerImage.get(dockerImageId)
+
+    if client is None:
+        client = getClient()
+
+    volume = image.volumes[volumeId]
+
+    containerInfo = inspectDockerContainer(containerID, client)
+
+    return containerInfo['Volumes'][volume]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
