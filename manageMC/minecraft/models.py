@@ -181,6 +181,23 @@ class MinecraftServer(Document):
         except ResourceNotFound:
             return None
 
+    def getVolumeLocation(self, volumeName, doCreate=False):
+        assert volumeName in self.getImage().volumes
+        path = os.path.join(
+                            settings.MC_SERVER_PATH,
+                            self.getSessionName(),
+                            volumeName,
+                            )
+        if doCreate and not os.path.exists(path):
+            os.makedirs(path, 0700)
+        return path
+
+    def getVolumeLocations(self, doCreate=False):
+        ret = {}
+        for name, intPath in self.getImage().volumes.items():
+            ret[self.getVolumeLocation(volumeName=name, doCreate=doCreate)] = intPath
+        return ret
+
 
 # class MinecraftServerBinary(models.Model):
 #     """ A type of Minecraft server a a specific version """

@@ -257,6 +257,7 @@ DEFAULT_DISCONNECT_PIPELINE = (
     'social.pipeline.disconnect.disconnect'
 )
 
+
 ##################################################################################
 # PyManageMC
 ##################################################################################
@@ -286,6 +287,17 @@ MINECRAFT_BASE_VOLUME_TYPES = dict(
                                    home='/home',
                                    )
 
+# Default ports inside the docker instance
+# Minecraft port
+MINECRAFT_DEFAULT_PORT_CONTAINER = 25565
+# Minecraft rcon port
+MINECRAFT_DEFAULT_PORT_RCON = 25575
+# Misc use ports
+MINECRAFT_DEFAULT_PORT_RANGE_START = 25580
+MINECRAFT_DEFAULT_PORT_RANGE_END = 25589
+# System
+MINECRAFT_DEFAULT_PORT_SSH = 22
+MINECRAFT_DEFAULT_PORT_SUPVD = 9001
 
 
 ##################################################################################

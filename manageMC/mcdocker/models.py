@@ -332,6 +332,30 @@ class DockerImage(Document):
                            default=settings.MINECRAFT_BASE_VOLUME_TYPES,
                            verbose_name="Volumes To Export",
                            )
+    # Fixed port mappings to export
+    # None==automatic random port
+    ports = DictProperty(
+           validators=[],
+           name='ports',
+           required=True,
+           default={
+            str(settings.MINECRAFT_DEFAULT_PORT_SSH):('0.0.0.0', None),
+            str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):('127.0.0.1', None),
+            str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):('0.0.0.0', None),
+            str(settings.MINECRAFT_DEFAULT_PORT_RCON):('127.0.0.1', None),
+            '25580':('127.0.0.1', None),
+            '25581':('127.0.0.1', None),
+            '25582':('127.0.0.1', None),
+            '25583':('127.0.0.1', None),
+            '25584':('127.0.0.1', None),
+            '25585':('127.0.0.1', None),
+            '25586':('127.0.0.1', None),
+            '25587':('127.0.0.1', None),
+            '25588':('127.0.0.1', None),
+            '25589':('127.0.0.1', None),
+            },
+           verbose_name="Ports To Export",
+           )
 
     # Minecraft server's java info
     javaArgs = StringListProperty(

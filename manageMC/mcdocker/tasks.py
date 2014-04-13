@@ -175,15 +175,33 @@ def getRealVolumeLocation(containerID, dockerImageId, volumeId, client=None):
     return containerInfo['Volumes'][volume]
 
 
-@task(expires=60 * 60 * 24)
+@task(expires=60 * 60 * 4)
 def createStartContainer(serverId, client=None):
     server = MinecraftServer.get(serverId)
     image = server.getImage()
+    instance = server.getInstance()  # @UnusedVariable
 
     assert image.imageType == 'UserImage', "Expected a user image"
 
     if client is None:
         client = getClient()
+
+    # Always make the Minecraft port accessible
+    # pb[str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER)] = (instance.internalIP, instance.port)
+    log.debug("Port mappings set to %r", image.ports)
+
+
+    # FIXME: Add in MORE ENV variables with other useful info for inside the container
+    env = {
+         'MINECRAFT_PORT_INT':str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER),
+         'SSH_PORT_INT':str(settings.MINECRAFT_DEFAULT_PORT_SSH),
+         'SUPVD_PORT_INT':str(settings.MINECRAFT_DEFAULT_PORT_SUPVD),
+         'MINECRAFT_RCON_PORT_INT':str(settings.MINECRAFT_DEFAULT_PORT_RCON),
+         }
+    if image.proxy:
+        env['http_proxy'] = image.proxy
+    log.debug("Env for system set to %r", env)
+
 
     # Create the container
     log.debug("Going to create container named %r", server.name)
@@ -195,12 +213,11 @@ def createStartContainer(serverId, client=None):
                             dns=None,
                             cpu_shares=image.dockerCPUShare,
                             name=server.name,
-                            # FIXME: Add in env variables with info
-                            environment=None,
+                            environment=env,
                             command=None,
                             user=None,
-                            ports=None,
-                            volumes=None,
+                            ports=image.ports.keys(),
+                            volumes=server.getImage().volumes.values(),
                             stdin_open=False,
                             tty=False,
                             volumes_from=None,
@@ -213,8 +230,8 @@ def createStartContainer(serverId, client=None):
     log.debug("Going to start %r", server.name)
     results = client.start(
                            server.name,
-                           binds=None,
-                           port_bindings=None,
+                           binds=server.getVolumeLocations(doCreate=False),
+                           port_bindings=image.ports,
                            publish_all_ports=True,
                            links=None,
                            privileged=False,
