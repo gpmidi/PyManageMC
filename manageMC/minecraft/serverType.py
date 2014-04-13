@@ -251,11 +251,6 @@ class ServerType(object):
     def getServerRoot(self):
         return self.mcServer.loc()
 
-    def getCreateServerRoot(self):
-        if not os.path.exists(self.getServerRoot()):
-            os.makedirs(self.getServerRoot(), 0770)
-        return self.getServerRoot()
-
     def getSessionName(self):
         return self.mcServer.getSessionName()
 

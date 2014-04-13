@@ -324,7 +324,7 @@ RPC4DJANGO_RESTRICT_RPCTEST = True
 # Local Settings & Overrides
 ##################################################################################
 try:
-    from manageMC.local_settings import *
+    from manageMC.local_settings import *  # @UnusedWildImport
 except ImportError as e:
     pass
 

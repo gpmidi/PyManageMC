@@ -26,10 +26,12 @@ from django.core.validators import validate_slug, MinValueValidator  # @UnusedIm
 
 # CouchDB
 from couchdbkit.ext.django.schema import *  # @UnusedWildImport
+from couchdbkit.exceptions import ResourceNotFound  # @UnusedImport
 
 # Load serverType objects
 from minecraft.serverType import loadOtherServerTypes, allServerTypes  # @UnusedImport
 from minecraft.validators import *  # @UnusedWildImport
+from mcdocker.models import *  # @UnusedWildImport
 
 
 class MinecraftServerBinary(Document):
@@ -121,13 +123,13 @@ class MinecraftServer(Document):
                           name="Image",
                           verbose_name="OS Image",
                           )
-    container = StringProperty(
-                          required=True,
-                          default=None,
-                          validators=[ ],
-                          name="Container",
-                          verbose_name="OS Instance",
-                          )
+#     container = StringProperty(
+#                           required=True,
+#                           default=None,
+#                           validators=[ ],
+#                           name="Container",
+#                           verbose_name="OS Instance",
+#                           )
 
     created = DateTimeProperty(
                                 # default=
@@ -170,7 +172,13 @@ class MinecraftServer(Document):
         or None if it is not hosted """
         try:
             return ServerInstance.objects.get(pk=self.name)
-        except ServerInstance.DoesNotExist as e:
+        except ServerInstance.DoesNotExist:
+            return None
+
+    def getImage(self):
+        try:
+            return DockerImage.get(self.image)
+        except ResourceNotFound:
             return None
 
 

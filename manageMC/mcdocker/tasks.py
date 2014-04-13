@@ -32,12 +32,13 @@ import tarfile
 # External
 from celery.task import task  # @UnresolvedImport
 import docker
-from django.conf import settings
+from django.conf import settings  # @UnusedImport
 from django.template.loader import render_to_string
-from couchdbkit.exceptions import ResourceNotFound
+from couchdbkit.exceptions import ResourceNotFound  # @UnusedImport
 
 # Ours
 from mcdocker.models import *  # @UnusedWildImport
+from minecraft.models import *  # @UnusedWildImport
 
 
 def getClient():
@@ -172,3 +173,86 @@ def getRealVolumeLocation(containerID, dockerImageId, volumeId, client=None):
     containerInfo = inspectDockerContainer(containerID, client)
 
     return containerInfo['Volumes'][volume]
+
+
+@task(expires=60 * 60 * 24)
+def createStartContainer(serverId, client=None):
+    server = MinecraftServer.get(serverId)
+    image = server.getImage()
+
+    assert image.imageType == 'UserImage', "Expected a user image"
+
+    if client is None:
+        client = getClient()
+
+    # Create the container
+    log.debug("Going to create container named %r", server.name)
+    results = client.create_container(
+                            image.imageID,
+                            detach=True,
+                            mem_limit="%dm" % image.dockerMemoryLimitMB,
+                            hostname=image.humanName,
+                            dns=None,
+                            cpu_shares=image.dockerCPUShare,
+                            name=server.name,
+                            # FIXME: Add in env variables with info
+                            environment=None,
+                            command=None,
+                            user=None,
+                            ports=None,
+                            volumes=None,
+                            stdin_open=False,
+                            tty=False,
+                            volumes_from=None,
+                            network_disabled=False,
+                            entrypoint=None,
+                            working_dir=None,
+                            )
+    log.debug("Results: %r", results)
+
+    log.debug("Going to start %r", server.name)
+    results = client.start(
+                           server.name,
+                           binds=None,
+                           port_bindings=None,
+                           publish_all_ports=True,
+                           links=None,
+                           privileged=False,
+                           )
+    log.debug("Results: %r", results)
+
+    return server.name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
