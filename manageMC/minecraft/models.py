@@ -115,12 +115,19 @@ class MinecraftServer(Document):
                               verbose_name="MinecraftServerBinary of the binary",
                               )
     image = StringProperty(
-                              required=True,
-                              default=None,
-                              validators=[validate_serverImage, ],
-                              name="Image",
-                              verbose_name="OS Image",
-                              )
+                          required=True,
+                          default=None,
+                          validators=[validate_serverImage, ],
+                          name="Image",
+                          verbose_name="OS Image",
+                          )
+    container = StringProperty(
+                          required=True,
+                          default=None,
+                          validators=[ ],
+                          name="Container",
+                          verbose_name="OS Instance",
+                          )
 
     created = DateTimeProperty(
                                 # default=
@@ -144,10 +151,6 @@ class MinecraftServer(Document):
 
     def __repr__(self):
         return "<MCServer %r %r>" % (self.name, self.getSessionName())
-
-    def loc(self):
-        """ Return the full path to the server """
-        return os.path.join(settings.MC_SERVER_PATH, str(self.getSessionName()))
 
     def getSessionName(self):
         """ Returns the screen session name.

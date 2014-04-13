@@ -259,18 +259,6 @@ class ServerType(object):
     def getSessionName(self):
         return self.mcServer.getSessionName()
 
-    def getScreenRoot(self):
-        return os.path.join(
-                            self.getServerRoot(),
-                            'screen',
-                            )
-
-    def getServerScreenConfig(self):
-        return os.path.join(
-                            self.getScreenRoot(),
-                            'screen.config',
-                            )
-
     @property
     def pk(self):
         return self.mcServer._id

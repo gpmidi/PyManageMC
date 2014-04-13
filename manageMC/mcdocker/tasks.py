@@ -172,26 +172,3 @@ def getRealVolumeLocation(containerID, dockerImageId, volumeId, client=None):
     containerInfo = inspectDockerContainer(containerID, client)
 
     return containerInfo['Volumes'][volume]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
