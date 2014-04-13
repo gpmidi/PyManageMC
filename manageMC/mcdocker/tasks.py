@@ -230,7 +230,7 @@ def createStartContainer(serverId, client=None):
     log.debug("Going to start %r", server.name)
     results = client.start(
                            server.name,
-                           binds=server.getVolumeLocations(doCreate=False),
+                           binds=server.getVolumeLocations(doCreate=True),
                            port_bindings=image.ports,
                            publish_all_ports=True,
                            links=None,
