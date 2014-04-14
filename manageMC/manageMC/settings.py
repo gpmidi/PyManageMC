@@ -216,6 +216,7 @@ SESSION_ENGINE = "django_couchdb_utils.sessions.couchdb"
 # SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
+CONN_MAX_AGE = 300
 
 ##################################################################################
 # Python-Social-Auth
