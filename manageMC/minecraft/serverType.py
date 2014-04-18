@@ -23,15 +23,19 @@ Created on Aug 11, 2012
 import logging
 log = logging.getLogger("server.allServerTypes." + __name__)
 
-import subprocess
-import re
+# Built-in
+import re  # @UnusedImport
 import os, os.path, sys, shutil  # @UnusedImport
 import time
 import hashlib
 import difflib
+import xmlrpclib
 
+# External
 from django.template.loader import render_to_string
+from supervisor import supervisord, supervisorctl  # @UnresolvedImport @UnusedImport
 
+# Ours
 from minecraft.models import *  # @UnusedWildImport
 
 allServerTypes = {}
@@ -248,10 +252,157 @@ class ServerType(object):
                                                                       ))
         self.log.debug("Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
 
-    def getServerRoot(self):
-        return self.mcServer.loc()
+        assert self.mcServer.type == self.TYPE
+        self._supervisorProxy = None
 
-    def getSessionName(self):
+    def _makeCacheID(self, fname, *varyOn, **kwargs):
+        h = hashlib.new('sha512')
+        h.update(str(fname))
+        if kwargs.get('varyOnSelf', True):
+            h.update(str(self.mcServer._id))
+        for i in varyOn:
+            h.update(str(i))
+        h.update(str(settings.SECRET_KEY))
+        return h.hexdigest()
+
+    @property
+    def containerInfo(self):
+        from mcdocker.tasks import inspectDockerContainer
+        return inspectDockerContainer.delay(
+                containerID=self.mcServer.container).get()
+
+    def getPortMappings(self):
+        """ Return raw port bindings for this instance
+        @note: This is slow as it requires an async XML-RPC request
+        Return schema:
+            "8888/tcp": [
+                {
+                    "HostIp": "0.0.0.0",
+                    "HostPort": "9999"
+                }
+            ]
+        """
+        return self.containerInfo["HostConfig"]["PortBindings"]
+
+    def getPortMapping(self, port, protocol='tcp', forceRefresh=False):
+        """
+        @return: List of (addy,port) tuples
+        """
+        assert protocol in ['tcp', 'udp'], "Expected 'tcp' or 'udp'"
+        internalName = "%d/%s" % (port, protocol)
+
+        cacheKey = self._makeCacheID('getPortMapping', internalName)
+
+        if forceRefresh:
+            mappings = self.getPortMappings()
+            if internalName in mappings:
+                ret = []
+                for mp in mappings[internalName]:
+                    if 'HostIp' in mp and 'HostPort' in mp:
+                        ret.append((mp['HostIp'], mp['HostPort']))
+                    elif 'HostPort' in mp:
+                        ret.append(('127.0.0.1', mp['HostPort']))
+            else:
+                ret = None
+            caches['default'].set(cacheKey, json.dumps(ret), 60)
+            return ret
+        else:
+            try:
+                return json.loads(caches['default'].get(cacheKey))
+            except:
+                return self.getPortMapping(
+                                           port=port,
+                                           protocol=protocol,
+                                           forceRefresh=True,
+                                           )
+
+    @property
+    def supervisordHostPort(self):
+        return self.getPortMapping(
+                                   port=settings.MINECRAFT_DEFAULT_PORT_SUPVD,
+                                   protocol='tcp',
+                                   )
+
+    @property
+    def sshdHostPort(self):
+        return self.getPortMapping(
+                                   port=settings.MINECRAFT_DEFAULT_PORT_SSH,
+                                   protocol='tcp',
+                                   )
+
+    @property
+    def minecraftHostPort(self):
+        return self.getPortMapping(
+                                   port=settings.MINECRAFT_DEFAULT_PORT_CONTAINER,
+                                   protocol='tcp',
+                                   )
+
+    @property
+    def rconHostPort(self):
+        return self.getPortMapping(
+                                   port=settings.MINECRAFT_DEFAULT_PORT_RCON,
+                                   protocol='tcp',
+                                   )
+
+    @property
+    def instance(self):
+        """ Returns the minecraft server object for hosted instances
+        or None if it is not hosted """
+        return self.mcServer.getInstance()
+
+    @property
+    def image(self):
+        return self.mcServer.getImage()
+
+    @property
+    def supervisordConnInfo(self):
+        """ URL to the XML-RPC interface for our Docker instance's supervisor
+        """
+        # TODO: Catch errors around this if no ports are bound
+        cacheKey = self._makeCacheID('supervisordConnInfo')
+        try:
+            ret = json.loads(caches['default'].get(cacheKey))
+        except:
+            import urllib
+            ret = "http://%s:%s@%s:%s/RPC2" % (
+                      urllib.quote(self.getImage.supervisordUser),
+                      urllib.quote(self.getImage.realSupervisordPasswd),
+                      urllib.quote(self.supervisordHostPort[0][0]),
+                      urllib.quote(self.supervisordHostPort[0][1]),
+                      )
+            caches['default'].set(cacheKey, json.dumps(ret), 60)
+        return ret
+
+    @property
+    def supervisordProxy(self):
+        """ Returns an XML-RPC Server Proxy to Supervisord in our Docker
+        instance """
+        if self._supervisorProxy is None:
+            self._supervisorProxy = xmlrpclib.ServerProxy()
+        try:
+            self._supervisorProxy.system.listMethods()
+        except Exception as e:
+            self.log.exception("Failed to run listMethods on %r in %r with %r", self._supervisorProxy, self, e)
+            self._supervisorProxy = xmlrpclib.ServerProxy()
+        return self._supervisorProxy
+
+    @property
+    def serverRoot(self):
+        """ Path to the minecraft instance directory from inside docker """
+        return '/var/lib/minecraft'
+
+    @property
+    def volumes(self):
+        """ Return dict of volumes in <real path>:<docker path>"""
+        return self.containerInfo["Volumes"]
+
+    @property
+    def realServerRoot(self):
+        """ Path to the minecraft instance directory from inside docker """
+        return self.volumes[self.serverRoot]
+
+    @property
+    def sessionName(self):
         return self.mcServer.getSessionName()
 
     @property
@@ -261,10 +412,10 @@ class ServerType(object):
     def getMapFilenames(self):
         # TODO: Support world names beyond 'world'
         return [
-                os.path.join(self.getServerRoot(), 'world'),
+                os.path.join(self.serverRoot, 'world'),
                 # Not needed for vanilla
-                # os.path.join(self.getServerRoot(), 'world_nether'),
-                # os.path.join(self.getServerRoot(), 'world_the_end'),
+                # os.path.join(self.serverRoot, 'world_nether'),
+                # os.path.join(self.serverRoot, 'world_the_end'),
                 ]
 
     # Tasks that should only be performed by the locally running Celery daemon
@@ -274,7 +425,7 @@ class ServerType(object):
 
         for path in [
                      # Needs to be before most others as they are subdirectories
-                     self.getServerRoot(),
+                     self.serverRoot,
                      self.getScreenRoot(),
                      ]:
             try:
@@ -285,7 +436,7 @@ class ServerType(object):
         copyfile(
                  self.mcServer.bin.exc.path,
                  os.path.join(
-                              self.getServerRoot(),
+                              self.serverRoot,
                               os.path.basename(self.mcServer.bin.exc.name),
                               ),
                  )
@@ -318,7 +469,7 @@ class ServerType(object):
         from zipfile import ZipFile
         zipLoc = os.path.join(settings.MC_MAP_SAVE_PATH, mapSave.zipName)
         zipF = ZipFile(zipLoc, 'r')
-        zipF.extractall(self.getServerRoot())
+        zipF.extractall(self.serverRoot)
         zipF.close()
 
     def _localGenZipName(self, name, version):
@@ -352,7 +503,7 @@ class ServerType(object):
         orgMapPaths = []
         for mapPath in self.getMapFilenames():
             assert os.access(mapPath, os.R_OK | os.W_OK), "Lacking sufficient access to the map files in %r" % mapPath
-            orgMapPaths.append(os.path.relpath(mapPath, self.getServerRoot()))
+            orgMapPaths.append(os.path.relpath(mapPath, self.serverRoot))
 
         tmpdir = mkdtemp()
         try:
@@ -362,7 +513,7 @@ class ServerType(object):
                     '-r',
                     zipTmpPath,
                     ] + orgMapPaths
-            self._logStartWait(args=args, cwd=self.getServerRoot())
+            self._logStartWait(args=args, cwd=self.serverRoot)
 
             mapsave.zip.save(os.path.basename(zipName), File(open(zipTmpPath, 'rb')))
             mapsave.save()
@@ -413,36 +564,9 @@ class ServerType(object):
         @return: True=Start OK, False=Start Failed
         """
         self.log.info("Going to start %r", self)
-        jarPath = os.path.join(
-                              self.getServerRoot(),
-                              os.path.basename(self.mcServer.bin.exc.name),
-                              )
-        managePath = os.path.join(
-                                  os.path.basename(settings.__file__),
-                                  '..',
-                                  'manage.py',
-                                  )
 
-        args = [
-              "/usr/bin/screen",
-              '-c',
-              self.getServerScreenConfig(),
-              "-dmS",
-              self.getSessionName(),
-              "/usr/bin/python",
-              managePath,
-              'wrapMinecraft',
-              '--serverId',
-              self.pk,
-              settings.MC_JAVA_LOC,
-              "-Xmx%dM" % settings.MC_RAM_X,
-              "-Xms%dM" % settings.MC_RAM_S,
-              "-jar",
-              jarPath,
-              self.getSessionName(),
-              ]
 
-        self._logStartWaitError(args=args, cwd=self.getServerRoot())
+
         return True
 
     def localStopServer(self, warn=True, warnDelaySeconds=0):
@@ -459,20 +583,23 @@ class ServerType(object):
 
     def localRunCommand(self, cmd):
         """ Run a server command. """
-        self.log.debug("Going to run %r on %r", cmd, self)
-        # Tell the users we are shutting down
-        args = [
-              "/usr/bin/screen",
-              "-p",
-              "0",
-              "-S",
-              self.getSessionName(),
-              "-X",
-              "eval",
-              # FIXME: Validate escaping is working right here
-              "stuff %r\015" % cmd,
-              ]
-        self._logStartWaitError(args=args, cwd=self.getServerRoot())
+
+#
+#
+#         self.log.debug("Going to run %r on %r", cmd, self)
+#         # Tell the users we are shutting down
+#         args = [
+#               "/usr/bin/screen",
+#               "-p",
+#               "0",
+#               "-S",
+#               self.getSessionName(),
+#               "-X",
+#               "eval",
+#               # FIXME: Validate escaping is working right here
+#               "stuff %r\015" % cmd,
+#               ]
+#         self._logStartWaitError(args=args, cwd=self.serverRoot)
         return True
 
     def localSay(self, msg):
@@ -504,7 +631,7 @@ class ServerType(object):
         """ Return the current contents of the given file. The
         filename should be relitiave to the server root.
         """
-        with open(os.path.join(self.getServerRoot(), filename), 'r') as f:
+        with open(os.path.join(self.serverRoot, filename), 'r') as f:
             return f.read()
 
     def localUpdateDBConfigFile(self, fileTypeObj):
@@ -516,7 +643,7 @@ class ServerType(object):
         confTxt = self.localGetConfigFile(filename=fileTypeObj.FILE_NAME)
 
         pk = fileTypeObj.saveConfig(
-                               filepath=os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME),
+                               filepath=os.path.join(self.serverRoot, fileTypeObj.FILE_NAME),
                                relativepath=fileTypeObj.FILE_NAME,
                                filedata=confTxt,
                                )
@@ -532,7 +659,7 @@ class ServerType(object):
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
 
-        filePath = os.path.join(self.getServerRoot(), fileTypeObj.FILE_NAME)
+        filePath = os.path.join(self.serverRoot, fileTypeObj.FILE_NAME)
         relPath = fileTypeObj.FILE_NAME
         (cls, dbObj) = fileTypeObj.getMyModel()
 

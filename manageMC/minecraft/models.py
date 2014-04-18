@@ -16,6 +16,7 @@
 #===============================================================================
 # Built-in
 import os.path  # @UnusedImport
+import json
 
 # Django
 from django.db import models  # @UnusedImport
@@ -23,6 +24,7 @@ from django.contrib.auth.models import User, Group  # @UnusedImport
 from django.conf import settings  # @UnusedImport
 from django.core.validators import MinLengthValidator, MaxValueValidator  # @UnusedImport
 from django.core.validators import validate_slug, MinValueValidator  # @UnusedImport
+from django.core.cache import caches  # @UnresolvedImport
 
 # CouchDB
 from couchdbkit.ext.django.schema import *  # @UnusedWildImport
@@ -109,6 +111,26 @@ class MinecraftServer(Document):
                           default=None,
                           verbose_name="Server Instance",
                           )
+    # User friendly info
+    humanName = StringProperty(
+                          validators=[validate_slug, ],
+                          name="humanName",
+                          required=True,
+                          default=None,
+                          verbose_name="Image Name",
+                          )
+    description = StringProperty(
+                          validators=[],
+                          name="humanDescription",
+                          required=True,
+                          default='',
+                          verbose_name="Image Description",
+                          )
+
+    def getSplitDescription(self):
+        """ Return description as list of lines without trailing newlines """
+        return map(lambda x: x.rstrip(), self.description)
+
     binary = StringProperty(
                               required=True,
                               default=None,
@@ -116,6 +138,7 @@ class MinecraftServer(Document):
                               name="Binary",
                               verbose_name="MinecraftServerBinary of the binary",
                               )
+    # Docker image
     image = StringProperty(
                           required=True,
                           default=None,
@@ -123,14 +146,14 @@ class MinecraftServer(Document):
                           name="Image",
                           verbose_name="OS Image",
                           )
-#     container = StringProperty(
-#                           required=True,
-#                           default=None,
-#                           validators=[ ],
-#                           name="Container",
-#                           verbose_name="OS Instance",
-#                           )
-
+    # An actual running docker image
+    container = StringProperty(
+                          required=False,
+                          default=None,
+                          validators=[RegexValidator(r'^[a-f0-9]+$'), ],  # TODO: Add container name validator
+                          name="Container",
+                          verbose_name="OS Instance",
+                          )
     created = DateTimeProperty(
                                 # default=
                                 required=True,

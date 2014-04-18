@@ -245,10 +245,22 @@ class DockerImage(Document):
                                       MaxLengthValidator(512),
                                       MinLengthValidator(8),
                                       ],
-                          name="minecraftUser",
+                          name="supervisordPassword",
                           required=True,
                           default=None,
-                          verbose_name="Supervisord's Management Password Or Hash",
+                          verbose_name="Supervisord's Management Password Or Hash For Config",
+                          )
+    # TODO: Need a better password storage system than a raw DB
+    realSupervisordPasswd = StringProperty(
+                          validators=[
+                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$'),
+                                      MaxLengthValidator(512),
+                                      MinLengthValidator(8),
+                                      ],
+                          name="realSupervisordPassword",
+                          required=True,
+                          default=None,
+                          verbose_name="Supervisord's Management Password",
                           )
     supervisordAutoRestart = BooleanProperty(
                                      name="supervisordAutoRestart",
@@ -408,6 +420,7 @@ class DockerImage(Document):
                           )
 
     def buildMCStartCmd(self):
+        # TODO: Look into making this so it doesn't require java and it's normal crap
         return "'%s' -Xmx%dM -Xms%dM -XX:ParallelGCThreads=%d %s -jar %s %s" % (
                 self.javaBin,
                 self.javaMaxMemMB,
