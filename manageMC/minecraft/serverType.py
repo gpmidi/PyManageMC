@@ -618,11 +618,11 @@ class ServerType(object):
         self.log.info("Going to stop %r", self)
         if warn:
             # Tell the users we are shutting down
-            self.localSay(msg="SERVER SHUTDOWN SOON")
+            self.sendSay("SERVER SHUTDOWN SOON")
             if warnDelaySeconds and warnDelaySeconds > 0:
                 time.sleep(warnDelaySeconds)
         # Gracefully stop the server
-        self.sendStopCommand()
+        r = self.sendStopCommand()
 
         start = time.time()
         if killAfter is not None:
@@ -632,74 +632,31 @@ class ServerType(object):
                     return self.killServer(wait=wait)
 
         # Success
-        return True
+        return r
 
-    def localRunCommand(self, cmd):
-        """ Run a server command. """
-
-#
-#
-#         self.log.debug("Going to run %r on %r", cmd, self)
-#         # Tell the users we are shutting down
-#         args = [
-#               "/usr/bin/screen",
-#               "-p",
-#               "0",
-#               "-S",
-#               self.getSessionName(),
-#               "-X",
-#               "eval",
-#               # FIXME: Validate escaping is working right here
-#               "stuff %r\015" % cmd,
-#               ]
-#         self._logStartWaitError(args=args, cwd=self.serverRoot)
-        return True
-
-    def localSay(self, msg):
-        self.log.info("Going to say %r on %r", msg, self)
-        self.localRunCommand(cmd="say %s" % str(msg))
-        return True
-
-    def localStatus(self):
-        self.log.info("Going to run 'list' on %r", self)
-        self.localRunCommand(cmd="list")
-        return True
-
-    def localForceSave(self):
-        self.log.info("Going to run 'save-all' on %r", self)
-        self.localRunCommand(cmd="save-all")
-        return True
-
-    def localEnableAutoSave(self):
-        self.log.info("Going to run 'save-on' on %r", self)
-        self.localRunCommand(cmd="save-on")
-        return True
-
-    def localDisableAutoSave(self):
-        self.log.info("Going to run 'save-off' on %r", self)
-        self.localRunCommand(cmd="save-off")
-        return True
-
-    def localGetConfigFile(self, filename):
+    def getConfigFile(self, filename):
         """ Return the current contents of the given file. The
-        filename should be relitiave to the server root.
+        filename should be relative to the server root.
         """
         with open(os.path.join(self.serverRoot, filename), 'r') as f:
             return f.read()
 
-    def localUpdateDBConfigFile(self, fileTypeObj):
-        """ Update couchdb with the current contents of the
-        requested config file.
+    def updateDBConfigFile(self, fileTypeObj):
+        """ Update couchdb with the current contents of the requested config
+        file.
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
 
         confTxt = self.localGetConfigFile(filename=fileTypeObj.FILE_NAME)
 
         pk = fileTypeObj.saveConfig(
-                               filepath=os.path.join(self.serverRoot, fileTypeObj.FILE_NAME),
-                               relativepath=fileTypeObj.FILE_NAME,
-                               filedata=confTxt,
-                               )
+               filepath=os.path.join(self.serverRoot, fileTypeObj.FILE_NAME),
+               relativepath=fileTypeObj.FILE_NAME,
+               filedata=confTxt,
+               )
+        return pk
+
+
     @staticmethod
     def _hashFile(filePath):
         with open(filePath, 'rb') as f:
