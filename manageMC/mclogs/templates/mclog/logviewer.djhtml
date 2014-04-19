@@ -1,0 +1,42 @@
+{# Importable log viewer using JS #}
+
+<link rel="stylesheet" type="text/css" href="/css/logviewer.css" title="stylesheet"/>
+
+<div class="logViewer{{ idNum|escapejs }}" class="logViewer">
+    <div id="logViewerLoc{{ idNum|escapejs }}" class="logViewerArea">
+        {% if offByDefault %}
+            <div id="logViewerLoadLine{{ idNum|escapejs }}">
+                <button id="logViewerLoad{{ idNum|escapejs }}">View</button>
+            </div>
+        {% else %}
+            <div id="logViewerLoadLine{{ idNum|escapejs }}"><i>Loading...</i></div>
+        {% endif %}
+    </div>
+
+    <script type="text/javascript" src="/js/logviewer.js"></script>
+
+    {% if offByDefault %}
+        <script type="text/javascript">
+            (function(){
+                setupLogViewer(
+                        "{{ server.name|escapejs }}",
+                        "{{ idNum|escapejs }}",
+                        false,0,
+                        "{{ ioType|escapejs }}"
+                        );
+            })();
+        </script>
+    {% else %}
+        <script type="text/javascript">
+            (function(){
+                setupLogViewer(
+                        "{{ server.name|escapejs }}",
+                        "{{ idNum|escapejs }}",
+                        true,0,
+                        "{{ ioType|escapejs }}"
+                        );
+            })();
+        </script>
+    {% endif %}
+</div>
+

@@ -1,0 +1,14 @@
+div.logViewer {
+    /* FIXME */
+}
+
+div.logViewer div.logViewerArea {
+    border: 1px solid blue;
+    height: 50px;
+    width: 500px;
+    overflow: hidden;
+}
+
+div.partialLogLine {
+    /* FIXME */
+}
