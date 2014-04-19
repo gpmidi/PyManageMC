@@ -204,21 +204,20 @@ class MinecraftServer(Document):
         except ResourceNotFound:
             return None
 
-    def getVolumeLocation(self, volumeName, doCreate=False):
+    def getVolumeLocation(self, volumeName):
+        """
+        @return: <path inside docker instance>
+        """
         assert volumeName in self.getImage().volumes
-        path = os.path.join(
-                            settings.MC_SERVER_PATH,
-                            self.getSessionName(),
-                            volumeName,
-                            )
-        if doCreate and not os.path.exists(path):
-            os.makedirs(path, 0700)
-        return path
+        return self.getImage().volumes[volumeName]
 
-    def getVolumeLocations(self, doCreate=False):
+    def getVolumeLocations(self):
+        """
+        @return: { <volume type name>:<path inside docker instance>,}
+        """
         ret = {}
         for name, intPath in self.getImage().volumes.items():
-            ret[self.getVolumeLocation(volumeName=name, doCreate=doCreate)] = intPath
+            ret[self.getVolumeLocation(volumeName=name)] = intPath
         return ret
 
 
@@ -435,7 +434,7 @@ class MapSave(Document):
                            required=False,
                            )
     version = StringProperty(
-                             verbose_name="Map version identifier for this save",
+                             verbose_name="User defined map version identifier for this save",
                              default='',
                              required=False,
                              )
@@ -444,11 +443,6 @@ class MapSave(Document):
                             default=None,
                             required=True,
                             )
-    mapSize = IntegerProperty(
-                               verbose_name="Map Size",
-                               default=None,
-                               required=True,
-                               )
 
     # When
     created = DateTimeProperty(
@@ -462,9 +456,6 @@ class MapSave(Document):
                                default=None,
                                auto_now=True,
                                )
-
-    def addMap(self, mapFileLoc):
-        raise NotImplementedError("FIXME: Fill in MapSave.addMap")
 
 
 # class MapSave(models.Model):

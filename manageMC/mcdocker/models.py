@@ -427,7 +427,10 @@ class DockerImage(Document):
                 self.javaInitMemMB,
                 self.javaGCThreads,
                 ' '.join(self.javaArgs),
-                '/var/lib/minecraft/minecraft_server.jar',
+                os.path.join(
+                             settings.MINECRAFT_BASE_VOLUME_TYPES['minecraft'],
+                             'minecraft_server.jar',
+                             ),
                 'nogui',
                 )
 

@@ -28,6 +28,7 @@ log = logging.getLogger('mcdocker.tasks')
 import os, os.path, sys  # @UnusedImport
 from StringIO import StringIO
 import tarfile
+import xmlrpclib
 
 # External
 from celery.task import task  # @UnresolvedImport
@@ -239,37 +240,4 @@ def createStartContainer(serverId, client=None):
     log.debug("Results: %r", results)
 
     return server.name
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -154,6 +154,7 @@ INSTALLED_APPS = (
     # Our stuff
     'extern',
     'minecraft',
+    'mcdocker',
     'mclogs',
 )
 

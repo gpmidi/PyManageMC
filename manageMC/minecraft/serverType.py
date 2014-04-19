@@ -30,6 +30,12 @@ import time
 import hashlib
 import difflib
 import xmlrpclib
+from contextlib import contextmanager
+import zipfile  # @UnusedImport
+from StringIO import StringIO  # @UnusedImport
+import tempfile
+import subprocess
+import datetime
 
 # External
 from django.template.loader import render_to_string
@@ -389,7 +395,7 @@ class ServerType(object):
     @property
     def serverRoot(self):
         """ Path to the minecraft instance directory from inside docker """
-        return '/var/lib/minecraft'
+        return self.mcServer.getVolumeLocation('minecraft')
 
     @property
     def volumes(self):
@@ -409,6 +415,160 @@ class ServerType(object):
     def pk(self):
         return self.mcServer._id
 
+    @property
+    def supervisordState(self):
+        # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getState
+        return self.supervisordProxy.supervisor.getState()['statename']
+
+    @property
+    def isRunning(self):
+        """ Make sure the docker instance, supervisord, and minecraft instance
+        are running
+        """
+        # TODO: Look into adding a RESTARTING check
+        return  self.supervisordState == "RUNNING" \
+            and self.minecraftProcState == "RUNNING"
+
+    @property
+    def minecraftProcInfo(self):
+        # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getProcessInfo
+        return self.supervisordProxy.supervisor.getProcessInfo('minecraft')
+
+    @property
+    def supervisordIsRunning(self):
+        # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getProcessInfo
+        return self.supervisordState['statename'] == "RUNNING"
+
+    def runCommand(self, cmd):
+        """ Run a command on the given server """
+        self.log.debug("Going to run %r on %r", cmd, self)
+
+        if not self.isRunning:
+            raise RuntimeError("Expected supervisord to be running for %r" % self)
+
+        self.supervisordProxy.supervisor.sendProcessStdin(
+                  'minecraft',
+                  cmd + "\n",
+                  )
+
+    def sendStopCommand(self):
+        """ Send the stop command to the server """
+        # TODO: Add a wait option
+        self.runCommand('stop')
+
+    def sendSay(self, message):
+        """ Send a message to all as the server """
+        # FIXME: Add validation
+        self.runCommand('say %s' % message)
+
+    def sendSaveOn(self):
+        self.runCommand('save-on')
+
+    def sendSaveOff(self):
+        self.runCommand('save-off')
+
+    def sendSaveAll(self):
+        self.runCommand('save-all')
+
+    @contextmanager
+    def ctxMgrSaveOff(self):
+        """ A context manager that will temp disable map saving while
+        it's running
+        """
+        self.sendSaveAll()
+        self.sendSaveOff()
+        self.sendSaveAll()
+        yield
+        self.sendSaveAll()
+        self.sendSaveOn()
+        self.sendSaveAll()
+
+    def _localGenZipName(self, name, version):
+        return "%09s_%s_%s_%s.zip" % (
+                                      self.pk,
+                                      self.mcServer.bin.typeName,
+                                      datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
+                                      version
+                                      )
+
+    def saveMap(self, msId):
+        ms = MapSave.get(msId)
+        name = self._localGenZipName(ms.name, ms.version)
+        tdir = tempfile.mkdtemp(prefix=str(self.pk))
+        zf = os.path.join(tdir, name)
+
+        try:
+            with self.ctxMgrSaveOff():
+                args = [
+                        '/usr/bin/zip',
+                        '--suffixes',  # Pointless since we don't compress
+                        '.mca',
+                        '--quiet',
+                        '--recurse-paths',
+                        '--archive-comment',
+                        'Minecraft Map For %s on %s' % (
+                                    self.pk,
+                                    datetime.datetime.utcnow().isoformat(),
+                                    ),
+                        '--no-extra',
+                        '--compression-method',
+                        'store',
+                        zf,
+                        ] + self.getMapFilenames()
+                p = subprocess.Popen(args, cwd=self.serverRoot)
+                rc = p.wait()
+                if rc != 0:
+                    raise RuntimeError("Failed to save map. Zip returned %d" % rc)
+
+            with open(zf, 'rb') as f:
+                ms.put_attachment(f, name=name)
+            ms.save()
+
+        finally:
+            try:
+                shutil.rmtree(tdir, True)
+            except:
+                pass
+
+    def loadMap(self, msId):
+        """ Load a saved map into the server. Overwrite if one already exists """
+
+        if self.isRunning:
+            raise RuntimeError("Server %r can't be running during a map load" % self)
+
+        ms = MapSave.get(msId)
+
+        # Remove old world
+        worlds = self.getMapFilenames()
+        for world in worlds:
+            try:
+                shutil.rmtree(world, ignore_errors=True)
+            except Exception, e:
+                self.log.exception("Failed to remove %r with %r", world, e)
+
+        # Extract the world
+        with tempfile.NamedTemporaryFile(
+                                         mode='wb',
+                                         prefix=str(self.pk),
+                                         suffix='.zip',
+                                         ) as f:
+            for block in ms.fetch_attachment(name=ms.name, stream=True):
+                f.write(block)
+            # Must be done inside the namedtemp with
+            args = [
+                    '/usr/bin/unzip',
+                    '-d',
+                    self.serverRoot,
+                    '-o',  # overwrite without warning
+                    '-q',  # quiet
+                    f.name,
+                    ] + self.getMapFilenames()
+            p = subprocess.Popen(args, cwd=self.serverRoot)
+            rc = p.wait()
+            if rc != 0:
+                raise RuntimeError("Failed to save map. Zip returned %d" % rc)
+
+
     def getMapFilenames(self):
         # TODO: Support world names beyond 'world'
         return [
@@ -418,15 +578,14 @@ class ServerType(object):
                 # os.path.join(self.serverRoot, 'world_the_end'),
                 ]
 
-    # Tasks that should only be performed by the locally running Celery daemon
-    def localInit(self):
+
+    def init(self):
         """ Perform first-round initialization tasks """
         from shutil import copyfile
 
         for path in [
                      # Needs to be before most others as they are subdirectories
                      self.serverRoot,
-                     self.getScreenRoot(),
                      ]:
             try:
                 os.makedirs(path, 0770)
@@ -441,143 +600,37 @@ class ServerType(object):
                               ),
                  )
 
-        self.localUpdateScreenConfig()
-
-    def localGetScreenConfig(self):
-        return render_to_string('screen.config', {
-                                                 'screenDir':self.getScreenRoot(),
-                                                 # TODO: Add ability to change doInitialHardCopy setting
-                                                 'doInitialHardCopy':True,
-                                                 },)
-
-    def localUpdateScreenConfig(self):
-        # Do this first so we don't spend ages with the file empty
-        toWrite = self.localGetScreenConfig()
-        with open(self.getServerScreenConfig(), 'wb') as f:
-            f.write(toWrite)
-
-    def localLoadMap(self, mapSave):
-        """ Load a saved map into the server. Overwrite if one already exists """
-        # Remove old world
-        worlds = self.getMapFilenames()
-        for world in worlds:
-            try:
-                shutil.rmtree(world, ignore_errors=True)
-            except Exception, e:
-                self.log.exception("Failed to remove %r with %r", world, e)
-
-        from zipfile import ZipFile
-        zipLoc = os.path.join(settings.MC_MAP_SAVE_PATH, mapSave.zipName)
-        zipF = ZipFile(zipLoc, 'r')
-        zipF.extractall(self.serverRoot)
-        zipF.close()
-
-    def _localGenZipName(self, name, version):
-        import datetime
-        return "%09s_%s_%s_%s.zip" % (
-                                      self.pk,
-                                      self.mcServer.bin.typeName,
-                                      datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
-                                      version
-                                      )
-
-    def localSaveMap(self, name, desc='', version='', owner=None, forceSaveBefore=True):
-        """ Save the map in the map archive
-        @param forceSaveBefore: If True, run 'save-all' on the server prior to making a ZIP of the map files on disk.
-        """
-        from tempfile import mkdtemp
-        from django.core.files import File
-        from minecraft.models import MapSave  # @Reimport
-
-        if forceSaveBefore:
-            self.localForceSave()
-
-        zipName = self._localGenZipName(name, version)
-        mapsave = MapSave(
-                          name=name,
-                          desc=desc,
-                          version=version,
-                          owners=owner,
-                          )
-
-        orgMapPaths = []
-        for mapPath in self.getMapFilenames():
-            assert os.access(mapPath, os.R_OK | os.W_OK), "Lacking sufficient access to the map files in %r" % mapPath
-            orgMapPaths.append(os.path.relpath(mapPath, self.serverRoot))
-
-        tmpdir = mkdtemp()
-        try:
-            zipTmpPath = os.path.join(tmpdir, zipName)
-            args = [
-                    '/usr/bin/zip',
-                    '-r',
-                    zipTmpPath,
-                    ] + orgMapPaths
-            self._logStartWait(args=args, cwd=self.serverRoot)
-
-            mapsave.zip.save(os.path.basename(zipName), File(open(zipTmpPath, 'rb')))
-            mapsave.save()
-
-            return mapsave.pk
-        finally:
-            self.log.debug("Cleaning up %r", tmpdir)
-            shutil.rmtree(tmpdir, ignore_errors=True)
-
-    def _simpleStartWait(self, args):
-        """ Run the requested app. Collect all output and RC. """
-        prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-        stdout, stderr = prg.communicate()
-        return dict(
-                    rc=prg.returncode,
-                    stdout=stdout,
-                    stderr=stderr,
-                    )
-
-    def _logStartWait(self, args, cwd=None):
-        """ Run the requested app. Log all output and RC. """
-        self.log.debug("Running %r in %r", args, cwd)
-        # Run it
-        prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd)
-        # Log IO
-        r = _IOLoggerThread(stream=prg.stdout, prg=prg, name="%s.stdout" % args[0])
-        r.start()
-        r = _IOLoggerThread(stream=prg.stderr, prg=prg, name="%s.stderr" % args[0])
-        r.start()
-
-        rc = prg.poll()
-        while rc is None:
-            self.log.debug("Still waiting for %r to complete" % args)
-            rc = prg.poll()
-        self.log.debug("RC from %r is %r", args, rc)
-        return rc
-
-    def _logStartWaitError(self, args, cwd=None):
-        """ Run the requested app. Log all output and RC. Generate an error if RC!=0. """
-        rc = self._logStartWait(args=args, cwd=cwd)
-        if rc != 0:
-            self.log.debug("Command %r failed with an RC of %r", args, rc)
-            raise RuntimeError("Return code from %r non-zero: %r" % (args, rc))
-        return rc
-
-    def localStartServer(self):
+    def startServer(self, wait=True):
         """ Start a server
         @return: True=Start OK, False=Start Failed
         """
         self.log.info("Going to start %r", self)
+        return self.supervisordProxy.supervisor.startProcess('minecraft', wait)
 
+    def killServer(self, wait=True):
+        """ Kill a server
+        @return: True=Kill OK, False=Kill Failed
+        """
+        self.log.info("Going to stop %r", self)
+        return self.supervisordProxy.supervisor.stopProcess('minecraft', wait)
 
-
-        return True
-
-    def localStopServer(self, warn=True, warnDelaySeconds=0):
+    def stopServer(self, killAfter=60, wait=True, warn=True, warnDelaySeconds=0):
         self.log.info("Going to stop %r", self)
         if warn:
             # Tell the users we are shutting down
-            self.localSay(msg="SERVER SHUTDOWN REQUESTED")
+            self.localSay(msg="SERVER SHUTDOWN SOON")
             if warnDelaySeconds and warnDelaySeconds > 0:
                 time.sleep(warnDelaySeconds)
         # Gracefully stop the server
-        self.localRunCommand(cmd="stop")
+        self.sendStopCommand()
+
+        start = time.time()
+        if killAfter is not None:
+            while self.isRunning:
+                time.sleep(1)
+                if start + killAfter > time.time():
+                    return self.killServer(wait=wait)
+
         # Success
         return True
 
@@ -719,6 +772,43 @@ class ServerType(object):
         results['oldHashFS'] = results['newHashFS']
         results['oldHashDB'] = results['newFileFS']
         return ServerType.SuccessConfigUpdateResult(**results)
+
+
+#     def _simpleStartWait(self, args):
+#         """ Run the requested app. Collect all output and RC. """
+#         prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+#         stdout, stderr = prg.communicate()
+#         return dict(
+#                     rc=prg.returncode,
+#                     stdout=stdout,
+#                     stderr=stderr,
+#                     )
+#
+#     def _logStartWait(self, args, cwd=None):
+#         """ Run the requested app. Log all output and RC. """
+#         self.log.debug("Running %r in %r", args, cwd)
+#         # Run it
+#         prg = subprocess.Popen(args, stderr=subprocess.PIPE, stdout=subprocess.PIPE, cwd=cwd)
+#         # Log IO
+#         r = _IOLoggerThread(stream=prg.stdout, prg=prg, name="%s.stdout" % args[0])
+#         r.start()
+#         r = _IOLoggerThread(stream=prg.stderr, prg=prg, name="%s.stderr" % args[0])
+#         r.start()
+#
+#         rc = prg.poll()
+#         while rc is None:
+#             self.log.debug("Still waiting for %r to complete" % args)
+#             rc = prg.poll()
+#         self.log.debug("RC from %r is %r", args, rc)
+#         return rc
+#
+#     def _logStartWaitError(self, args, cwd=None):
+#         """ Run the requested app. Log all output and RC. Generate an error if RC!=0. """
+#         rc = self._logStartWait(args=args, cwd=cwd)
+#         if rc != 0:
+#             self.log.debug("Command %r failed with an RC of %r", args, rc)
+#             raise RuntimeError("Return code from %r non-zero: %r" % (args, rc))
+#         return rc
 
     # Override all var below this point
 
