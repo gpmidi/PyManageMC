@@ -1440,4 +1440,72 @@ class MinecraftServerProperties(Document):
             )
 
 
+class GenericConfig(Document):
+    """ A generic config file for a Minecraft server
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='ConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default=None,
+                                required=False,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment(self.fileName, stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name=self.fileName,
+                                )
+
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment(self.fileName + '.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name=self.fileName + '.old',
+                                )
 

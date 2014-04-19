@@ -172,6 +172,9 @@ class ConfigFileType(NoOverwriteFileType):
     updated by the server process
     """
 
+    def getModelClass(self):
+        return self.GenericConfig
+
 
 class _serverTypeType(type):
     def __init__(cls, name, bases, dct):
