@@ -480,6 +480,67 @@ class ServerType(object):
         self.sendSaveOn()
         self.sendSaveAll()
 
+    def clearMCLogs(self):
+        log.debug("Clearing logs for %r", self)
+        ret = self.supervisordProxy.supervisor.clearProcessLogs('minecraft')
+        if ret:
+            log.debug("Successfully cleared logs for %r", self)
+        else:
+            log.warn("Failed to clear logs for %r", self)
+        return ret
+
+    def clearAllLogs(self):
+        log.debug("Clearing all logs for %r", self)
+        ret = self.supervisordProxy.supervisor.clearAllProcessLogs()
+        if ret:
+            log.debug("Successfully cleared all logs for %r", self)
+        else:
+            log.warn("Failed to clear all logs for %r", self)
+        return ret
+
+    def readMCLog(self, length, offset=0, ioType='stdout'):
+        """ Read the given location from Supervisord's Minecraft IO
+        log files.
+        @return: String with the requested bytes
+        """
+        # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.readProcessStdoutLog
+        if ioType == 'stdout':
+            method = self.supervisordProxy.supervisor.readProcessStdoutLog
+        elif ioType == 'stderr':
+            method = self.supervisordProxy.supervisor.readProcessStderrLog
+        else:
+            raise ValueError("Stream type %r is not valid" % ioType)
+
+        return method(
+                    name='minecraft',
+                    offset=offset,
+                    length=length,
+                    )
+
+    def tailMCLog(self, length, offset=0, ioType='stdout'):
+        """ Read the given location from Supervisord's Minecraft IO
+        log files.
+        @return: array result [string bytes, int offset, bool overflow]
+        """
+        # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.tailProcessStdoutLog
+        if ioType == 'stdout':
+            method = self.supervisordProxy.supervisor.tailProcessStdoutLog
+        elif ioType == 'stderr':
+            method = self.supervisordProxy.supervisor.tailProcessStderrLog
+        else:
+            raise ValueError("Stream type %r is not valid" % ioType)
+
+        returnedBytes, newOffset, hasOverflow = method(
+                                            name='minecraft',
+                                            offset=offset,
+                                            length=length,
+                                            )
+        log.debug(
+            "Got %d bytes with a new offset of %d and overflow=%r",
+            len(returnedBytes), newOffset, hasOverflow,
+            )
+        return (returnedBytes, int(newOffset), bool(hasOverflow))
+
     def _localGenZipName(self, name, version):
         return "%09s_%s_%s_%s.zip" % (
                                       self.pk,

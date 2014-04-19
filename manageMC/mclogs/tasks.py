@@ -25,15 +25,18 @@ import logging
 log = logging.getLogger('mclogs.tasks')
 
 # Built-in
-import os, os.path, sys
-import datetime, time
+import os, os.path, sys  # @UnusedImport
+import datetime, time  # @UnusedImport
 import re
 
 # External
 from celery.task import task  # @UnresolvedImport
-from celery.contrib.batches import Batches
+from celery.contrib.batches import Batches  # @UnresolvedImport
+from django.conf import settings
 
 # Ours
+from minecraft.serverType import getServerFromModel
+from minecraft.models import MinecraftServer
 
 
 @task(expires=60 * 60 * 24 * 14)
@@ -46,14 +49,53 @@ def logLineInfo(**kwargs):
     """ Notify the admin via Django messages that a error/warn/info occurred """
 
 
+@task(expires=60 * 60 * 24 * 14)
+def fetchSegment(serverId, length, offset=0, tail=True, ioType='stdout'):
+    """ Fetch a segment of log files from the server's supervisord instance
+    @return: dict(returnedBytes,newOffset=None,hasOverflow=None)
+    """
+    assert ioType in ['stdout', 'stdin']
+    mcServer = MinecraftServer.get(serverId)
+    serverType = getServerFromModel(mcServer)
 
-PARSE_LOG_LINE = re.compile(r'^\[(?P<hour>\d+):(?P<minute>\d+):(?P<second>\d+)\] \[(?P<source>.+)\/(?P<level>[^ ]+)\]\: (?P<message>.*)\s*$')
-MC_LOG_LEVELS = {
-              'DEBUG':'Debug',
-              'INFO':'Info',
-              'WARN':'Warning',
-              'ERROR':'Error',
-              }
+    if serverType.supervisordState != 'RUNNING':
+        raise RuntimeError(
+           "The server %r(%r) is not running supervisord: Status=%r" % (
+                  mcServer,
+                  serverType,
+                  serverType.supervisordState,
+                  ))
+    else:
+        log.debug("Supervisord on %r is running", serverType)
+
+    if tail:
+        returnedBytes, newOffset, hasOverflow = serverType.tailMCLog(
+                                                       offset=offset,
+                                                       length=length,
+                                                       ioType=ioType,
+                                                       )
+        return dict(
+                   returnedBytes=returnedBytes,
+                   newOffset=newOffset,
+                   hasOverflow=hasOverflow,
+                   )
+    else:
+        returnedBytes = serverType.readMCLog(
+                                   offset=offset,
+                                   length=length,
+                                   ioType=ioType,
+                                   )
+        return dict(
+                   returnedBytes=returnedBytes,
+                   newOffset=None,
+                   hasOverflow=None,
+                   )
+
+
+
+#===============================================================================
+# Below here currently unused
+#===============================================================================
 @task(expires=60 * 60 * 24 * 14)
 def logLine(serverId, line, flow, whenReal=None, when=None, whenCaptured=None, **kwargs):
     if whenCaptured is None:
@@ -76,8 +118,8 @@ def logLine(serverId, line, flow, whenReal=None, when=None, whenCaptured=None, *
                )
     for k, v in kwargs.items():
         kws[k] = v
-    
-    parsed = PARSE_LOG_LINE.match(line)
+
+    parsed = settings.PARSE_LOG_LINE.match(line)
     if parsed:
         d = parsed.groupdict()
         try:
@@ -85,7 +127,7 @@ def logLine(serverId, line, flow, whenReal=None, when=None, whenCaptured=None, *
         except:
             pass
         if 'level' in d:
-            kws['level'] = MC_LOG_LEVELS.get(d['level'], None)
+            kws['level'] = settings.MC_LOG_LEVELS.get(d['level'], None)
         if 'message' in d:
             kws['message'] = d['message']
         if 'source' in d:

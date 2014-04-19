@@ -7,6 +7,7 @@ Created on Jul 21, 2013
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
+import re
 
 DEBUG = False
 # DEBUG = True
@@ -15,7 +16,6 @@ DAJAXICE_DEBUG = DEBUG
 DAJAXICE_NOTIFY_EXCEPTIONS = DEBUG
 SOCIAL_AUTH_RAISE_EXCEPTIONS = DEBUG
 RAISE_EXCEPTIONS = DEBUG
-
 
 # ADMINS = (
 #     # ('Your Name', 'your_email@example.com'),
@@ -300,6 +300,14 @@ MINECRAFT_DEFAULT_PORT_RANGE_END = 25589
 # System
 MINECRAFT_DEFAULT_PORT_SSH = 22
 MINECRAFT_DEFAULT_PORT_SUPVD = 9001
+
+PARSE_LOG_LINE = re.compile(r'^\[(?P<hour>\d+):(?P<minute>\d+):(?P<second>\d+)\] \[(?P<source>.+)\/(?P<level>[^ ]+)\]\: (?P<message>.*)\s*$')
+MC_LOG_LEVELS = {
+              'DEBUG':'Debug',
+              'INFO':'Info',
+              'WARN':'Warning',
+              'ERROR':'Error',
+              }
 
 
 ##################################################################################
