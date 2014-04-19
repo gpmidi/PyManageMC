@@ -547,6 +547,532 @@ class MapSave(Document):
 #                                        )
 
 
+class BannedIPConfig(DocumentSchema):
+    """
+  {
+    "ip": "1.2.3.4",
+    "created": "2014-04-09 22:43:45 -0400",
+    "source": "(Unknown)",
+    "expires": "forever",
+    "reason": "Banned by an operator."
+  }
+    """
+    ip = StringProperty(
+                    verbose_name='Reason',
+                    default=None,
+                    required=True,
+                    name='ip',
+                    )
+    created = StringProperty(
+                    verbose_name='Reason',
+                    required=True,
+                    name='created',
+                    )
+    source = StringProperty(
+                    verbose_name='Reason',
+                    default='(Unknown)',
+                    required=True,
+                    name='source',
+                    )
+    expires = StringProperty(
+                    verbose_name='Reason',
+                    default='forever',
+                    required=True,
+                    name='expires',
+                    )
+    reason = StringProperty(
+                    verbose_name='Reason',
+                    default='Banned by an operator.',
+                    required=True,
+                    name='reason',
+                    )
+
+class BannedIPsConfig(Document):
+    """ A Minecraft server banned IPs
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='BannedIPsConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    banned = SchemaListProperty(
+                                BannedIPConfig,
+                                verbose_name="Banned IPs",
+                                default=[],
+                                required=True,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('banned-ips.json', stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='banned-ips.json',
+                                )
+
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('banned-ips.json.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='banned-ips.json.old',
+                                )
+
+
+class BannedPlayerConfig(DocumentSchema):
+    """
+  {
+    "uuid": "8b489868-248c-4744-a32d-021f0d7f7f50",
+    "name": "abc12345",
+    "created": "2014-04-09 22:43:44 -0400",
+    "source": "(Unknown)",
+    "expires": "forever",
+    "reason": "Banned by an operator."
+  },
+
+    """
+    name = StringProperty(
+                    verbose_name='Username',
+                    default=None,
+                    required=True,
+                    name='name',
+                    )
+    uuid = StringProperty(
+                    verbose_name='UUID',
+                    default=None,
+                    required=True,
+                    name='uuid',
+                    )
+    created = StringProperty(
+                    verbose_name='Reason',
+                    required=True,
+                    name='created',
+                    )
+    source = StringProperty(
+                    verbose_name='Reason',
+                    default='(Unknown)',
+                    required=True,
+                    name='source',
+                    )
+    expires = StringProperty(
+                    verbose_name='Reason',
+                    default='forever',
+                    required=True,
+                    name='expires',
+                    )
+    reason = StringProperty(
+                    verbose_name='Reason',
+                    default='Banned by an operator.',
+                    required=True,
+                    name='reason',
+                    )
+
+
+class BannedPlayersConfig(Document):
+    """ A Minecraft server banned players
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='BannedPlayersConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    banned = SchemaListProperty(
+                                BannedPlayerConfig,
+                                verbose_name="Banned Players",
+                                default=[],
+                                required=True,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('banned-players.json', stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='banned-players.json',
+                                )
+
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('banned-players.json.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='banned-players.json.old',
+                                )
+
+
+class OpConfig(DocumentSchema):
+    """
+  {
+    "uuid": "85ff1e2c-3fc2-4640-a74f-2c24a834f285",
+    "name": "abc123",
+    "level": 3
+  }
+    """
+    name = StringProperty(
+                    verbose_name='Username',
+                    default=None,
+                    required=True,
+                    name='name',
+                    )
+    uuid = StringProperty(
+                    verbose_name='UUID',
+                    default=None,
+                    required=True,
+                    name='uuid',
+                    )
+    level = IntegerProperty(
+                            verbose_name='Level',
+                            default=3,
+                            required=True,
+                            name='level'
+                            )
+
+
+class OpsConfig(Document):
+    """ A Minecraft server Op players
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='OpsConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    oplist = SchemaListProperty(
+                                OpConfig,
+                                verbose_name="Op'ed Players",
+                                default=[],
+                                required=True,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('ops.json', stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='ops.json',
+                                )
+
+    # Not using revisions because this guarantees availability of it
+    # and because it's useful for change management
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('ops.json.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='ops.json.old',
+                                )
+
+
+class WhitelistUserConfig(DocumentSchema):
+    """
+  {
+    "uuid": "178818cd-2f9f-46e8-add5-1cfd1e19f0f1",
+    "name": "bcd2134"
+  },
+    """
+    name = StringProperty(
+                    verbose_name='Username',
+                    default=None,
+                    required=True,
+                    name='name',
+                    )
+    uuid = StringProperty(
+                    verbose_name='UUID',
+                    default=None,
+                    required=True,
+                    name='uuid',
+                    )
+
+
+class WhitelistConfig(Document):
+    """ A Minecraft server's whitelisted players
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='WhiteListConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    users = SchemaListProperty(
+                                WhitelistUserConfig,
+                                verbose_name="Whitelisted Players",
+                                default=[],
+                                required=True,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('whitelist.json', stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='whitelist.json',
+                                )
+
+    # Not using revisions because this guarantees availability of it
+    # and because it's useful for change management
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('whitelist.json.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='whitelist.json.old',
+                                )
+
+
+class UserCacheConfig(DocumentSchema):
+    """
+ {u'expiresOn': u'2014-05-09 22:43:45 -0400',
+  u'name': u'Evangelion1990',
+  u'uuid': u'cab6dbc0-130b-4da6-8e35-28f83935ddad'
+ },
+    """
+    name = StringProperty(
+                    verbose_name='Username',
+                    default=None,
+                    required=True,
+                    name='name',
+                    )
+    uuid = StringProperty(
+                    verbose_name='UUID',
+                    default=None,
+                    required=True,
+                    name='uuid',
+                    )
+    expiresOn = StringProperty(
+                    verbose_name='Expires On',
+                    default=None,
+                    required=True,
+                    name='expiresOn',
+                    )
+
+
+class UsersCacheConfig(Document):
+    """ A Minecraft server players cache
+    """
+
+    @classmethod
+    def makeServerID(cls, minecraftServerPK):
+        """ Create the _id used for a record given the server info """
+        return "%s-%s" % (cls.__name__, minecraftServerPK)
+
+    # Standard Info
+    nc_configFileTypeName = StringProperty(
+                                        verbose_name='Config File Type Name',
+                                        default='UsersCacheConfigFileType',
+                                        required=True,
+                                        )
+
+    nc_minecraftServerPK = StringProperty(
+                                        verbose_name='MinecraftServer\'s PK',
+                                        required=True,
+                                        )
+
+    # When
+    nc_created = DateTimeProperty(
+                               verbose_name="Date Created",
+                               required=True,
+                               auto_now_add=True,
+                               )
+    nc_modified = DateTimeProperty(
+                               verbose_name="Date Modified",
+                               required=False,
+                               default=None,
+                               auto_now=True,
+                               )
+    nc_lastHash = StringProperty(
+                                verbose_name="Last Hash",
+                                default=None,
+                                required=False,
+                                )
+
+    users = SchemaListProperty(
+                                UserCacheConfig,
+                                verbose_name="Cached Players",
+                                default=[],
+                                required=True,
+                                )
+
+    def getConfigFile(self):
+        try:
+            return str(self.fetch_attachment('usercache.json', stream=False))
+        except Exception as e:
+            return None
+
+    def putConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='usercache.json',
+                                )
+
+    # Not using revisions because this guarantees availability of it
+    # and because it's useful for change management
+    def getLastConfigFile(self):
+        try:
+            return str(self.fetch_attachment('usercache.json.old', stream=False))
+        except Exception as e:
+            return None
+
+    def putLastConfigFile(self, data):
+        return self.put_attachment(
+                                content=str(data),
+                                name='usercache.json.old',
+                                )
+
+
 class MinecraftServerProperties(Document):
     """ A Minecraft server config file
     """
@@ -554,8 +1080,6 @@ class MinecraftServerProperties(Document):
     @classmethod
     def makeServerID(cls, minecraftServerPK):
         """ Create the _id used for a record given the server info """
-        from minecraft.serverType import ServerProperitiesConfigFileType
-        # FIXME: Should 'cls' be 'ServerProperitiesConfigFileType'?
         return "%s-%s" % (cls.__name__, minecraftServerPK)
 
     # Standard Info

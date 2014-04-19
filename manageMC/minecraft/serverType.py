@@ -656,41 +656,6 @@ class ServerType(object):
                )
         return pk
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @staticmethod
     def _hashFile(filePath):
         with open(filePath, 'rb') as f:
@@ -817,25 +782,34 @@ class StockServerType(ServerType):
         ServerType.__init__(self, *args, **kw)
 
 
-class BannedIPSConfigFileType(ConfigFileType):
+class BannedIPsConfigFileType(ConfigFileType):
     # File match stuff
-    FILE_MATCH = re.compile(r'^banned\-ips\.txt$')
+    FILE_MATCH = re.compile(r'^banned\-ips\.json$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
+    def getModelClass(self):
+        return BannedIPsConfig
 
 
 class BannedPlayersConfigFileType(ConfigFileType):
     # File match stuff
-    FILE_MATCH = re.compile(r'^banned\-players\.txt$')
+    FILE_MATCH = re.compile(r'^banned\-players\.json')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
+    def getModelClass(self):
+        return BannedPlayersConfig
 
 
 class OpsConfigFileType(ConfigFileType):
     # File match stuff
-    FILE_MATCH = re.compile(r'^ops\.txt$')
+    FILE_MATCH = re.compile(r'^ops\.json')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
+    def getModelClass(self):
+        return OpsConfig
 
 
 class ServerProperitiesConfigFileType(ConfigFileType):
@@ -849,7 +823,6 @@ class ServerProperitiesConfigFileType(ConfigFileType):
     TEMPLATE_INIT = 'configs/server.properties'
 
     def getModelClass(self):
-        from minecraft.models import MinecraftServerProperties
         return MinecraftServerProperties
 
     def parseConfig(self, filepath, relativepath, filedata):
@@ -957,9 +930,22 @@ class ServerProperitiesConfigFileType(ConfigFileType):
 
 class WhiteListConfigFileType(ConfigFileType):
     # File match stuff
-    FILE_MATCH = re.compile(r'^white\-list\.txt$')
+    FILE_MATCH = re.compile(r'^whitelist\.json$')
     # Standard stuff
     SERVERTYPE = StockServerType.TYPE
+
+    def getModelClass(self):
+        return self.WhitelistConfig
+
+
+class UsersCacheConfigFileType(ConfigFileType):
+    # File match stuff
+    FILE_MATCH = re.compile(r'^usercache\.json$')
+    # Standard stuff
+    SERVERTYPE = StockServerType.TYPE
+
+    def getModelClass(self):
+        return self.UsersCacheConfig
 
 
 def getServerFromModel(mcServer):
