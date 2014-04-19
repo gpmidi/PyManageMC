@@ -122,31 +122,39 @@ class FileType(object):
     def saveConfig(self, filepath, relativepath, filedata):
         """ Parse the given config file and then save the results to
         the DB """
-        parsed = self.parseConfig(filepath, relativepath, filedata)
-        cls = self.getModelClass()
-        obj = cls.get_or_create(self.getModelClassID())
+        cls, obj = self.getMyModel()
 
+        # Common attrs
+        obj.nc_fileName = relativepath
+        obj.nc_minecraftServerPK = self.minecraftServerObj.pk
+        obj.nc_lastHash = hashlib.new('sha512', filedata).hexdigest().lower()
+
+        parsed = self.parseConfig(filepath, relativepath, filedata)
         for k, v in parsed.items():
             setattr(obj, k, v)
 
+        # Need to be sure that the doc exists before we can attach anything
         obj.save()
+        obj.put_attachment(filedata, name=filepath)
+        obj.save()
+
         return self.getModelClassID()
 
     def renderConfig(self, relativepath):
-        assert self.TEMPLATE_INIT, "%r needs a valid TEMPLATE_INIT" % self
-
         cls = self.getModelClass()
         obj = cls.get_or_create(self.getModelClassID())
-
-        return render_to_string(
-                              self.TEMPLATE_INIT,
-                              dict(
-                                   fileType=self,
-                                   fileRelPath=relativepath,
-                                   fileData=obj,
-                                   server=self.minecraftServerObj,
-                                   ),
-                              )
+        if self.TEMPLATE_INIT is None:
+            return str(obj.fetch_attachment(obj.nc_fileName, stream=False))
+        else:
+            return render_to_string(
+                                  self.TEMPLATE_INIT,
+                                  dict(
+                                       fileType=self,
+                                       fileRelPath=relativepath,
+                                       fileData=obj,
+                                       server=self.minecraftServerObj,
+                                       ),
+                                  )
 
     def writeConfig(self, filepath, relativepath):
         """ Write this config file data to the given file """
@@ -195,36 +203,48 @@ class ServerType(object):
     mcServer = None
 
     class ConfigUpdateResult(object):
-        def __init__(self, oldHashDB, oldHashFS, oldFileDB, oldFileFS, hashType='SHA512'):
+        """ Config update result """
+        def __init__(
+                    self,
+                    oldHashDB=None,
+                    oldHashFS=None,
+                    oldFileDB=None,
+                    oldFileFS=None,
+                    # hashType='SHA512',
+                    newHashDB=None,
+                    newFileDB=None,
+                    newHashFS=None,
+                    newFileFS=None,
+                    fileDiff=None,
+                    ):
+            """ Create config update result
+            old*DB = What was in the DB before the changes we're applying were made
+            old*FS = What was on the FS before the changes we're applying were applies
+            new*DB = What is in the DB post-change
+            new*FS = What is in the FS post-change
+            """
             self.oldHashDB = oldHashDB
             self.oldHashFS = oldHashFS
             self.oldFileDB = oldFileDB
             self.oldFileFS = oldFileFS
-            self.hashType = hashType
-
-
-    class SuccessConfigUpdateResult(ConfigUpdateResult):
-        def __init__(self, newHashDB, newFileDB, newHashFS, newFileFS, **kw):
-            ServerType.ConfigUpdateResult.__init__(self, **kw)
+            # self.hashType = hashType
             self.newHashDB = newHashDB
             self.newFileDB = newFileDB
             self.newHashFS = newHashFS
             self.newFileFS = newFileFS
-
-
-    class FailConfigUpdateResult(ConfigUpdateResult):
-        def __init__(self, newHashDB, newFileDB, fileDiff, **kw):
-            ServerType.ConfigUpdateResult.__init__(self, **kw)
-            self.newHashDB = newHashDB
-            self.newFileDB = newFileDB
             self.fileDiff = fileDiff
 
 
+    class SuccessConfigUpdateResult(ConfigUpdateResult):
+        pass
+
+
+    class FailConfigUpdateResult(ConfigUpdateResult):
+        pass
+
+
     class ExistsFailConfigUpdateResult(ConfigUpdateResult):
-        def __init__(self, newHashDB, newFileDB, **kw):
-            ServerType.ConfigUpdateResult.__init__(self, **kw)
-            self.newHashDB = newHashDB
-            self.newFileDB = newFileDB
+        pass
 
 
     def __init__(self, mcServer):
@@ -624,7 +644,7 @@ class ServerType(object):
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
 
-        confTxt = self.localGetConfigFile(filename=fileTypeObj.FILE_NAME)
+        confTxt = self.getConfigFile(filename=fileTypeObj.FILE_NAME)
 
         pk = fileTypeObj.saveConfig(
                filepath=os.path.join(self.serverRoot, fileTypeObj.FILE_NAME),
@@ -649,21 +669,25 @@ class ServerType(object):
         relPath = fileTypeObj.FILE_NAME
         (cls, dbObj) = fileTypeObj.getMyModel()
 
+        # old*DB = What was in the DB before the changes we're applying were made
+        # old*FS = What was on the FS before the changes we're applying were applies
+        # new*DB = What is in the DB post-change
+        # new*FS = What is in the FS post-change
         results = dict(
                        oldHashDB=dbObj.nc_lastHash,
                        oldHashFS=None,
                        oldFileDB=dbObj.getConfigFile(),
                        oldFileFS=None,
                        # hashType='SHA512',
+                       newHashDB=None,
+                       newFileDB=None,
+                       newHashFS=None,
+                       newFileFS=None,
+                       fileDiff=None,
                        )
 
         if os.path.exists(filePath):
             results['oldHashFS'], results['oldFileFS'] = self._hashFile(filePath)
-
-        newCfg = fileTypeObj.renderConfig(relativepath=relPath)
-        h = hashlib.new('sha512', newCfg)
-        results['newHashDB'] = h.hexdigest().lower()
-        results['newFileDB'] = newCfg
 
         # Make sure the file matches what we were told to expect
         if  results['oldHashDB'] is None:
@@ -676,10 +700,12 @@ class ServerType(object):
                     return ServerType.ExistsFailConfigUpdateResult(**results)
             else:
                 log.debug("Config file %r doesn't exist as was expected. ", filePath)
+                # Safe to proceed
         else:
             log.debug("I've been told %r will exist and that it's sha512 is %r", fileTypeObj, results['oldHashDB'])
             if results['oldHashFS'] == results['oldHashDB']:
                 log.debug("SHA512 checksums match %r=%r", results['oldHashFS'], results['oldHashDB'])
+                # Safe to proceed
             else:
                 log.info("SHA512 checksums for %r don't match: %r!=%r", filePath, results['oldHashFS'], results['oldHashDB'])
                 if errorOnFail:
@@ -696,14 +722,25 @@ class ServerType(object):
                         results['fileDiff'] = None
                     return ServerType.FailConfigUpdateResult(**results)
 
+        # Just have to hope that this is close enough to atomic
         fileTypeObj.writeConfig(
                                 filepath=filePath,
                                 relativepath=relPath,
                                 )
 
         results['newHashFS'], results['newFileFS'] = self._hashFile(filePath)
-        results['oldHashFS'] = results['newHashFS']
-        results['oldHashDB'] = results['newFileFS']
+
+        newCfg = fileTypeObj.renderConfig(relativepath=relPath)
+        h = hashlib.new('sha512', newCfg)
+        results['newHashDB'] = h.hexdigest().lower()
+        results['newFileDB'] = newCfg
+        dbObj.save()
+
+        dbObj.put_attachment(results['newFileDB'], name=dbObj.filepath)
+        dbObj.nc_lastHash = results['newHashDB']
+
+        dbObj.save()
+
         return ServerType.SuccessConfigUpdateResult(**results)
 
     # Override all var below this point

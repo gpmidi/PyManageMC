@@ -606,6 +606,7 @@ class BannedIPsConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -625,7 +626,11 @@ class BannedIPsConfig(Document):
                                 default=None,
                                 required=False,
                                 )
-
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='banned-ips.json',
+                                required=False,
+                                )
     banned = SchemaListProperty(
                                 BannedIPConfig,
                                 verbose_name="Banned IPs",
@@ -726,6 +731,7 @@ class BannedPlayersConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -745,7 +751,11 @@ class BannedPlayersConfig(Document):
                                 default=None,
                                 required=False,
                                 )
-
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='banned-players.json',
+                                required=False,
+                                )
     banned = SchemaListProperty(
                                 BannedPlayerConfig,
                                 verbose_name="Banned Players",
@@ -825,6 +835,7 @@ class OpsConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -844,7 +855,11 @@ class OpsConfig(Document):
                                 default=None,
                                 required=False,
                                 )
-
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='ops.json',
+                                required=False,
+                                )
     oplist = SchemaListProperty(
                                 OpConfig,
                                 verbose_name="Op'ed Players",
@@ -919,6 +934,7 @@ class WhitelistConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -938,7 +954,11 @@ class WhitelistConfig(Document):
                                 default=None,
                                 required=False,
                                 )
-
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='whitelist.json',
+                                required=False,
+                                )
     users = SchemaListProperty(
                                 WhitelistUserConfig,
                                 verbose_name="Whitelisted Players",
@@ -1019,6 +1039,7 @@ class UsersCacheConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -1038,7 +1059,11 @@ class UsersCacheConfig(Document):
                                 default=None,
                                 required=False,
                                 )
-
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='usercache.json',
+                                required=False,
+                                )
     users = SchemaListProperty(
                                 UserCacheConfig,
                                 verbose_name="Cached Players",
@@ -1089,12 +1114,11 @@ class MinecraftServerProperties(Document):
                                         default='ServerProperitiesConfigFileType',
                                         required=True,
                                         )
-
-    nc_minecraftServerPK = IntegerProperty(
+    nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
-
     # When
     nc_created = DateTimeProperty(
                                verbose_name="Date Created",
@@ -1107,9 +1131,15 @@ class MinecraftServerProperties(Document):
                                default=None,
                                auto_now=True,
                                )
+    # File attrs
     nc_lastHash = StringProperty(
                                 verbose_name="Last Hash",
                                 default=None,
+                                required=False,
+                                )
+    nc_fileName = StringProperty(
+                                verbose_name="File Name & Path",
+                                default='server.properties',
                                 required=False,
                                 )
 
@@ -1120,6 +1150,7 @@ class MinecraftServerProperties(Document):
             return None
 
     def putConfigFile(self, data):
+        # FIXME: Add in code to move existing to previous config file(s) and or file hash
         return self.put_attachment(
                                 content=str(data),
                                 name='server.properties',
@@ -1459,6 +1490,7 @@ class GenericConfig(Document):
     nc_minecraftServerPK = StringProperty(
                                         verbose_name='MinecraftServer\'s PK',
                                         required=True,
+                                        validators=[validate_serverInstance, ],
                                         )
 
     # When
@@ -1479,7 +1511,7 @@ class GenericConfig(Document):
                                 required=False,
                                 )
 
-    fileName = StringProperty(
+    nc_fileName = StringProperty(
                                 verbose_name="File Name & Path",
                                 default=None,
                                 required=False,
