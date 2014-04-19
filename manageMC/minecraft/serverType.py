@@ -657,6 +657,40 @@ class ServerType(object):
         return pk
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @staticmethod
     def _hashFile(filePath):
         with open(filePath, 'rb') as f:
@@ -664,7 +698,7 @@ class ServerType(object):
             h = hashlib.new('sha512', data)
         return (h.hexdigest().lower(), data)
 
-    def localUpdateConfigFile(self, fileTypeObj, errorOnFail=True):
+    def updateConfigFile(self, fileTypeObj, errorOnFail=True):
         """ Update the config file with data from couchdb.
         """
         assert isinstance(fileTypeObj, FileType), "Expected %r to be FileType based" % fileTypeObj
