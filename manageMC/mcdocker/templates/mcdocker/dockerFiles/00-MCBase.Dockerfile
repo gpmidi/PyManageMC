@@ -26,9 +26,8 @@ ONBUILD RUN umask 0022
 # Do an initial update
 RUN  apt-get update \
   && apt-get -y upgrade --no-install-recommends \
-  && apt-get dist-upgrade -y
-
-RUN  mkdir -p /var/run/sshd
+  && apt-get dist-upgrade -y \
+  && mkdir -p /var/run/sshd
 
 # Various bits of software we'll need
 RUN apt-get install -y \
