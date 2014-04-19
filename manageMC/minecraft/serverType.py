@@ -186,32 +186,6 @@ class _serverTypeType(type):
             allServerTypes[cls.TYPE] = cls
 
 
-import threading
-class _IOLoggerThread(threading.Thread):
-
-    def __init__(self, stream, prg, name='Unnamed', loglevel=20):
-        threading.Thread.__init__(self)
-        self.level = loglevel
-        self.stream = stream
-        self.prg = prg
-        self.streamname = name
-        self.setName(name="IOReaderThread-%s" % name)
-        self.log = logging.getLogger("server.allServerTypes." + name)
-        self.log.debug("Creating IO logger %r (%r)" % (name, self.getName()))
-        self.setDaemon(True)
-
-    def run(self):
-        rc = self.prg.poll()
-        while rc is None:
-            line = self.stream.readline()
-            if line != '' and line != '\n':
-                self.log.log(self.level, "Read: " + line)
-            rc = self.prg.poll()
-        line = self.stream.read()
-        self.log.log(self.level, "Read: " + line)
-        self.log.log(self.level, "-- Completed with a return code of %r --" % rc)
-
-
 class ServerType(object):
     """ Represent a stock server.
 
@@ -732,6 +706,13 @@ class ServerType(object):
         results['oldHashDB'] = results['newFileFS']
         return ServerType.SuccessConfigUpdateResult(**results)
 
+    # Override all var below this point
+
+    # The 'name' (both human-readable and allServerTypes's key) for the server
+    TYPE = None
+
+    # Override all methods below this point
+
 
 #     def _simpleStartWait(self, args):
 #         """ Run the requested app. Collect all output and RC. """
@@ -769,12 +750,30 @@ class ServerType(object):
 #             raise RuntimeError("Return code from %r non-zero: %r" % (args, rc))
 #         return rc
 
-    # Override all var below this point
-
-    # The 'name' (both human-readable and allServerTypes's key) for the server
-    TYPE = None
-
-    # Override all methods below this point
+# import threading
+# class _IOLoggerThread(threading.Thread):
+#
+#     def __init__(self, stream, prg, name='Unnamed', loglevel=20):
+#         threading.Thread.__init__(self)
+#         self.level = loglevel
+#         self.stream = stream
+#         self.prg = prg
+#         self.streamname = name
+#         self.setName(name="IOReaderThread-%s" % name)
+#         self.log = logging.getLogger("server.allServerTypes." + name)
+#         self.log.debug("Creating IO logger %r (%r)" % (name, self.getName()))
+#         self.setDaemon(True)
+#
+#     def run(self):
+#         rc = self.prg.poll()
+#         while rc is None:
+#             line = self.stream.readline()
+#             if line != '' and line != '\n':
+#                 self.log.log(self.level, "Read: " + line)
+#             rc = self.prg.poll()
+#         line = self.stream.read()
+#         self.log.log(self.level, "Read: " + line)
+#         self.log.log(self.level, "-- Completed with a return code of %r --" % rc)
 
 
 class StockServerType(ServerType):
