@@ -92,6 +92,33 @@ def fetchSegment(serverId, length, offset=0, tail=True, ioType='stdout'):
                    )
 
 
+@task(expires=60 * 5)
+def archiveAllLogs():
+    """ Check all servers for any log files that have been rotated out
+    @return: Number of log files loaded
+    """
+    for serverId in MinecraftServer.view('FIXME: fill this in'):
+        archiveLogs.delay(serverId=serverId)
+
+
+@task(expires=60 * 60)
+def archiveLogs(serverId):
+    """ Check the given server for any log files that have been rotated out
+    @return: Number of log files loaded
+    """
+    server = MinecraftServer.get(serverId)
+    serverType = getServerFromModel(server)
+    count = 0
+
+    if not serverType.isRunning:
+        return count
+
+    ids = serverType.archiveLogs()
+    count += len(ids)
+
+    log.debug("Archived %d log files", count)
+    return count
+
 
 #===============================================================================
 # Below here currently unused

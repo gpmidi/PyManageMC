@@ -7,7 +7,9 @@ Created on Jul 21, 2013
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
-import re
+import re  # @UnusedImport
+import os, os.path, sys  # @UnusedImport
+import time  # @UnusedImport
 
 DEBUG = False
 # DEBUG = True
@@ -288,7 +290,11 @@ MINECRAFT_BASE_VOLUME_TYPES = dict(
                                    sshconf='/etc/ssh',
                                    home='/home',
                                    )
-
+# The path within the logs volume that stores post-rotation logs
+MINECRAFT_BASE_OLDLOGS = os.path.join(
+                                      MINECRAFT_BASE_VOLUME_TYPES['syslog'],
+                                      'oldlogs',
+                                      )
 # Default ports inside the docker instance
 # Minecraft port
 MINECRAFT_DEFAULT_PORT_CONTAINER = 25565

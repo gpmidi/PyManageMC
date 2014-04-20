@@ -43,6 +43,7 @@ from supervisor import supervisord, supervisorctl  # @UnresolvedImport @UnusedIm
 
 # Ours
 from minecraft.models import *  # @UnusedWildImport
+from mclogs.models import *  # @UnusedWildImport
 
 allServerTypes = {}
 
@@ -395,6 +396,11 @@ class ServerType(object):
         return self.mcServer.getVolumeLocation('minecraft')
 
     @property
+    def serverSystemLogsRoot(self):
+        """ Path to the minecraft instance directory from inside docker """
+        return self.mcServer.getVolumeLocation('syslog')
+
+    @property
     def volumes(self):
         """ Return dict of volumes in <real path>:<docker path>"""
         return self.containerInfo["Volumes"]
@@ -548,6 +554,48 @@ class ServerType(object):
                                       datetime.datetime.now().strftime('%Y-%m-%d_%H%M'),
                                       version
                                       )
+
+    def archiveLogs(self):
+        archivedIds = []
+        loc = os.path.join(self.serverSystemLogsRoot, 'oldlogs')
+        for (dirpath, dirnames, filenames) in os.walk(loc):
+            for filename in filenames:
+                filePath = os.path.join(dirpath, filename)
+                fileRel = os.path.relpath(filePath, loc)
+                r = self.archiveLog(filePath, fileRel, filename)
+                if r:
+                    archivedIds.append(str(r))
+        return archivedIds
+
+    def archiveLog(self, absFilePath, relFilePath, filename):
+        # Ignore if it disappears on us
+        if not os.path.exists(absFilePath):
+            return None
+        try:
+            # TODO: Change to streaming for very large file support
+            hsh = hashlib.new('sha512')
+            with open(absFilePath) as f:
+                hsh.update(f.read())
+            lfa = MinecraftServerLogFileArchive(
+                                                _id=hsh.hexdigest(),
+                                                serverId=self.pk,
+                                                flow='FILE',
+                                                logType='file',
+                                                filename=filename,
+                                                compression='None',
+                                                # beginning = TODO: Fill this in
+                                                # ending = TODO: Fill this in
+                                                )
+            lfa.save()
+            with open(absFilePath) as f:
+                lfa.put_attachment(content=f, name=filename)
+            lfa.save()
+            # TODO: Add a temp location for ones that are in progress and/or locking
+            os.remove(absFilePath)
+            return lfa._id
+        except Exception as e:
+            self.log.exception("Failed to archive %r with %r", absFilePath, e)
+            return None
 
     def saveMap(self, msId):
         ms = MapSave.get(msId)
