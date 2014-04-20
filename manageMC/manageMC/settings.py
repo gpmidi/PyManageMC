@@ -338,6 +338,14 @@ djcelery.setup_loader()
 CELERY_DEFAULT_RATE_LIMIT = None
 CELERY_DISABLE_RATE_LIMITS = True
 
+CELERY_TIMEZONE = 'UTC'  # May not need this because of django
+CELERYBEAT_SCHEDULE = {
+    'archive-minecraft-system-logs': {
+        'task': 'mclogs.archiveAllLogs',
+        'schedule': timedelta(minutes=15),
+        'args': (),
+    },
+}
 
 ##################################################################################
 # RPC4Django
