@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 from django.db import models
 from django.contrib.auth.models import User, Group
@@ -104,7 +104,7 @@ class ExtraUserEmail(models.Model):
                                 verbose_name="Public",
                                 help_text="Allow unauthenticated users to see this",
                                 )
-    
+
     def __str__(self):
         return "Email %r" % self.email
 
@@ -184,7 +184,7 @@ class UserPhoneNumber(models.Model):
                                 help_text="Allow unauthenticated users to see this",
                                 )
     def __str__(self):
-        return "Phone Number %s" % self.phoneNumber    
+        return "Phone Number %s" % self.phoneNumber
 
 
 class UserProfile(models.Model):
@@ -220,7 +220,7 @@ class UserProfile(models.Model):
                                        max_length=65536,
                                        verbose_name="Miscellaneous Contact Info",
                                        )
-    
+
     def __str__(self):
         return "%s's Profile" % self.user.username
 
@@ -280,7 +280,7 @@ class ServerSystem(models.Model):
                               verbose_name="Owner",
                               help_text="The user that is ultimately responsible for this server",
                               )
-    
+
     def __str__(self):
         return "System %s" % self.name
 
@@ -335,7 +335,7 @@ class ServerInstanceExternalInfo(models.Model):
                                  )
     def __str__(self):
         return "ExternalInfo %s" % self.name
-   
+
 
 class ServerInstance(models.Model):
     class Meta:
@@ -368,7 +368,7 @@ class ServerInstance(models.Model):
                               verbose_name="Owner",
                               help_text="The user that is ultimately responsible for this server instance",
                               )
-    
+
     # @warning: Both the status name and the group name MUST be valid as-is in URLs
     SERVER_STATUS = (
                        ('Active', (
@@ -428,8 +428,8 @@ class ServerInstance(models.Model):
                                              MaxValueValidator(65535),
                                              ],
                                )
-    
-    
+
+
     @classmethod
     def listStatusGroups(cls, forceLowerCase=False):
         """ List out all status groups """
@@ -440,13 +440,13 @@ class ServerInstance(models.Model):
             else:
                 groups.append(group)
         return groups
-    
-    
+
+
     @classmethod
     def listStatuses(cls, forceLowerCase=False, retActualName=False):
-        """ List out all statuses 
+        """ List out all statuses
         @param forceLowerCase: All returned data should be in lowercase
-        @param retActualName: Return the name stored in the DB, not the "Pretty" name  
+        @param retActualName: Return the name stored in the DB, not the "Pretty" name
         """
         ret = []
         for group, statuses in cls.SERVER_STATUS:
@@ -459,19 +459,19 @@ class ServerInstance(models.Model):
                     value = value.lower()
                 ret.append(value)
         return ret
-    
-    
+
+
     @classmethod
     def listStatusFull(cls):
-        """ Return a list of all statuses as (actualName,humanName)  
+        """ Return a list of all statuses as (actualName,humanName)
         """
         ret = []
         for group, statuses in cls.SERVER_STATUS:
             for stat in statuses:
                 ret.append(stat)
         return ret
-    
-    
+
+
     @classmethod
     def statusGroup(cls, group, refrenceType="Pretty", exactCase=False):
         groups = []
@@ -487,24 +487,28 @@ class ServerInstance(models.Model):
                 else:
                     raise ValueError("Reference type must be Pretty or Actual, not %r" % refrenceType)
         raise ValueError("Group %r is not a valid server status group. Valid choices: %r" % (group, groups))
-    
-    
+
+
     def checkUser(self, req, perms='admin'):
         if req.user in self.admins.all() or req.user == self.owner:
             return True
         return False
 
+    @property
+    def mcname(self):
+        from minecraft.models import MinecraftServer
+        return MinecraftServer.makeSessionName(self.name)
 
     def getServer(self):
         """ Returns the minecraft server object for hosted instances
         or None if it is not hosted """
         from minecraft.models import MinecraftServer
         try:
-            return MinecraftServer.get(MinecraftServer.makeSessionName(self.name))
+            return MinecraftServer.get(self.mcname)
         except ResourceNotFound as e:
             return None
 
-    
+
     def __str__(self):
         return "Instance %s" % self.name
-    
+

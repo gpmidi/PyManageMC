@@ -14,69 +14,69 @@
 {% block quick %}
     {% cache 60 QuickServerBase1 user.id server.name %}
 	    {# Nav #}
-	    <ul class="nav">  
+	    <ul class="nav">
 	        <li>{{ server.name }} Administration</li>
 	        <li>FIXME</li>
-	    </ul>  
-	    
+	    </ul>
+
 	    {# Server Status #}
-	    <ul class="nav">    
+	    <ul class="nav">
 	        <li>{{ server.name }} Server Status</li>
 	        <li>
 	            <input id="servermessage" type="text" name="serverstatus"
-	                onclick="Dajaxice.minecraft.server_status(function(){},{'server_pk':'{{ instance.name|escapejs }}'});"
-	                onload="Dajaxice.minecraft.server_status(function(){},{'server_pk':'{{ instance.name|escapejs }}'});"
+	                onclick="Dajaxice.minecraft.server_status(function(){},{'server_pk':'{{ instance.mcname|escapejs }}'});"
+	                onload="Dajaxice.minecraft.server_status(function(){},{'server_pk':'{{ instance.mcname|escapejs }}'});"
 	            />
-	        </li>         
+	        </li>
 	        <li>
-		        <input type="submit" value="Start" onclick="Dajaxice.minecraft.server_start(Dajax.process,{'server_pk':'{{ instance.name|escapejs }}'});"/>
-		        <input type="submit" value="Stop" onclick="Dajaxice.minecraft.server_stop(Dajax.process,{'server_pk':'{{ instance.name|escapejs }}'});"/>
-		        <input type="submit" value="Restart" onclick="Dajaxice.minecraft.server_restart(Dajax.process,{'server_pk':'{{ instance.name|escapejs }}'});"/>
-		        <input type="submit" value="Kill" onclick="Dajaxice.minecraft.server_kill(Dajax.process,{'server_pk':'{{ instance.name|escapejs }}'});"/>
+		        <input type="submit" value="Start" onclick="Dajaxice.minecraft.server_start(Dajax.process,{'server_pk':'{{ instance.mcname|escapejs }}'});"/>
+		        <input type="submit" value="Stop" onclick="Dajaxice.minecraft.server_stop(Dajax.process,{'server_pk':'{{ instance.mcname|escapejs }}'});"/>
+		        <input type="submit" value="Restart" onclick="Dajaxice.minecraft.server_restart(Dajax.process,{'server_pk':'{{ instance.mcname|escapejs }}'});"/>
+		        <input type="submit" value="Kill" onclick="Dajaxice.minecraft.server_kill(Dajax.process,{'server_pk':'{{ instance.mcname|escapejs }}'});"/>
 	        </li>
 	    </ul>
 	    {# Various bits we need #}
-	    <script type="text/javascript">    
+	    <script type="text/javascript">
 		    (function(){
 		        Dajaxice.minecraft.server_status (
 		                 Dajax.process,
-		                 {'server_pk':'{{ instance.name|escapejs }}'}
+		                 {'server_pk':'{{ instance.mcname|escapejs }}'}
 		                     );
 		             setTimeout(arguments.callee, 2500);
-		        })();   
+		        })();
 		    var srvsay = function() {
 		        Dajaxice.minecraft.server_say(
 		                Dajax.process,
 		                {
-		                    'server_pk':'{{ instance.name|escapejs }}',
+		                    'server_pk':'{{ instance.mcname|escapejs }}',
 		                    'message':$("#tosay").val(),
 		                    'cleared':true
 		                    }
 		                );
 		        $("#tosay").val("");
 		    };
-	
+
 		    var forEnter = function(event) {
 		        if (event.which == 13 || event.keyCode == 13) {
 		            event.preventDefault();
 		            srvsay();
 		        };
 		    };
-		</script>   
+		</script>
 	    {# Server Commands #}
-	    <ul class="nav">  
+	    <ul class="nav">
 	        <li>Server Talk</li>
 	        <li>
 	            <input id="tosay" type="text" name="tosay" onkeypress="forEnter(event)"/>
 	            <input type="submit" value="Say" onclick="srvsay()"/>
 	        </li>
 	    </ul>
-	    <ul class="nav">  
+	    <ul class="nav">
 	        <li>Send Command</li>
 	        <li>
 	            <input id="tosend" type="text" name="tosend" onkeypress="forEnter(event)"/>
 	            <input type="submit" value="Send" onclick="srvsay()"/>
 	        </li>
 	    </ul>
-    {% endcache %}	    
+    {% endcache %}
 {% endblock %}

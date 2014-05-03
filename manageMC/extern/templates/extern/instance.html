@@ -36,7 +36,7 @@
                         <div class="sectionbox">
 	                        <h4>Description: </h4>
 		                    <p>
-		                        {{ instance.description|linebreaks }}                        
+		                        {{ instance.description|linebreaks }}
 		                    </p>
 		                </div>
 	                {% endif %}
@@ -45,7 +45,7 @@
 	                    {{ instance.get_status_display }}
 	                    <h4>Owner: </h4>
 	                    <a href="/e/users/{{ instance.owner.pk|urlize }}/" title="User Info">
-				            {% if instance.owner.get_profile.screenname %}   
+				            {% if instance.owner.get_profile.screenname %}
 				                {{ instance.owner.get_profile.screenname }}
 				            {% else %}
 				                {{ instance.owner.username }}
@@ -62,7 +62,7 @@
 	                        {{ instance.system }}
 	                    </div>
                     {% endif %}
-                    <div class="sectionbox">                    
+                    <div class="sectionbox">
 	                    <h4>Connection Info</h4>
 	                    <ul>
 	                        {% for info in instance.serverinstanceexternalinfo_set.all %}
@@ -75,7 +75,7 @@
 	                    <ul>
 	                        {% for admin in instance.admins.all %}
 	                            <li><a href="/e/users/{{ admin.pk|urlize }}/" title="User Info">
-	                                {% if admin.get_profile.screenname %}   
+	                                {% if admin.get_profile.screenname %}
 	                                    {{ admin.get_profile.screenname }}
 	                                {% else %}
 	                                    {{ admin.username }}

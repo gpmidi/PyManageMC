@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Apr 29, 2012
@@ -27,10 +27,10 @@ from django.db.models import Q
 from django.http import Http404
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
-import os.path 
+import os.path
 from mimetypes import guess_type
 from django.contrib.auth import authenticate, login
-from dajaxice.core import dajaxice_functions  # @UnresolvedImport
+from dajaxice.decorators import dajaxice_register
 from django.contrib.auth.decorators import login_required
 
 from minecraft.models import *
@@ -76,7 +76,7 @@ def _makeMessage(server_pk, message, url=None):
                              }
                             )
 
-
+@dajaxice_register
 @login_required
 def server_stop(req, server_pk):
     """ Stop a server """
@@ -87,9 +87,8 @@ def server_stop(req, server_pk):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Stopping server...'))
     return dajax.json()
 
-dajaxice_functions.register(server_stop)
 
-
+@dajaxice_register
 @login_required
 def server_start(req, server_pk):
     """ Start a server """
@@ -100,9 +99,8 @@ def server_start(req, server_pk):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Starting server...'))
     return dajax.json()
 
-dajaxice_functions.register(server_start)
 
-
+@dajaxice_register
 @login_required
 def server_restart(req, server_pk):
     """ Restart a server """
@@ -113,9 +111,8 @@ def server_restart(req, server_pk):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Restarting server...'))
     return dajax.json()
 
-dajaxice_functions.register(server_restart)
 
-
+@dajaxice_register
 @login_required
 def server_say(req, server_pk, message, cleared=False):
     """ Say something in a server """
@@ -127,9 +124,8 @@ def server_say(req, server_pk, message, cleared=False):
         dajax.clear('#tosay', 'value')
     return dajax.json()
 
-dajaxice_functions.register(server_say)
 
-
+@dajaxice_register
 @login_required
 def server_status(req, server_pk):
     """ Get updated status """
@@ -143,9 +139,8 @@ def server_status(req, server_pk):
     dajax.assign('input#servermessage', 'value', ret)
     return dajax.json()
 
-dajaxice_functions.register(server_status)
 
-
+@dajaxice_register
 @login_required
 def server_kill(req, server_pk):
     """ Kill a server """
@@ -156,9 +151,8 @@ def server_kill(req, server_pk):
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Killing server...'))
     return dajax.json()
 
-dajaxice_functions.register(server_kill)
 
-
+@dajaxice_register
 @login_required
 def server_cmd(req, server_pk, cmd):
     """ Run a raw command on a server """
@@ -167,5 +161,3 @@ def server_cmd(req, server_pk, cmd):
     # dajax.prepend('#adminActionLog', 'innerHTML', 'Running "%s"\n' % cmd)
     dajax.prepend('#messageList', 'innerHTML', _makeMessage(server_pk, 'Running "%s"' % cmd))
     return dajax.json()
-
-dajaxice_functions.register(server_cmd)

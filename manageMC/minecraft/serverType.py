@@ -41,8 +41,8 @@ import datetime
 from django.template.loader import render_to_string
 
 # Ours
-from minecraft.models import *  # @UnusedWildImport
 from mclogs.models import *  # @UnusedWildImport
+from minecraft.models import *  # @UnusedWildImport
 
 allServerTypes = {}
 
@@ -255,7 +255,7 @@ class ServerType(object):
                                                                       ))
         self.log.debug("Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
 
-        assert self.mcServer.type == self.TYPE
+        # assert self.mcServer.type == self.TYPE
         self._supervisorProxy = None
 
     def _makeCacheID(self, fname, *varyOn, **kwargs):
@@ -368,8 +368,8 @@ class ServerType(object):
         except:
             import urllib
             ret = "http://%s:%s@%s:%s/RPC2" % (
-                      urllib.quote(self.getImage.supervisordUser),
-                      urllib.quote(self.getImage.realSupervisordPasswd),
+                      urllib.quote(self.image.supervisordUser),
+                      urllib.quote(self.image.realSupervisordPasswd),
                       urllib.quote(self.supervisordHostPort[0][0]),
                       urllib.quote(self.supervisordHostPort[0][1]),
                       )
@@ -381,12 +381,12 @@ class ServerType(object):
         """ Returns an XML-RPC Server Proxy to Supervisord in our Docker
         instance """
         if self._supervisorProxy is None:
-            self._supervisorProxy = xmlrpclib.ServerProxy()
+            self._supervisorProxy = xmlrpclib.ServerProxy(self.supervisordConnInfo)
         try:
             self._supervisorProxy.system.listMethods()
         except Exception as e:
             self.log.exception("Failed to run listMethods on %r in %r with %r", self._supervisorProxy, self, e)
-            self._supervisorProxy = xmlrpclib.ServerProxy()
+            self._supervisorProxy = xmlrpclib.ServerProxy(self.supervisordConnInfo)
         return self._supervisorProxy
 
     @property
@@ -435,6 +435,10 @@ class ServerType(object):
     def minecraftProcInfo(self):
         # http://supervisord.org/api.html?highlight=python#supervisor.rpcinterface.SupervisorNamespaceRPCInterface.getProcessInfo
         return self.supervisordProxy.supervisor.getProcessInfo('minecraft')
+
+    @property
+    def minecraftProcState(self):
+        return self.minecraftProcInfo['statename']
 
     @property
     def supervisordIsRunning(self):
@@ -1095,11 +1099,46 @@ class UsersCacheConfigFileType(ConfigFileType):
         return self.UsersCacheConfig
 
 
+class BukkitServerType(ServerType):
+    TYPE = "Bukkit"
+
+    def __init__(self, *args, **kw):
+        log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self, *args, **kw)
+
+
+class TekkitServerType(ServerType):
+    TYPE = "Tekkit"
+
+    def __init__(self, *args, **kw):
+        log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self, *args, **kw)
+
+
+class NerdBukkitServerType(ServerType):
+    TYPE = "NerdBukkit"
+
+    def __init__(self, *args, **kw):
+        log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self, *args, **kw)
+
+
+class FTBServerType(ServerType):
+    TYPE = "FTB"
+
+    def __init__(self, *args, **kw):
+        log.log(10, "Creating a %r server (%r)" % (self.TYPE, self.__class__.__name__))
+        ServerType.__init__(self, *args, **kw)
+
+
 def getServerFromModel(mcServer):
-    if allServerTypes.has_key(mcServer.bin.typeName):
-        return allServerTypes[mcServer.bin.typeName]
+    assert mcServer.binary, "Expected %r to be defined in %r" % (mcServer.binary, mcServer)
+    from minecraft.models import MinecraftServerBinary  # @Reimport
+    b = MinecraftServerBinary.get(mcServer.binary)
+    if allServerTypes.has_key(b.typeName):
+        return allServerTypes[b.typeName]
     else:
-        raise IndexError, "Server type %r not found" % mcServer.bin.typeName
+        raise IndexError("Server type %r not found" % b.typeName)
 
 
 def loadOtherServerTypes():

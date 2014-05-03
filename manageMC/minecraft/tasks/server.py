@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Setup logging
 import logging
@@ -52,7 +52,7 @@ def quickCreate(name, port, ip, binLoc, ownerPK=1, status='active', humanName=''
         sSystem = ServerSystem.objects.all()[0]
     else:
         sSystem = ServerSystem.objects.get(pk=systemPK)
-        
+
     mcInstance = ServerInstance(
                                 name=name,
                                 owner=User.objects.get(pk=ownerPK),
@@ -90,22 +90,22 @@ def quickCreate(name, port, ip, binLoc, ownerPK=1, status='active', humanName=''
 @task(expires=60 * 60)
 def init(serverPK):
     """ Init the given server.  """
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    # Run the init 
+    # Run the init
     server.localInit()
-    
+
 
 @task(expires=60 * 60)
 def loadMap(serverPK, mapPK):
-    """ Init the given server.  
-    TODO: Add support for saving the existing map if one exists. 
+    """ Init the given server.
+    TODO: Add support for saving the existing map if one exists.
     """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     mapSave = MapSave.objects.get(pk=mapPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
@@ -113,46 +113,46 @@ def loadMap(serverPK, mapPK):
     server = stype(mcServer=mcServer)
     # Load the map
     server.localLoadMap(mapSave)
-    
+
 
 @task(expires=60 * 60 * 24 * 14)
 def save_map(serverPK, name, desc='', version='', owner=None):
-    """ Save a map. Returns MapSave PK. """    
+    """ Save a map. Returns MapSave PK. """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     mapPK = server.localSaveMap(name=name, desc=desc, version=version, owner=owner)
-    
-    return mapPK 
-    
+
+    return mapPK
+
 
 @task(expires=60 * 60 * 24)
 def start(serverPK):
     """ Start a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     return server.localStartServer()
-    
+
 
 @task(expires=60 * 60 * 24)
 def stop(serverPK, warn=True, warnDelaySeconds=0):
     """ Stop a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     return server.localStopServer(warn=warn, warnDelaySeconds=warnDelaySeconds)
 
 
@@ -160,12 +160,12 @@ def stop(serverPK, warn=True, warnDelaySeconds=0):
 def restart(serverPK, warn=True, warnDelaySeconds=0):
     """ Restart a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     results = dict(start=None, stop=None)
     results['stop'] = stop(
                            serverPK=mcServer.pk,
@@ -183,7 +183,7 @@ def restart(serverPK, warn=True, warnDelaySeconds=0):
 def kill(serverPK, warn=True, warnDelaySeconds=0):
     """ Kill a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
@@ -196,27 +196,27 @@ def kill(serverPK, warn=True, warnDelaySeconds=0):
 def say(serverPK, msg):
     """ Start a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     return server.localSay(msg=msg)
-    
+
 
 @task(expires=60 * 60 * 24)
 def status(serverPK):
     """ Start a server """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    
+
     try:
-        return server.localStatus()
+        return server.minecraftProcState
     except RuntimeError as e:
         return False
 
@@ -225,7 +225,7 @@ def status(serverPK):
 def runCommand(serverPK, cmd):
     """ Run server command """
     # Get model objects
-    mcServer = MinecraftServer.objects.get(pk=serverPK)
+    mcServer = MinecraftServer.get(serverPK)
     # Get the class type that is the right type
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
