@@ -65,7 +65,7 @@ from minecraft.tasks.server import *
 #
 # dajaxice_functions.register(login_a)
 
-
+# FIXME: Add perm checks to all
 def _makeMessage(server_pk, message, url=None):
     return render_to_string(
                             'servers/makeMessage.html',

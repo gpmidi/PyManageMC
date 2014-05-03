@@ -41,6 +41,7 @@ def _getAdmin():
     else:
         return (sName[0], ' '.join(sName[1:]), email)
 
+
 _validatePackageListRE = re.compile(r'^[a-zA-Z\-_.]+$')
 def _validatePackageList(value):
     try:
@@ -50,6 +51,7 @@ def _validatePackageList(value):
     for value in values:
         if not _validatePackageListRE.match(value):
             raise ValidationError(u'%s is not a valid package name' % value)
+
 
 _validateSSHKeyListRE = re.compile(r'^ssh-(rsa|dsa)\s+[a-zA-Z0-9+/]+([=]*)( [ a-zA-Z0-9+@./]+)?$')
 def _validateSSHKeyList(value):
