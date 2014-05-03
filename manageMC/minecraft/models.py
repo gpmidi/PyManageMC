@@ -24,7 +24,7 @@ from django.contrib.auth.models import User, Group  # @UnusedImport
 from django.conf import settings  # @UnusedImport
 from django.core.validators import MinLengthValidator, MaxValueValidator  # @UnusedImport
 from django.core.validators import validate_slug, MinValueValidator  # @UnusedImport
-from django.core.cache import caches  # @UnresolvedImport
+from django.core.cache import get_cache  # @UnusedImport
 
 # CouchDB
 from couchdbkit.ext.django.schema import *  # @UnusedWildImport

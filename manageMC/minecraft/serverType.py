@@ -39,7 +39,6 @@ import datetime
 
 # External
 from django.template.loader import render_to_string
-from supervisor import supervisord, supervisorctl  # @UnresolvedImport @UnusedImport
 
 # Ours
 from minecraft.models import *  # @UnusedWildImport
@@ -308,11 +307,11 @@ class ServerType(object):
                         ret.append(('127.0.0.1', mp['HostPort']))
             else:
                 ret = None
-            caches['default'].set(cacheKey, json.dumps(ret), 60)
+            get_cache('default').set(cacheKey, json.dumps(ret), 60)
             return ret
         else:
             try:
-                return json.loads(caches['default'].get(cacheKey))
+                return json.loads(get_cache('default').get(cacheKey))
             except:
                 return self.getPortMapping(
                                            port=port,
@@ -365,7 +364,7 @@ class ServerType(object):
         # TODO: Catch errors around this if no ports are bound
         cacheKey = self._makeCacheID('supervisordConnInfo')
         try:
-            ret = json.loads(caches['default'].get(cacheKey))
+            ret = json.loads(get_cache('default').get(cacheKey))
         except:
             import urllib
             ret = "http://%s:%s@%s:%s/RPC2" % (
@@ -374,7 +373,7 @@ class ServerType(object):
                       urllib.quote(self.supervisordHostPort[0][0]),
                       urllib.quote(self.supervisordHostPort[0][1]),
                       )
-            caches['default'].set(cacheKey, json.dumps(ret), 60)
+            get_cache('default').set(cacheKey, json.dumps(ret), 60)
         return ret
 
     @property

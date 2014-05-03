@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Jan 12, 2013
@@ -28,7 +28,7 @@ from django.template import RequestContext
 from django.http import Http404
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
-from django.core.cache import cache
+from django.core.cache import get_cache  # @UnusedImport
 from django.utils.http import urlquote
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login, REDIRECT_FIELD_NAME
@@ -89,7 +89,7 @@ def userEditProfile(req):
     except ObjectDoesNotExist, e:
         profile = UserProfile(user=req.user)
         profile.save()
-    
+
     if req.method == "POST":
         form = UserProfileForm(req.POST, instance=profile)
         if form.is_valid():
