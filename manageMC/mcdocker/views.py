@@ -50,7 +50,7 @@ from mcdocker.tasks import *  # @UnusedWildImport
 def dockerImageIndex(req):
     """ Docker Image index """
     return render_to_response(
-                              'mcdocker/dockerMgmt/index.html',
+                              'mcdocker/dockerMgmt/index.djhtml',
                               dict(
                                    allImages=DockerImage.view('mcdocker/allOSImages'),
                                    baseImages=DockerImage.view('mcdocker/baseOSImages'),
@@ -67,7 +67,7 @@ def dockerImageEdit(req, dockerImageId):
     """ Docker Image Change """
     try:
         return render_to_response(
-                                  'mcdocker/dockerMgmt/edit.html',
+                                  'mcdocker/dockerMgmt/edit.djhtml',
                                   dict(
                                        image=DockerImage.get(dockerImageId),
                                        ),
@@ -86,7 +86,7 @@ def dockerImageCreate(req):
     form = None
 
     return render_to_response(
-                              'mcdocker/dockerMgmt/add.html',
+                              'mcdocker/dockerMgmt/add.djhtml',
                               dict(
                                    form=form,
                                    ),

@@ -1,4 +1,4 @@
-{% extends "mcdocker/dockerMgmt/base.html" %}
+{% extends "mcdocker/dockerMgmt/base.djhtml" %}
 {% load cache %}
 {# OS Image Editing #}
 
