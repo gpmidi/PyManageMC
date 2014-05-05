@@ -35,6 +35,7 @@ from django.core.validators import *
 from minecraft.models import *  # @UnusedWildImport
 from mcdocker.models import *  # @UnusedWildImport
 from mcdocker.tasks import *  # @UnusedWildImport
+from mcdocker.models import _getAdmin
 
 
 class BaseDockerInstanceForm(forms.Form):
@@ -243,58 +244,60 @@ class BaseDockerInstanceForm(forms.Form):
                                       ],
                            )
     # An optional HTTP proxy for package download caching
-    proxy = StringProperty(
-                          validators=[URLValidator(), ],
-                          name="httpProxy",
-                          required=False,
-                          default=None,
-                          verbose_name="HTTP Proxy",
-                          )
+    proxy = forms.URLField(
+                           required=False,
+                           default=None,
+                           label="HTTP Proxy",
+                           help_text="HTTP proxy that docker instances should use",
+                           validators=[URLValidator(), ],
+                           )
+
     # TODO: Improve package name validation
-    extraPackages = StringListProperty(
-                          validators=[_validatePackageList, ],
-                          name="extraPackages",
-                          required=True,
-                          default=[],
-                          verbose_name="Extra Packages",
-                          )
-    sshKeysRoot = StringListProperty(
-                          validators=[_validateSSHKeyList, ],
-                          name="sshKeysRoot",
-                          required=True,
-                          default=[],
-                          verbose_name="Root's Authorized Keys",
-                          )
-    sshKeysMinecraft = StringListProperty(
-                          validators=[_validateSSHKeyList, ],
-                          name="sshKeysMinecraft",
-                          required=True,
-                          default=[],
-                          verbose_name="Minecraft User's Authorized Keys",
-                          )
+    extraPackages = forms.CharField(
+                                    required=False,
+                                    default='',
+                                    label="Extra Packages",
+                                    help_text="A list of extra packages to install in the Minecraft Docker instances",
+                                    widget=forms.Textarea(),
+                                    )
+    # FIXME: Add validators
+    sshKeysRoot = forms.CharField(
+                                required=False,
+                                default='',
+                                label="Root's Authorized Keys",
+                                help_text="A list of SSH keys to include for the root user",
+                                widget=forms.Textarea(),
+                                )
+    # FIXME: Add validators
+    sshKeysMinecraft = forms.CharField(
+                                required=False,
+                                default='',
+                                label="Minecraft's Authorized Keys",
+                                help_text="A list of SSH keys to include for the Minecraft user",
+                                widget=forms.Textarea(),
+                                )
     # Image Maintainer Info
-    firstName = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
-                          name="firstName",
-                          required=True,
-                          default=_getAdmin()[0],
-                          verbose_name="Docker Maintainer's First Name",
-                          )
-    lastName = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
-                          name="lastName",
-                          required=True,
-                          default=_getAdmin()[1],
-                          verbose_name="Docker Maintainer's Last Name",
-                          )
-    email = StringProperty(
+    firstName = forms.CharField(
+                                required=True,
+                                default=_getAdmin()[0],
+                                label="Docker Maintainer's First Name",
+                                help_text="The first name of the person who maintains this Docker container",
+                                validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
+                                )
+    lastName = forms.CharField(
+                                required=True,
+                                default=_getAdmin()[0],
+                                label="Docker Maintainer's Last Name",
+                                help_text="The last name of the person who maintains this Docker container",
+                                validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
+                                )
+    email = forms.EmailField(
                           validators=[EmailValidator, ],
-                          name="email",
                           required=True,
                           default=_getAdmin()[2],
                           verbose_name="Docker Maintainer's Email Address",
+                          help_text="The email address of the person who maintains this Docker container",
                           )
-    # Volumes to export/save
     volumes = DictProperty(
                            validators=[],
                            name='volumes',
