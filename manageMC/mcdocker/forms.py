@@ -62,20 +62,20 @@ class BaseDockerInstanceForm(forms.Form):
                                 required=True,
                                 label='Human Name',
                                 help_text='Human friendly name for this image',
-                                default='',
+                                initial='',
                                 min_length=0,
                                 max_length=8192,
                                 widget=forms.Textarea,
                                 )
     dockerMemoryLimitMB = forms.IntegerField(
                            required=True,
-                           default=512,
+                           initial=512,
                            label='Docker Memory Limit (MiB)',
                            help_text='Max memory the Docker instance can use in MiB',
                            )
     dockerCPUShare = forms.IntegerField(
                            required=True,
-                           default=64,
+                           initial=64,
                            label='Docker CPU Share',
                            help_text='Relative CPU share',
                            )
@@ -103,7 +103,7 @@ class BaseDockerInstanceForm(forms.Form):
     repo = forms.SlugField(
                             required=False,
                             label='Docker Repo Name',
-                            default=None,
+                            initial=None,
                             validators=[
                                          validate_slug,
                                          MaxLengthValidator(64),
@@ -115,7 +115,7 @@ class BaseDockerInstanceForm(forms.Form):
     tag = forms.SlugField(
                             required=True,
                             label='Docker Image Tag',
-                            default=None,
+                            initial=None,
                             validators=[
                                          validate_slug,
                                          MaxLengthValidator(64),
@@ -134,12 +134,12 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=14,
                           label="Minecraft Shell User/Group",
                           required=True,
-                          default='minecraft',
+                          initial='minecraft',
                           help_text="The user and primary group name that Minecraft will run as",
                           )
     uid = forms.IntegerField(
                            required=True,
-                           default=1000,
+                           initial=1000,
                            label='Minecraft Shell UID',
                            help_text="The UID to use for the Minecraft user's user",
                            validators=[
@@ -149,7 +149,7 @@ class BaseDockerInstanceForm(forms.Form):
                            )
     gid = forms.IntegerField(
                            required=True,
-                           default=1000,
+                           initial=1000,
                            label='Minecraft Shell GID',
                            help_text="The GID to use for the Minecraft user's primary group",
                            validators=[
@@ -167,7 +167,7 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=128,
                           label="Minecraft Shell User's Password",
                           required=False,
-                          default=None,
+                          initial=None,
                           help_text="The Minecraft shell user's password",
                           )
     rootUserPasswd = forms.CharField(
@@ -180,7 +180,7 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=128,
                           label="Root Shell User's Password",
                           required=False,
-                          default=None,
+                          initial=None,
                           help_text="The Root shell user's password",
                           )
     supervisordUser = forms.CharField(
@@ -193,7 +193,7 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=32,
                           label="Supervisord's Management Username",
                           required=True,
-                          default='admin',
+                          initial='admin',
                           help_text="The Root shell user's password",
                           )
     supervisordPasswd = forms.CharField(
@@ -206,7 +206,7 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=128,
                           label="Supervisord's Management Password",
                           required=True,
-                          default=None,
+                          initial=None,
                           help_text="Supervisord's Management Password Or Hash For Config. Warning: This password is stored as-is in a file readable by all users in the Docker instance. ",
                           )
     # TODO: Need a better password storage system than a raw DB
@@ -220,22 +220,22 @@ class BaseDockerInstanceForm(forms.Form):
                           max_length=512,
                           label="Supervisord's Management Password",
                           required=False,
-                          default=None,
+                          initial=None,
                           help_text="Supervisord's actual management password",
                           )
     supervisordAutoRestart = forms.BooleanField(
                                                 required=True,
-                                                default=True,
+                                                initial=True,
                                                 label='Auto Restart Minecraft',
                                                 )
     supervisordAutoStart = forms.BooleanField(
                                                 required=True,
-                                                default=True,
+                                                initial=True,
                                                 label='Auto Start Minecraft',
                                                 )
     supervisordStartTimeSeconds = forms.IntegerField(
                            required=True,
-                           default=1000,
+                           initial=1000,
                            label='Minecraft Shell UID',
                            help_text="Time to wait for Minecraft to start in seconds",
                            validators=[
@@ -246,7 +246,7 @@ class BaseDockerInstanceForm(forms.Form):
     # An optional HTTP proxy for package download caching
     proxy = forms.URLField(
                            required=False,
-                           default=None,
+                           initial=None,
                            label="HTTP Proxy",
                            help_text="HTTP proxy that docker instances should use",
                            validators=[URLValidator(), ],
@@ -255,7 +255,7 @@ class BaseDockerInstanceForm(forms.Form):
     # TODO: Improve package name validation
     extraPackages = forms.CharField(
                                     required=False,
-                                    default='',
+                                    initial='',
                                     label="Extra Packages",
                                     help_text="A list of extra packages to install in the Minecraft Docker instances",
                                     widget=forms.Textarea(),
@@ -263,7 +263,7 @@ class BaseDockerInstanceForm(forms.Form):
     # FIXME: Add validators
     sshKeysRoot = forms.CharField(
                                 required=False,
-                                default='',
+                                initial='',
                                 label="Root's Authorized Keys",
                                 help_text="A list of SSH keys to include for the root user",
                                 widget=forms.Textarea(),
@@ -271,7 +271,7 @@ class BaseDockerInstanceForm(forms.Form):
     # FIXME: Add validators
     sshKeysMinecraft = forms.CharField(
                                 required=False,
-                                default='',
+                                initial='',
                                 label="Minecraft's Authorized Keys",
                                 help_text="A list of SSH keys to include for the Minecraft user",
                                 widget=forms.Textarea(),
@@ -279,14 +279,14 @@ class BaseDockerInstanceForm(forms.Form):
     # Image Maintainer Info
     firstName = forms.CharField(
                                 required=True,
-                                default=_getAdmin()[0],
+                                initial=_getAdmin()[0],
                                 label="Docker Maintainer's First Name",
                                 help_text="The first name of the person who maintains this Docker container",
                                 validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
                                 )
     lastName = forms.CharField(
                                 required=True,
-                                default=_getAdmin()[0],
+                                initial=_getAdmin()[0],
                                 label="Docker Maintainer's Last Name",
                                 help_text="The last name of the person who maintains this Docker container",
                                 validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
@@ -294,7 +294,7 @@ class BaseDockerInstanceForm(forms.Form):
     email = forms.EmailField(
                           validators=[EmailValidator, ],
                           required=True,
-                          default=_getAdmin()[2],
+                          initial=_getAdmin()[2],
                           verbose_name="Docker Maintainer's Email Address",
                           help_text="The email address of the person who maintains this Docker container",
                           )
@@ -302,7 +302,7 @@ class BaseDockerInstanceForm(forms.Form):
                            validators=[],
                            name='volumes',
                            required=True,
-                           default=settings.MINECRAFT_BASE_VOLUME_TYPES,
+                           initial=settings.MINECRAFT_BASE_VOLUME_TYPES,
                            verbose_name="Volumes To Export",
                            )
     # Fixed port mappings to export
@@ -311,7 +311,7 @@ class BaseDockerInstanceForm(forms.Form):
            validators=[],
            name='ports',
            required=True,
-           default={
+           initial={
             str(settings.MINECRAFT_DEFAULT_PORT_SSH):('0.0.0.0', None),
             str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):('127.0.0.1', None),
             str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):('0.0.0.0', None),
@@ -335,7 +335,7 @@ class BaseDockerInstanceForm(forms.Form):
                           validators=[ ],
                           name="javaArgs",
                           required=True,
-                          default=[
+                          initial=[
                                    '-XX:+UseConcMarkSweepGC',
                                    '-XX:+CMSIncrementalPacing',
                                    '-XX:+AggressiveOpts',
@@ -346,7 +346,7 @@ class BaseDockerInstanceForm(forms.Form):
                           validators=[ ],
                           name="javaBin",
                           required=True,
-                          default='/usr/bin/java',
+                          initial='/usr/bin/java',
                           verbose_name="Java Binary",
                           )
     javaMaxMemMB = IntegerProperty(
@@ -356,7 +356,7 @@ class BaseDockerInstanceForm(forms.Form):
                                       ],
                           name="javaMaxMemMB",
                           required=True,
-                          default=512,
+                          initial=512,
                           verbose_name="Java Max Heap (MB) For Minecraft",
                           )
     javaInitMemMB = IntegerProperty(
@@ -366,7 +366,7 @@ class BaseDockerInstanceForm(forms.Form):
                                       ],
                           name="javaInitMemMB",
                           required=True,
-                          default=64,
+                          initial=64,
                           verbose_name="Java Initial Heap (MB) For Minecraft",
                           )
     javaGCThreads = IntegerProperty(
@@ -376,7 +376,7 @@ class BaseDockerInstanceForm(forms.Form):
                                       ],
                           name="javaGCThreads",
                           required=True,
-                          default=2,
+                          initial=2,
                           verbose_name="Java GC Thread Count For Minecraft",
                           )
 
