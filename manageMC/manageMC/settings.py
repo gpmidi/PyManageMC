@@ -320,25 +320,81 @@ MC_LOG_LEVELS = {
 # Celery
 ##################################################################################
 
-# BROKER_URL = 'amqp://myusername:mypassword@myhostname:5672/myinstancename'
+# Time related
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = 'UTC'  # May not need this because of django
+
+# Task settings
+# CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
+# Could move this to Redis long term for performance reasons
 CELERY_RESULT_BACKEND = "amqp"
+CELERY_RESULT_SERIALIZER = 'json'
+
+# Concurency settings
 CELERYD_CONCURRENCY = 2
 CELERYD_PREFETCH_MULTIPLIER = 2
+
+# AMQP Broker Backend Settings
+
+# BROKER_URL = 'amqp://myusername:mypassword@myhostname:5672/myinstancename'
+# CELERY_RESULT_EXCHANGE
+# CELERY_RESULT_EXCHANGE_TYPE
+
+# If set to True, result messages will be persistent. This means the messages will not be lost after a broker restart. The default is for the results to be transient.
+CELERY_RESULT_PERSISTENT = 60 * 60 * 48
+
+# Routing
+# CELERY_QUEUES
+# CELERY_ROUTES
+# CELERY_QUEUE_HA_POLICY
+# CELERY_DEFAULT_QUEUE
+# CELERY_DEFAULT_EXCHANGE
+# CELERY_DEFAULT_EXCHANGE_TYPE
+# CELERY_DEFAULT_ROUTING_KEY
+CELERY_DEFAULT_DELIVERY_MODE = 'persistent'
+
+# For security reasons, only accept JSON
+# Pickle and YAML have known code exec vulns
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# This option enables so that every worker has a dedicated queue, so that tasks can be routed to specific workers.
+CELERY_WORKER_DIRECT = True
+
+# If enabled (default), any queues specified that are not defined in CELERY_QUEUES will be automatically created.
+CELERY_CREATE_MISSING_QUEUES = True
+
+# Note: Only works with pyamqp
 BROKER_HEARTBEAT = True
+
+# Note: Only works with pyamqp
 BROKER_HEARTBEAT_CHECKRATE = 10
+
+# TODO: Enable this
+# BROKER_USE_SSL
+
+# May want to enable message compression at some point
+# CELERY_MESSAGE_COMPRESSION = 'gzip'
+
+
+CELERY_TASK_PUBLISH_RETRY = True
+CELERY_ENABLE_REMOTE_CONTROL = True
+
+CELERY_SEND_EVENTS = True
+
 CELERY_REDIRECT_STDOUTS_LEVEL = "DEBUG"
 
 # Don't keep any celery results longer than 1h to keep
 # them from using up a lot of rabbitmq memory
 from datetime import timedelta
 TASK_RESULT_EXPIRES = timedelta(hours=1)
+CELERY_TASK_RESULT_EXPIRES = TASK_RESULT_EXPIRES
 
 import djcelery  # @UnresolvedImport
 djcelery.setup_loader()
 CELERY_DEFAULT_RATE_LIMIT = None
 CELERY_DISABLE_RATE_LIMITS = True
 
-CELERY_TIMEZONE = 'UTC'  # May not need this because of django
 CELERYBEAT_SCHEDULE = {
     'archive-minecraft-system-logs': {
         'task': 'mclogs.archiveAllLogs',
