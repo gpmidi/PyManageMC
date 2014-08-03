@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Jan 11, 2013
@@ -24,14 +24,14 @@ from django.conf import settings
 
 def gaProcessor(request):
     """ Add a Google Analytics tracking code """
-    if hasattr(settings, 'GA_ACCOUNT'):    
+    if hasattr(settings, 'GA_ACCOUNT'):
         return {'gaAccount':settings.GA_ACCOUNT}
     return {'gaAccount':None}
 
 
 def footerProcessor(request):
     """ Add an optional legal footer """
-    if hasattr(settings, 'LEGAL_FOOTER'):    
+    if hasattr(settings, 'LEGAL_FOOTER'):
         return {'legalFooter':settings.LEGAL_FOOTER}
     return {'legalFooter':None}
 
@@ -45,7 +45,7 @@ def siteInfoProcessor(request):
                   }
     ret = {}
     for settingName, info in INFOSETTINGS.items():
-        if hasattr(settings, settingName):    
+        if hasattr(settings, settingName):
             ret[info[1]] = getattr(settings, settingName)
         else:
             ret[info[1]] = info[0]

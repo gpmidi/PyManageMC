@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Built-in
 import urllib
@@ -119,7 +119,7 @@ def index(req):  #
                                    ),
                               context_instance=RequestContext(req),
                               )
-    
+
 
 @login_required
 @permission_required('minecraft.change_serverinstance')
@@ -189,7 +189,7 @@ def view(req, binId):
 #                               )
 
 
-    
+
 # @login_required
 # @permission_required('minecraft.add_serverinstance')
 # def newserver(req):
@@ -203,7 +203,7 @@ def view(req, binId):
 #                                     ),
 #                               context_instance = RequestContext(req),
 #                               )
-    
-    
-    
+
+
+
 

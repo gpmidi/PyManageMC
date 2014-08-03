@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Feb 16, 2013
@@ -37,29 +37,29 @@ class NewsAdmin(admin.ModelAdmin):
                   )
     ordering = (
                 '-created',
-                ) 
+                )
 
 admin.site.register(News, NewsAdmin)
 
-        
+
 class ExtraUserEmailInline(admin.TabularInline):
     model = ExtraUserEmail
     extra = 0
-        
-        
+
+
 class MinecraftUsernameInline(admin.TabularInline):
     model = MinecraftUsername
-    extra = 0    
+    extra = 0
 
-    
+
 class UserPhoneNumberInline(admin.TabularInline):
     model = UserPhoneNumber
     extra = 0
 
-    
+
 class ServerSystemIPsInline(admin.TabularInline):
     model = ServerSystemIPs
-    
+
 
 class UserProfileAdmin(admin.ModelAdmin):
     inlines = [
@@ -78,7 +78,7 @@ class ServerSystemAdmin(admin.ModelAdmin):
 
 admin.site.register(ServerSystem, ServerSystemAdmin)
 
-    
+
 class ServerInstanceExternalInfoInline(admin.TabularInline):
     model = ServerInstanceExternalInfo
 

@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Apr 29, 2012
@@ -27,7 +27,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
-import os.path 
+import os.path
 from mimetypes import guess_type
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import permission_required, login_required

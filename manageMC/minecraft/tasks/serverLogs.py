@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Setup logging
 import logging
@@ -44,6 +44,6 @@ def init(serverPK):
     stype = getServerFromModel(mcServer=mcServer)
     # Server interaction object
     server = stype(mcServer=mcServer)
-    # Run the init 
+    # Run the init
     server.localInit()
-    
+

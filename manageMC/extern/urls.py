@@ -12,13 +12,13 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('extern.views',
     url(r'^(?:/)?$', 'index'),
-    
+
     # Server instances
     url(r'^instances(?:/)?$', 'instances', name="ListAllInstances"),
     url(r'^instances/new(?:/)?$', 'newInstanceNonAdmin', name="NewInstanceNonAdmin"),
@@ -28,7 +28,7 @@ urlpatterns = patterns('extern.views',
     url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)(?:/)?$', 'instance', name="InstanceObject"),
     url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/delete(?:/)?$', 'deleteInstance', name="DeleteInstanceObject"),
     url(r'^instances/instance/(?P<instanceSlug>[a-zA-Z0-9\-_]+)/define(?:/)?$', 'defineInstance', name="DefineInstanceObject"),
-    
+
     # Users
     # url(r'^users(?:/)?$','users',name="UserList"),
     url(r'^users/(?P<userPK>\d+)(?:/)?$', 'userView', name="User"),

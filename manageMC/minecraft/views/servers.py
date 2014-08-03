@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 # Built-in
 
@@ -45,7 +45,7 @@ def index(req):  #
         # Dedup
         found = ServerInstance.objects.filter(name__in=
                                                  ServerInstance.objects.filter(
-                                                     Q(owner=req.user) | 
+                                                     Q(owner=req.user) |
                                                      Q(admins__contains=req.user)
                                                  ).values('name'))
     servers = []
@@ -67,7 +67,7 @@ def index(req):  #
                                     ),
                               context_instance=RequestContext(req),
                               )
-    
+
 
 # @login_required
 # @permission_required('minecraft.change_serverinstance')
@@ -139,8 +139,8 @@ def view(req, serverSlug):
                                    ),
                               context_instance=RequestContext(req),
                               )
-    
-    
+
+
 # @login_required
 # @permission_required('minecraft.add_serverinstance')
 # def newserver(req):
@@ -154,7 +154,7 @@ def view(req, serverSlug):
 #                                     ),
 #                               context_instance = RequestContext(req),
 #                               )
-    
-    
-    
+
+
+
 

@@ -12,7 +12,7 @@
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html 
+#    along with PyManageMC.  If not, see http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 #===============================================================================
 '''
 Created on Jan 12, 2013
@@ -79,7 +79,7 @@ def newInstanceAdmin(req):
                                    ),
                               context_instance=RequestContext(req),
                               )
-    
+
 
 @permission_required('extern.view_serverinstance')
 def instance(req, instanceSlug):
@@ -166,7 +166,7 @@ def instances(req, statusIs=None, statusIsInGroup=None):
                                    serverInstances=inst,
                                    serverStatusGroups=groups,
                                    serverStatuses=statuses,
-                                   
+
                                    ),
                               context_instance=RequestContext(req),
                               )

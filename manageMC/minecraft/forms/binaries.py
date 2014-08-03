@@ -69,5 +69,5 @@ class UploadBinaryForm(forms.Form):
                                required=False,
                                label="Helper Files (Configs)",
                                )
-    
-    
+
+
