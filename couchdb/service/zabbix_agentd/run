@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /sbin/setuser zabbix /usr/sbin/zabbix_agentd -c /etc/zabbix/zabbix_agentd.conf >> /var/log/zabbix_agentd.log 2>&1

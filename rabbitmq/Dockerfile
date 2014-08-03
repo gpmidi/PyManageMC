@@ -30,6 +30,7 @@ RUN  apt-get install -y rabbitmq-server
 
 # Config Files
 ADD configs /root/configs.pymc/
+ADD service /root/service.pymc/
 RUN  chmod -R 750 /root/configs.pymc/ \
   && mkdir -p /root/.pip/ \
   && cp -a /root/configs.pymc/pip.conf /root/.pip/pip.conf \
@@ -44,6 +45,9 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && cp /root/configs.pymc/authorized_keys /root/.ssh/authorized_keys \
   && chmod -R 700 /root/.ssh \
   && chown -R root: /root/.ssh \
+  && chmod -R 755 /root/service.pymc \
+  && chown -R root:root /root/service.pymc \
+  && cp -a /root/service.pymc/* /etc/service/ \
   && echo "Done with configs"
 
 # Enable the rmq mgmt plugin on tcp/15672

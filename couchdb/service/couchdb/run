@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /sbin/setuser couchdb /usr/bin/couchdb >> /var/log/couchdb.log 2>&1

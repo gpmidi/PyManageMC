@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /sbin/setuser pymc /usr/bin/uwsgi FIXME >> /var/log/pymc.log 2>&1
