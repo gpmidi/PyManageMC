@@ -13,7 +13,7 @@ couchdb0:
     - "3209:5"
     - "5009:10050"
   volumes:
-    - /home/pymcdev/vols/cdb0_cdb:/var/lib/couchdb	
+    - /home/pymcdev/vols/cdb0_cdb:/var/lib/couchdb
 wsgi0:
   build: wsgi
   ports:
@@ -23,17 +23,17 @@ wsgi0:
   volumes:
     - /home/pymcdev/vols/wsgi0_pymc:/var/lib/pymc
   links:
-	- rabbitmq0
-	- memcached0
-	- memcached1
-	- pgsql0
-	- couchdb0
+    - rabbitmq0
+    - memcached0
+    - memcached1
+    - pgsql0
+    - couchdb0
 fe0:
   build: fe
   ports:
     - "2211:22"
     - "8011:80"
-	- "4311:443"
+    - "4311:443"
     - "5011:10050"
   volumes:
     - /home/pymcdev/vols/fe0_html:/usr/local/nginx/html:ro
@@ -54,7 +54,7 @@ memcached0:
     - "8013:11211"
     - "5013:10050"
 memcached1:
-  build:memcached
+  build: memcached
   ports:
     - "2214:22"
     - "8014:11211"

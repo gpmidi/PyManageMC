@@ -37,11 +37,10 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   python-django-celery-doc python-amqp amqp-tools python-librabbitmq \
   librabbitmq-dev librabbitmq1 redis-tools python-redis libmemcached-tools \
   uwsgi-core syslog-ng-mod-redis python-couchdb python-couchdbkit \
-  ipython-beautifulsoup ipython
+  python-bs4 ipython python-configobj python-openid python-requests-oauthlib
 
-RUN  pip install --upgrade django-sendfile django celery social \
-  django_couchdb_utils couchdbkit couchdb redis amqp django-auth-openid \
-  south
+RUN  pip install --upgrade django-sendfile django celery python-social-auth \
+  django_couchdb_utils couchdbkit couchdb redis amqp south
 
 # Config Files
 ADD configs /root/configs.pymc/
@@ -50,9 +49,7 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && cp -a /root/configs.pymc/pip.conf /root/.pip/pip.conf \
   && chown -R root:root /root/configs.pymc/ /root/.pip/ \
   && chmod -R 700 /root/.pip/ \
-  && cp -a /root/configs.pymc/sshd.conf /etc/supervisor/conf.d/ \
   && cp -a /root/configs.pymc/profile_proxy.sh /etc/profile.d/99_proxy.sh \
-  && cp -a /root/configs.pymc/zabbix-agent.conf /etc/supervisor/conf.d/ \
   && cp -a /root/configs.pymc/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf \
   && cp -a /root/configs.pymc/applimits.conf /etc/security/limits.d/applimits.conf \
   && chmod 755 /etc/profile.d/99_proxy.sh \

@@ -36,9 +36,7 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && cp -a /root/configs.pymc/pip.conf /root/.pip/pip.conf \
   && chown -R root:root /root/configs.pymc/ /root/.pip/ \
   && chmod -R 700 /root/.pip/ \
-  && cp -a /root/configs.pymc/sshd.conf /etc/supervisor/conf.d/ \
   && cp -a /root/configs.pymc/profile_proxy.sh /etc/profile.d/99_proxy.sh \
-  && cp -a /root/configs.pymc/zabbix-agent.conf /etc/supervisor/conf.d/ \
   && cp -a /root/configs.pymc/zabbix_agentd.conf /etc/zabbix/zabbix_agentd.conf \
   && cp -a /root/configs.pymc/applimits.conf /etc/security/limits.d/applimits.conf \
   && chmod 755 /etc/profile.d/99_proxy.sh \
