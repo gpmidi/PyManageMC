@@ -36,7 +36,9 @@ fe0:
     - "4311:443"
     - "5011:10050"
   volumes:
-    - /home/pymcdev/vols/fe0_html:/usr/local/nginx/html:ro
+    - /home/pymcdev/vols/fe0_html:/usr/local/nginx/html
+    - /home/pymcdev/vols/fe0_pymc:/var/lib/pymc
+    - /home/pymcdev/vols/fe0_felogs:/var/log/nginx
   links:
     - wsgi0
 rabbitmq0:
