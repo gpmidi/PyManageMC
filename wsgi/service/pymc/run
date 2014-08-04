@@ -1,2 +1,13 @@
 #!/bin/sh
-exec /sbin/setuser pymc /usr/bin/uwsgi FIXME >> /var/log/pymc.log 2>&1
+exec /sbin/setuser pymc /usr/bin/uwsgi \
+  --chdir=/var/lib/pymc/manageMC \
+  --module=manageMC.wsgi:application \
+  --env DJANGO_SETTINGS_MODULE=manageMC.settings \
+  --master --pidfile=/var/lib/pymc/master.pid \
+  --socket=0.0.0.0:32323 \
+  --processes=8 \
+  --harakiri=30 \
+  --max-requests=5000 \
+  --vacuum \
+  --daemonize=/var/lib/pymc/pymc.log \
+  >> /var/log/pymc.log 2>&1
