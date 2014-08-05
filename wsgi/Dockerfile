@@ -36,7 +36,7 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   python-openstack-auth python-django-auth-openid python-django-celery \
   python-django-celery-doc python-amqp amqp-tools python-librabbitmq \
   librabbitmq-dev librabbitmq1 redis-tools python-redis libmemcached-tools \
-  uwsgi-core syslog-ng-mod-redis python-couchdb python-couchdbkit \
+  syslog-ng-mod-redis python-couchdb python-couchdbkit python-devel \
   python-bs4 ipython python-configobj python-openid python-requests-oauthlib
 
 RUN  pip install --upgrade django-sendfile django celery python-social-auth \
@@ -67,6 +67,9 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && chown -R root:root /root/service.pymc \
   && cp -a /root/service.pymc/* /etc/service/ \
   && echo "Done with configs"
+
+# Install latest version of uwsgi
+RUN  pip install uwsgi
 
 
 # Clean up APT when done.
