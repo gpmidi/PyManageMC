@@ -9,3 +9,4 @@ local_settings.py
 /media
 /logs
 /_gsdata_
+/master.pid
