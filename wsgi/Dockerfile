@@ -36,7 +36,7 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   python-openstack-auth python-django-auth-openid python-django-celery \
   python-django-celery-doc python-amqp amqp-tools python-librabbitmq \
   librabbitmq-dev librabbitmq1 redis-tools python-redis libmemcached-tools \
-  syslog-ng-mod-redis python-couchdb python-couchdbkit python-devel \
+  syslog-ng-mod-redis python-couchdb python-couchdbkit python-dev \
   python-bs4 ipython python-configobj python-openid python-requests-oauthlib
 
 RUN  pip install --upgrade django-sendfile django celery python-social-auth \
