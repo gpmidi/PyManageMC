@@ -10,3 +10,5 @@ local_settings.py
 /logs
 /_gsdata_
 /master.pid
+.viminfo
+/.ipython
