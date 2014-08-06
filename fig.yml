@@ -4,8 +4,9 @@ pgsql0:
   domainname: mcd.gpmidi.net
   ports:
     - "2208:22"
-    - "3208:5432"
     - "5008:10050"
+  expose:
+    - "3208:5432"  
   volumes:
     - /home/pymcdev/vols/pgsql0_pg:/var/lib/postgresql/data
   environment:
@@ -16,8 +17,9 @@ couchdb0:
   domainname: mcd.gpmidi.net
   ports:
     - "2209:22"
-    - "3209:5984"
     - "5009:10050"
+  expose:
+    - "3209:5984"
   volumes:
     - /home/pymcdev/vols/cdb0_cdb:/var/lib/couchdb
 wsgi0:
@@ -26,8 +28,9 @@ wsgi0:
   domainname: mcd.gpmidi.net
   ports:
     - "2210:22"
-    - "3210:32323"
     - "5010:10050"
+  expose:
+    - "3210:32323"
   volumes:
     - /home/pymcdev/vols/wsgi0_pymc:/var/lib/pymc
   links:
@@ -49,6 +52,8 @@ fe0:
     - /home/pymcdev/vols/fe0_html:/usr/local/nginx/html
     - /home/pymcdev/vols/fe0_pymc:/var/lib/pymc
     - /home/pymcdev/vols/fe0_felogs:/var/log/nginx
+  volumes_from:
+    - wsgi0
   links:
     - wsgi0
 rabbitmq0:
@@ -57,8 +62,9 @@ rabbitmq0:
   domainname: mcd.gpmidi.net
   ports:
     - "2212:22"
-    - "7212:5672"
     - "5012:10050"
+  expose:
+    - "7212:5672"
   volumes:
     - /home/pymcdev/vols/rabbitmq0_rmq:/var/lib/rabbitmq
 memcached0:
@@ -67,13 +73,15 @@ memcached0:
   domainname: mcd.gpmidi.net
   ports:
     - "2213:22"
-    - "8013:11211"
     - "5013:10050"
+  expose:
+    - "8013:11211"
 memcached1:
   build: memcached
   hostname: memcached1
   domainname: mcd.gpmidi.net
   ports:
     - "2214:22"
-    - "8014:11211"
     - "5014:10050"
+  expose:
+    - "8014:11211"
