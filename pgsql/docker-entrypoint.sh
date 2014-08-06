@@ -1,5 +1,8 @@
 #!/bin/bash
 
+/bin/mkdir -p /var/run/sshd
+/usr/sbin/sshd
+
 if [ "$1" = 'postgres' ]; then
     chown -R postgres "$PGDATA"
 

@@ -5,8 +5,7 @@ pgsql0:
   ports:
     - "2208:22"
     - "5008:10050"
-  expose:
-    - "3208:5432"  
+    - "3208:5432"
   volumes:
     - /home/pymcdev/vols/pgsql0_pg:/var/lib/postgresql/data
   environment:
@@ -18,7 +17,6 @@ couchdb0:
   ports:
     - "2209:22"
     - "5009:10050"
-  expose:
     - "3209:5984"
   volumes:
     - /home/pymcdev/vols/cdb0_cdb:/var/lib/couchdb
