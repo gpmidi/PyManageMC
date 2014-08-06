@@ -12,3 +12,4 @@ local_settings.py
 /master.pid
 .viminfo
 /.ipython
+/.bash_history
