@@ -19,6 +19,15 @@ import os
 import sys
 
 if __name__ == "__main__":
+    import os, sys
+
+    # Calculate the path based on the location of the WSGI script.
+    settingsdir = os.path.dirname(__file__)
+    project = os.path.dirname(settingsdir)
+    sys.path.append(project)
+    sys.path.append('/usr/lib/python2.7/site-packages')
+    sys.path.append('/usr/local/lib/python2.7/dist-packages')
+
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "manageMC.settings")
 
     from django.core.management import execute_from_command_line
