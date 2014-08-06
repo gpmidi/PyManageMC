@@ -8,13 +8,15 @@ pgsql0:
     - "5008:10050"
   volumes:
     - /home/pymcdev/vols/pgsql0_pg:/var/lib/postgresql/data
+  environment:
+    LC_ALL: C.UTF-8
 couchdb0:
   build: couchdb
   hostname: couchdb0
   domainname: mcd.gpmidi.net
   ports:
     - "2209:22"
-    - "3209:5"
+    - "3209:5984"
     - "5009:10050"
   volumes:
     - /home/pymcdev/vols/cdb0_cdb:/var/lib/couchdb
