@@ -45,8 +45,8 @@ fe0:
   domainname: mcd.gpmidi.net
   ports:
     - "2211:22"
-    - "8011:80"
-    - "4311:443"
+    - "80:80"
+    - "443:443"
     - "5011:10050"
   volumes:
     - /home/pymcdev/vols/fe0_html:/usr/local/nginx/html
