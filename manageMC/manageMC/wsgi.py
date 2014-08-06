@@ -35,6 +35,8 @@ import os, sys
 settingsdir = os.path.dirname(__file__)
 project = os.path.dirname(settingsdir)
 sys.path.append(project)
+sys.path.append('/usr/lib/python2.7/site-packages')
+sys.path.append('/usr/local/lib/python2.7/dist-packages')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "manageMC.settings")
 
 # This application object is used by any WSGI server configured to use this
