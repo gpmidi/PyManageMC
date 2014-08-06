@@ -49,6 +49,12 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && chmod -R 755 /root/service.pymc \
   && chown -R root:root /root/service.pymc \
   && cp -a /root/service.pymc/* /etc/service/ \
+  && mkdir -p /var/run/couchdb \
+  && chown -R couchdb:couchdb /var/run/couchdb/ \
+  && cp /root/configs.pymc/cdb.conf /etc/couchdb/local.d/pymc.conf \
+  && chown couchdb:couchdb /etc/couchdb/local.d/pymc.conf \
+  && /bin/sed -i 's/;port = 5984/port = 5984/' /etc/couchdb/local.ini \
+  && /bin/sed -i 's/;bind_address = 127.0.0.1/bind_address = 0.0.0.0/' /etc/couchdb/local.ini \
   && echo "Done with configs"
 
 # Clean up APT when done.
