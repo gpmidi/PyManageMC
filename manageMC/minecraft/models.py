@@ -129,7 +129,7 @@ class MinecraftServer(Document):
 
     def getSplitDescription(self):
         """ Return description as list of lines without trailing newlines """
-        return map(lambda x: x.rstrip(), self.description)
+        return map(lambda x: x.rstrip(), str(self.description).splitlines())
 
     binary = StringProperty(
                               required=True,
