@@ -1,4 +1,4 @@
 function(doc)
 {
-    emit(doc.type,1);
+    emit(doc.doc_type,1);
 }
