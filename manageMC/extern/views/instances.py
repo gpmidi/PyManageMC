@@ -121,7 +121,7 @@ def defineInstance(req, instanceSlug):
     inst = get_object_or_404(ServerInstance, name=instanceSlug)
     try:
         srv = MinecraftServer.get(inst.name)
-        raise Http404("An instance of this server already exists")
+        raise Http404("An instance of this server already exists: %r" % srv._id)
     except ResourceNotFound as e:
         pass
 
@@ -132,6 +132,9 @@ def defineInstance(req, instanceSlug):
             srv.name = inst.name
             srv._id = MinecraftServer.makeSessionName(inst.name)
             srv.binary = form.cleaned_data['binary']
+            srv.humanName = inst.humanName
+            srv.description = inst.description
+            srv.image = form.cleaned_data['image']
             srv.save()
             return redirect('/mc/servers/%s/' % urllib.quote(inst.name))
     else:

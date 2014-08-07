@@ -29,6 +29,17 @@ from django.forms.widgets import *
 from couchdbkit.ext.django.forms import DocumentForm
 
 from minecraft.models import *
+from mcdocker.models import DockerImage
+
+
+def _getImages():
+    ret = []
+    for img in DockerImage.view('mcdocker/userOSImages').all():
+        ret.append((
+                    img['id'],
+                    '%(humanName)s | %(dockerName)s' % img['value'],
+                    ))
+    return ret
 
 
 class MinecraftServerForm(forms.Form):
@@ -41,3 +52,6 @@ class MinecraftServerForm(forms.Form):
                ),
            required=True,
            )
+    image = CharField(
+          widget=Select(choices=_getImages())
+          )
