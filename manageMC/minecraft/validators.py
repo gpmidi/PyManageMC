@@ -32,6 +32,8 @@ def validate_serverBinary(value):
 
 
 def validate_serverImage(value):
+    if not value:
+        raise ValidationError("OS image named %r isn't a valid _id" % value)
     try:
         from mcdocker.models import DockerImage
         si = DockerImage.get(value)
