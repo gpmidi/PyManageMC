@@ -35,6 +35,9 @@ from minecraft.serverType import loadOtherServerTypes, allServerTypes  # @Unused
 from minecraft.validators import *  # @UnusedWildImport
 from mcdocker.models import *  # @UnusedWildImport
 
+# Ours
+from mcprofile import MinecraftUser
+
 
 class MinecraftServerBinary(Document):
     # TODO: Move this to a doc
