@@ -46,11 +46,11 @@ class MinecraftUser(object):
     def __init__(self, uuid=None, username=None):
         assert uuid or username, "Expected either uuid or username to be defined"
         self.cache = get_cache('default')
+        self._uuid = uuid
+        self._session = None
         if username:
             self._uuid = self.usernameToUUID(username)
         self._username = username
-        self._uuid = uuid
-        self._session = None
 
     @property
     def uuid(self):
@@ -93,7 +93,7 @@ class MinecraftUser(object):
         h.update(cls.__class__.__name__)
         h.update(typ)
         for i in data:
-            h.update(i)
+            h.update(str(i))
         return h.hexdigest()
 
     def usernameToUUID(self, username):
@@ -101,7 +101,7 @@ class MinecraftUser(object):
         uuid = self.cache.get(k)
         if uuid:
             return uuid
-        for name, uuid in self.usernameToUUID([username, ]).items():
+        for name, uuid in self.usernamesToUUID([username, ]).items():
             if name == username:
                 self.cache.set(k, uuid, None)
                 return uuid

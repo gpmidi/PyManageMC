@@ -31,7 +31,3 @@ import requests
 # Ours
 from mcprofile.profile import MinecraftUser
 
-class MinecraftAPI(object):
-
-    def __init__(self,):
-        pass
