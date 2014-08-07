@@ -17,6 +17,9 @@
 # Built-in
 import os, os.path, sys  # @UnusedImport
 import re  # @UnusedImport
+import hashlib
+import string
+import random
 
 # Django
 from django.db import models  # @UnusedImport
@@ -27,6 +30,15 @@ from django.core.exceptions import ValidationError  # @Reimport
 # CouchDB
 from couchdbkit.ext.django.schema import *  # @UnusedWildImport
 
+
+def mkPasswordFunc(length=16, chars=string.ascii_letters + string.digits + '!@#$%^&*()'):
+    """ Create a function that returns a random password """
+    # FIXME: Replace this with
+    def func():
+        # Randomize random module's seed
+        random.seed = os.urandom(1024)
+        return ''.join(random.choice(chars) for i in range(length))
+    return func
 
 def _getAdmin():
     if len(settings.ADMINS) <= 0:
@@ -216,7 +228,7 @@ class DockerImage(Document):
                                       ],
                           name="minecraftUserPasswd",
                           required=False,
-                          default=None,
+                          default=mkPasswordFunc(length=16, chars=string.ascii_letters + string.digits),
                           verbose_name="Minecraft Shell User's Password",
                           )
     rootUserPasswd = StringProperty(
@@ -227,7 +239,7 @@ class DockerImage(Document):
                                       ],
                           name="rootUserPasswd",
                           required=False,
-                          default=None,
+                          default=mkPasswordFunc(length=16, chars=string.ascii_letters + string.digits),
                           verbose_name="Root Shell User's Password",
                           )
     supervisordUser = StringProperty(
@@ -249,7 +261,7 @@ class DockerImage(Document):
                                       ],
                           name="supervisordPassword",
                           required=True,
-                          default=None,
+                          default=mkPasswordFunc(length=32, chars=string.ascii_letters + string.digits),
                           verbose_name="Supervisord's Management Password Or Hash For Config",
                           )
     # TODO: Need a better password storage system than a raw DB
@@ -261,7 +273,7 @@ class DockerImage(Document):
                                       ],
                           name="realSupervisordPassword",
                           required=True,
-                          default=None,
+                          default=mkPasswordFunc(length=32, chars=string.ascii_letters + string.digits),
                           verbose_name="Supervisord's Management Password",
                           )
     supervisordAutoRestart = BooleanProperty(
@@ -298,7 +310,7 @@ class DockerImage(Document):
     extraPackages = StringListProperty(
                           validators=[_validatePackageList, ],
                           name="extraPackages",
-                          required=True,
+                          required=False,
                           default=[],
                           verbose_name="Extra Packages",
                           )
