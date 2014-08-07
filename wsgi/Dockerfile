@@ -69,7 +69,7 @@ RUN  chmod -R 750 /root/configs.pymc/ \
 # Install Python packages
 RUN  pip install --upgrade django-sendfile django celery python-social-auth \
   django_couchdb_utils couchdbkit couchdb redis amqp south uwsgi billiard \
-  django-celery docker-py
+  django-celery docker-py requests
 
 
 # Clean up APT when done.
