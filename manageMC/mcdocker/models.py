@@ -53,14 +53,14 @@ def _validatePackageList(value):
             raise ValidationError(u'%s is not a valid package name' % value)
 
 
-_validateSSHKeyListRE = re.compile(r'^ssh-(rsa|dsa)\s+[a-zA-Z0-9+/]+([=]*)( [ a-zA-Z0-9+@./]+)?$')
+_validateSSHKeyListRE = re.compile(r'^ssh-(rsa|dsa)\s+[a-zA-Z0-9+/]+([=]*)( [\- a-zA-Z0-9+@./]+)?$')
 def _validateSSHKeyList(value):
     try:
         values = list(value)  # @UnusedVariable
     except:
         raise ValidationError(u'%s is not itterable' % value)
     for value in values:
-        if not _validatePackageListRE.match(value):
+        if not _validateSSHKeyListRE.match(value):
             raise ValidationError(u'%s is not a valid SSH public key' % value)
 
 
@@ -83,7 +83,7 @@ class DockerImage(Document):
 
     def getSplitDescription(self):
         """ Return description as list of lines without trailing newlines """
-        return map(lambda x: x.rstrip(), self.description)
+        return map(lambda x: x.rstrip(), self.description.splitlines())
 
     IMAGE_TYPES = (
                    # Not directly used; used as a platform for building other
@@ -102,7 +102,7 @@ class DockerImage(Document):
                           verbose_name="Image Type",
                           )
     imageID = StringProperty(
-                          validators=[RegexValidator(r'^[a-f0-9]+$'), ],
+                          validators=[RegexValidator(r'^[a-f0-9]+$', message='Invalid Docker Image ID'), ],
                           name="dockerImageID",
                           required=True,
                           default=None,
@@ -110,10 +110,10 @@ class DockerImage(Document):
                           )
 
     parent = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?(?:\/[a-zA-Z0-9.\-]+)+(?:\:[a-zA-Z0-9.\-]+)?$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?(?:\/[a-zA-Z0-9.\-]+)+(?:\:[a-zA-Z0-9.\-]+)?$', message='Invalid Parent Docker Image Name/ID'), ],
                           name="dockerParent",
                           required=True,
-                          default="Ubuntu:13.10",
+                          default="ubuntu:14.04",
                           verbose_name="Docker Image Parent Image",
                           )
     dockerMemoryLimitMB = IntegerProperty(
@@ -149,28 +149,28 @@ class DockerImage(Document):
         return ret
 
     dockerName = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$', message='Invalid Docker Name'), ],
                           name="dockerName",
                           required=True,
                           default=None,
                           verbose_name="Docker Image Name",
                           )
     dockerIndexer = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?$', message='Invalid Docker Indexer'), ],
                           name="dockerIndexer",
                           required=False,
                           default=None,
                           verbose_name="Docker Image Indexer",
                           )
     repo = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$', message='Invalid Docker Repo'), ],
                           name="dockerRepo",
                           required=False,
                           default=None,
                           verbose_name="Docker Image Repo",
                           )
     tag = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+$', message='Invalid Docker tag'), ],
                           name="dockerTag",
                           required=True,
                           default='latest',
@@ -179,7 +179,7 @@ class DockerImage(Document):
     # The user that Minecraft runs as
     user = StringProperty(
                           validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9]+$'),
+                                      RegexValidator(r'^[a-zA-Z0-9]+$', message='Invalid Minecraft username'),
                                       MaxLengthValidator(14),
                                       MinLengthValidator(3),
                                       ],
@@ -210,7 +210,7 @@ class DockerImage(Document):
                           )
     minecraftUserPasswd = StringProperty(
                           validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
+                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$', message='Invalid Minecraft user password'),
                                       MaxLengthValidator(128),
                                       MinLengthValidator(8),
                                       ],
@@ -221,7 +221,7 @@ class DockerImage(Document):
                           )
     rootUserPasswd = StringProperty(
                           validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
+                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$', message='Invalid root user password'),
                                       MaxLengthValidator(128),
                                       MinLengthValidator(8),
                                       ],
@@ -232,7 +232,7 @@ class DockerImage(Document):
                           )
     supervisordUser = StringProperty(
                           validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9]+$'),
+                                      RegexValidator(r'^[a-zA-Z0-9]+$', message='Invalid supervisord username'),
                                       MaxLengthValidator(32),
                                       MinLengthValidator(4),
                                       ],
@@ -243,7 +243,7 @@ class DockerImage(Document):
                           )
     supervisordPasswd = StringProperty(
                           validators=[
-                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$'),
+                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$', message='Invalid supervisord password or password hash'),
                                       MaxLengthValidator(512),
                                       MinLengthValidator(8),
                                       ],
@@ -255,7 +255,7 @@ class DockerImage(Document):
     # TODO: Need a better password storage system than a raw DB
     realSupervisordPasswd = StringProperty(
                           validators=[
-                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$'),
+                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$', message='Real supervisord password'),
                                       MaxLengthValidator(512),
                                       MinLengthValidator(8),
                                       ],
@@ -318,14 +318,14 @@ class DockerImage(Document):
                           )
     # Image Maintainer Info
     firstName = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$', message='Invalid maintainer first name'), ],
                           name="firstName",
                           required=True,
                           default=_getAdmin()[0],
                           verbose_name="Docker Maintainer's First Name",
                           )
     lastName = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$', message='Invalid maintainer last name'), ],
                           name="lastName",
                           required=True,
                           default=_getAdmin()[1],
@@ -353,20 +353,20 @@ class DockerImage(Document):
            name='ports',
            required=True,
            default={
-            str(settings.MINECRAFT_DEFAULT_PORT_SSH):('0.0.0.0', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):('127.0.0.1', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):('0.0.0.0', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_RCON):('127.0.0.1', None),
-            '25580':('127.0.0.1', None),
-            '25581':('127.0.0.1', None),
-            '25582':('127.0.0.1', None),
-            '25583':('127.0.0.1', None),
-            '25584':('127.0.0.1', None),
-            '25585':('127.0.0.1', None),
-            '25586':('127.0.0.1', None),
-            '25587':('127.0.0.1', None),
-            '25588':('127.0.0.1', None),
-            '25589':('127.0.0.1', None),
+            str(settings.MINECRAFT_DEFAULT_PORT_SSH):['0.0.0.0', None],
+            str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):['127.0.0.1', None],
+            str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):['0.0.0.0', None],
+            str(settings.MINECRAFT_DEFAULT_PORT_RCON):['127.0.0.1', None],
+            '25580':['127.0.0.1', None],
+            '25581':['127.0.0.1', None],
+            '25582':['127.0.0.1', None],
+            '25583':['127.0.0.1', None],
+            '25584':['127.0.0.1', None],
+            '25585':['127.0.0.1', None],
+            '25586':['127.0.0.1', None],
+            '25587':['127.0.0.1', None],
+            '25588':['127.0.0.1', None],
+            '25589':['127.0.0.1', None],
             },
            verbose_name="Ports To Export",
            )
@@ -402,7 +402,7 @@ class DockerImage(Document):
                           )
     javaInitMemMB = IntegerProperty(
                           validators=[
-                                      MinValueValidator(128),
+                                      MinValueValidator(64),
                                       MaxValueValidator(32 * 1024),
                                       ],
                           name="javaInitMemMB",
