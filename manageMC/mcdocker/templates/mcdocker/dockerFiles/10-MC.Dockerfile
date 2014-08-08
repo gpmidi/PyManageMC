@@ -15,7 +15,7 @@ ENV MC_IMAGE_DOCKER_PARENT "{{ image.parent }}"
 {% if image.description %}
 # Image Description:
 {% for line in image.getSplitDescription %}
-# {{ line }}
+#   {{ line }}
 {% endfor %}
 {% endif %}
 
@@ -25,6 +25,7 @@ ONBUILD RUN umask 0022
 
 {% if image.extraPackages %}
     # User defined packages
+    RUN apt-get update
     {% for pkg in image.extraPackages %}
         RUN apt-get install -y {{ pkg }}
     {% endfor %}

@@ -66,7 +66,7 @@ VOLUME ["/var/lib/minecraft","/var/log","/etc/ssh"]
 CMD [ \
     "supervisord", \
     "--nodaemon", \
-    "--logfile=/var/log/supervisor/supervisord.log", \
+    "--logfile=/var/log/supervisord.log", \
     "--loglevel=warn", \
     "--logfile_maxbytes=1GB", \
     "--logfile_backups=0" \
