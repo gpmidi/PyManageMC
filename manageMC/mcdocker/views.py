@@ -63,18 +63,18 @@ def dockerImageIndex(req):
 @login_required
 @permission_required('mcdocker.view_dockerimage')
 @permission_required('mcdocker.change_dockerimage')
-def dockerImageEdit(req, dockerImageId):
+def dockerImageEdit(req, dockerImageName):
     """ Docker Image Change """
     try:
         return render_to_response(
                                   'mcdocker/dockerMgmt/edit.djhtml',
                                   dict(
-                                       image=DockerImage.get(dockerImageId),
+                                       image=DockerImage.get(dockerImageName),
                                        ),
                                   context_instance=RequestContext(req),
                                   )
     except ResourceNotFound:
-        raise Http404("Couldn't find an image named %r" % dockerImageId)
+        raise Http404("Couldn't find an image named %r" % dockerImageName)
 
 
 @login_required

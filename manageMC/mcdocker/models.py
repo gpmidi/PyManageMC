@@ -78,6 +78,7 @@ def _validateSSHKeyList(value):
 
 class DockerImage(Document):
     """ """
+    # TODO: This really isn't a human name, it's a mixed-use name
     humanName = StringProperty(
                           validators=[validate_slug, ],
                           name="humanName",
@@ -122,7 +123,12 @@ class DockerImage(Document):
                           )
 
     parent = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?(?:\/[a-zA-Z0-9.\-]+)+(?:\:[a-zA-Z0-9.\-]+)?$', message='Invalid Parent Docker Image Name/ID'), ],
+                          validators=[
+                              RegexValidator(
+                                  r'^(?:[a-zA-Z0-9._\-]+(?:\:[0-9]+)?/)?(?:[a-zA-Z0-9_\-]+/?)+(?:\:[a-zA-Z0-9_.\-]+)?$',
+                                  message='Invalid Parent Docker Image Name/ID',
+                                  ),
+                              ],
                           name="dockerParent",
                           required=True,
                           default="ubuntu:14.04",

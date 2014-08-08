@@ -12,8 +12,12 @@
 
 
 {% block quick %}
-    {% cache 60 QuickServerOSBase1 user.id server.name %}
+    {% cache 60 QuickServerOSBaseEdit1 user.id server.name %}
         {# Nav #}
-
+        <ul class="nav">
+            <li>Minecraft+Docker</li>
+            <li><a href="{% url 'DockerImageIndex' %}">Images</a></li>
+            <li><a href="{% url 'DockerImageCreate' %}">New Image</a></li>
+        </ul>
     {% endcache %}
 {% endblock %}

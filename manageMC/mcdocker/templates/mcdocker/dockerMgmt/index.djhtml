@@ -16,8 +16,8 @@
         </tr>
         {% for image in userImages %}
             <tr>
-                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.humanName }}</a></td>
-                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.imageID }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.humanName }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.imageID }}</a></td>
                 <td>{{ image.dockerName }}</td>
                 <td>{{ image.repo }}</td>
                 <td>{{ image.tag }}</td>
@@ -36,8 +36,8 @@
         </tr>
         {% for image in baseImages %}
             <tr>
-                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.humanName }}</a></td>
-                <td><a href="{% url 'DockerImageEdit' image.id %}">{{ image.imageID }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.humanName }}</a></td>
+                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.imageID }}</a></td>
                 <td>{{ image.dockerName }}</td>
                 <td>{{ image.repo }}</td>
                 <td>{{ image.tag }}</td>

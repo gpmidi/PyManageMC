@@ -7,32 +7,35 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
         <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-        {% dajaxice_js_import %}        
+        {% dajaxice_js_import %}
         <script src="/static/dajax/jquery.dajax.core.js"></script>
         <script src="/static/base.js"></script>
         {% block imports %}{% endblock %}
         {% if gaAccount %}
-		    <script type="text/javascript">
-			  var _gaq = _gaq || [];
-			  _gaq.push(['_setAccount', '{{ gaAccount }}']);
-			  _gaq.push(['_trackPageview']);
-			  (function() {
-			    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-			    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-			    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			  })();
-		    </script>
+            <script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+              ga('create', '{{ gaAccount }}', 'auto');
+              ga('send', 'pageview');
+
+              {% block analyticsActions %}{% endblock %}
+
+            </script>
 		{% endif %}
     </head>
     <body>
         <div class="wrap">
         <div id="main">
         <div class="leftColumn">
-            <ul class="nav">    
+            <ul class="nav">
                 <li>Main</li>
                     <li><a href="/" title="Main page">Home</a></li>
                     <li><a href="/e/instances/" title="A list of all server instances">Server Instances</a></li>
                     <li><a href="/mc/bins/" title="A list of all server binaries">Server Binaries</a></li>
+                    <li><a href="/mcOS/images" title="A list of all Docker-based server images">Docker Images</a></li>
                     {% block quickMain %}
                     {% endblock %}
             </ul>
@@ -42,11 +45,11 @@
 	                <li>My Account</li>
 	                    {% if user.is_authenticated %}
 	                        <li><a href="/mc/servers/">My Hosted Servers</a></li>
-	                        <li><a href="/accounts/profile/">Edit Profile</a></li>             
+	                        <li><a href="/accounts/profile/">Edit Profile</a></li>
 	                        <li><a href="/accounts/logout/">Logout</a></li>
 			                {% if user.is_staff %}
 			                    <li><a href="/admin/">Admin</a></li>
-			                {% endif %}    	                        
+			                {% endif %}
 	                    {% else %}
 	                        <li><a href="/accounts/login/">Login</a></li>
 	                    {% endif %}
@@ -54,7 +57,7 @@
 	        {% endcache %}
 
             {% block quick %}{% endblock %}
-        </div>                  
+        </div>
         <div class="rightColumn">
 	        <ul class="messages" id="messageList">
 	            {% if messages %}
@@ -62,20 +65,20 @@
 	                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
 	                {% endfor %}
 	            {% endif %}
-	        </ul>           
+	        </ul>
 	        {% block body %}{% endblock %}
         </div>
         </div>
         </div>
-        
+
         <div class="footer">
             {% block footer %}
-            {% endblock %}    
+            {% endblock %}
             {% if legalFooter %}
                 <p class="footerLegal">{{ legalFooter|safe }}</p><br />
             {% endif %}
         </div>
-	    
+
         <!--[if !IE 7]>
             <style type="text/css">
                 #wrap {display:table;height:100%}
@@ -83,4 +86,4 @@
         <![endif]-->
     </body>
 </html>
-        
+
