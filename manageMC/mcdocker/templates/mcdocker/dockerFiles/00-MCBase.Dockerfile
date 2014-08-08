@@ -1,6 +1,6 @@
 {% autoescape off %}
 FROM {{ image.parent }}
-MAINTAINER {{ image.firstName }} {{ image.lastName }}, {{ image.email }}
+MAINTAINER {{ image.firstName }} {{ image.lastName }} <{{ image.email }}>
 
 # Image Name: {{ image.humanName }}
 # Image Type: {{ image.imageType }}
@@ -10,7 +10,7 @@ MAINTAINER {{ image.firstName }} {{ image.lastName }}, {{ image.email }}
 {% if image.description %}
 # Image Description:
 {% for line in image.getSplitDescription %}
-# {{ line }}
+#   {{ line }}
 {% endfor %}
 {% endif %}
 

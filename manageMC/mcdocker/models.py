@@ -80,7 +80,7 @@ class DockerImage(Document):
     """ """
     # TODO: This really isn't a human name, it's a mixed-use name
     humanName = StringProperty(
-                          validators=[validate_slug, ],
+                          validators=[],
                           name="humanName",
                           required=True,
                           default=None,
@@ -174,7 +174,7 @@ class DockerImage(Document):
                           verbose_name="Docker Image Name",
                           )
     dockerIndexer = StringProperty(
-                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]+(:?\:[0-9]+)?$', message='Invalid Docker Indexer'), ],
+                          validators=[RegexValidator(r'^[a-zA-Z0-9.\-]*(:?\:[0-9]+)?$', message='Invalid Docker Indexer'), ],
                           name="dockerIndexer",
                           required=False,
                           default=None,

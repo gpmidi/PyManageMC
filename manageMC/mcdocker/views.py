@@ -85,17 +85,47 @@ def dockerImageEdit(req, dockerImageName):
 def dockerImageCreate(req):
     """ Docker Image Add """
     if req.method == 'POST':
-        form = BaseDockerInstanceForm(req.POST)
+        form = NewDockerInstanceForm(req.POST)
         if form.is_valid():
             di = DockerImage(
-                             _id=form.slug,
-                             humanName=form.humanName,
-
+                             _id=form.cleaned_data['itag'],
+                             humanName=form.cleaned_data['humanName'],
+                             description=form.cleaned_data['description'],
+                             imageType='BaseImage',
+                             imageID=None,
+                             # TODO: Stop hard coding this
+                             parent='ubuntu:14.04',
+                             dockerMemoryLimitMB=form.cleaned_data['dockerMemoryLimitMB'],
+                             dockerCPUShare=form.cleaned_data['dockerCPUShare'],
+                             dockerName=form.cleaned_data['dockerName'],
+                             dockerIndexer=form.cleaned_data['dockerIndexer'],
+                             repo=form.cleaned_data['repo'],
+                             tag=form.cleaned_data['tag'],
+                             user=form.cleaned_data['user'],
+                             uid=form.cleaned_data['uid'],
+                             gid=form.cleaned_data['gid'],
+                             minecraftUserPasswd=None,
+                             rootUserPasswd=None,
+                             supervisordUser=form.cleaned_data['supervisordUser'],
+                             supervisordPasswd=None,
+                             supervisordAutoRestart=form.cleaned_data['supervisordAutoRestart'],
+                             supervisordAutoStart=form.cleaned_data['supervisordAutoStart'],
+                             supervisordStartTimeSeconds=form.cleaned_data['supervisordStartTimeSeconds'],
+                             proxy=form.cleaned_data['proxy'],
+                             extraPackages=map(lambda x: x.rstrip(), form.cleaned_data['extraPackages'].splitlines()),
+                             sshKeysRoot=map(lambda x: x.rstrip(), form.cleaned_data['sshKeysRoot'].splitlines()),
+                             sshKeysMinecraft=map(lambda x: x.rstrip(), form.cleaned_data['sshKeysMinecraft'].splitlines()),
+                             firstName=form.cleaned_data['firstName'],
+                             lastName=form.cleaned_data['lastName'],
+                             email=form.cleaned_data['email'],
+                             javaMaxMemMB=form.cleaned_data['javaMaxMemMB'],
+                             javaInitMemMB=form.cleaned_data['javaInitMemMB'],
+                             javaGCThreads=form.cleaned_data['javaGCThreads'],
                              )
-            # model = form.save()
-            return redirect('dockerImageEdit', di._id)
+            di.save()
+            return redirect('DockerImageEdit', di._id)
     else:
-        form = BaseDockerInstanceForm()
+        form = NewDockerInstanceForm()
 
     return render_to_response(
                               'mcdocker/dockerMgmt/add.djhtml',
@@ -117,42 +147,42 @@ def dockerBaseImageCreate(req):
         if form.is_valid():
             # TODO: Catch model validation errors and pass to user as something friendly
             di = DockerImage(
-                             _id=form.slug,
-                             humanName=form.humanName,
-                             description=form.description,
+                             _id=form.cleaned_data['itag'],
+                             humanName=form.cleaned_data['humanName'],
+                             description=form.cleaned_data['description'],
                              imageType='BaseImage',
                              imageID=None,
                              # TODO: Stop hard coding this
                              parent='ubuntu:14.04',
-                             dockerMemoryLimitMB=form.dockerMemoryLimitMB,
-                             dockerCPUShare=form.dockerCPUShare,
-                             dockerName=form.dockerName,
-                             dockerIndexer=form.dockerIndexer,
-                             repo=form.repo,
-                             tag=form.tag,
-                             user=form.user,
-                             uid=form.uid,
-                             gid=form.gid,
+                             dockerMemoryLimitMB=form.cleaned_data['dockerMemoryLimitMB'],
+                             dockerCPUShare=form.cleaned_data['dockerCPUShare'],
+                             dockerName=form.cleaned_data['dockerName'],
+                             dockerIndexer=form.cleaned_data['dockerIndexer'],
+                             repo=form.cleaned_data['repo'],
+                             tag=form.cleaned_data['tag'],
+                             user=form.cleaned_data['user'],
+                             uid=form.cleaned_data['uid'],
+                             gid=form.cleaned_data['gid'],
                              minecraftUserPasswd=None,
                              rootUserPasswd=None,
-                             supervisordUser=form.supervisordUser,
+                             supervisordUser=form.cleaned_data['supervisordUser'],
                              supervisordPasswd=None,
-                             supervisordAutoRestart=form.supervisordAutoRestart,
-                             supervisordAutoStart=form.supervisordAutoStart,
-                             supervisordStartTimeSeconds=form.supervisordStartTimeSeconds,
-                             proxy=form.proxy,
-                             extraPackages=map(lambda x: x.rstrip(), form.extraPackages.splitlines()),
-                             sshKeysRoot=map(lambda x: x.rstrip(), form.sshKeysRoot.splitlines()),
-                             sshKeysMinecraft=map(lambda x: x.rstrip(), form.sshKeysMinecraft.splitlines()),
-                             firstName=form.firstName,
-                             lastName=form.lastName,
-                             email=form.email,
-                             javaMaxMemMB=form.javaMaxMemMB,
-                             javaInitMemMB=form.javaInitMemMB,
-                             javaGCThreads=form.javaGCThreads,
+                             supervisordAutoRestart=form.cleaned_data['supervisordAutoRestart'],
+                             supervisordAutoStart=form.cleaned_data['supervisordAutoStart'],
+                             supervisordStartTimeSeconds=form.cleaned_data['supervisordStartTimeSeconds'],
+                             proxy=form.cleaned_data['proxy'],
+                             extraPackages=map(lambda x: x.rstrip(), form.cleaned_data['extraPackages'].splitlines()),
+                             sshKeysRoot=map(lambda x: x.rstrip(), form.cleaned_data['sshKeysRoot'].splitlines()),
+                             sshKeysMinecraft=map(lambda x: x.rstrip(), form.cleaned_data['sshKeysMinecraft'].splitlines()),
+                             firstName=form.cleaned_data['firstName'],
+                             lastName=form.cleaned_data['lastName'],
+                             email=form.cleaned_data['email'],
+                             javaMaxMemMB=form.cleaned_data['javaMaxMemMB'],
+                             javaInitMemMB=form.cleaned_data['javaInitMemMB'],
+                             javaGCThreads=form.cleaned_data['javaGCThreads'],
                              )
             di.save()
-            return redirect('dockerImageEdit', di._id)
+            return redirect('DockerImageEdit', di._id)
     else:
         form = BaseDockerInstanceForm()
 

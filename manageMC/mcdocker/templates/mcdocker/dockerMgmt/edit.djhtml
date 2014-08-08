@@ -2,8 +2,123 @@
 {% load cache %}
 {# OS Image Editing #}
 
-{% block title %}Edit {{ image.name }} - Minecraft OS Manager{% endblock %}
+{% block title %}Edit {{ image.humanName }} - Minecraft OS Manager{% endblock %}
 
 {% block body %}
-
+    {% cache 5 MCOSEditDockerImageBody6 user.id image.get_id %}
+        <div class="newsbox">
+            <h1>{{ image.imageType }}</h1>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Basic</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>Name:</b> {{ image.humanName }}</li>
+                        <li><b>ID:</b> {{ image.get_id }}</li>
+                        <li><b>Type:</b> {{ image.imageType }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Description</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    {{ image.description|linebreaksbr }}
+                    {% if not image.description %}
+                        [[ Blank ]]
+                    {% endif %}
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Docker</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>Name:</b> {{ image.getFullDockerName }}</li>
+                        <li><b>Image ID:</b> {{ image.imageID }}</li>
+                        <li><b>Parent:</b> {{ image.parent }}</li>
+                        <li><b>Memory Limit:</b> {{ image.dockerMemoryLimitMB }} MiB</li>
+                        <li><b>CPU Share:</b> {{ image.dockerCPUShare }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Minecraft</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>System Username:</b> {{ image.user }}</li>
+                        <li><b>UID:</b> {{ image.uid }}</li>
+                        <li><b>GID:</b> {{ image.gid }}</li>
+                        <li><b>SSH Keys:</b> {{ image.sshKeysMinecraft }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Java</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>Args:</b> {{ image.javaArgs }}</li>
+                        <li><b>Binary:</b> {{ image.javaBin }}</li>
+                        <li><b>Max Memory:</b> {{ image.javaMaxMemMB }} MB</li>
+                        <li><b>Initial Memory:</b> {{ image.javaInitMemMB }} MB</li>
+                        <li><b>GC Threads:</b> {{ image.javaGCThreads }} Threads</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Supervisord</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>User:</b> {{ image.supervisordUser}}</li>
+                        <li><b>Auto Restart:</b> {{ image.supervisordAutoRestart }}</li>
+                        <li><b>Auto Start:</b> {{ image.supervisordAutoStart }}</li>
+                        <li><b>Max Start Time:</b> {{ image.supervisordStartTimeSeconds }} Seconds</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">System</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>Proxy:</b> {{ image.proxy }}</li>
+                        <li><b>Extra Packages:</b> {{ image.extraPackages }}</li>
+                        <li><b>SSH Keys:</b> {{ image.sshKeysRoot }}</li>
+                        <li><b>Volumes:</b> {{ image.volumes }}</li>
+                        <li><b>Ports:</b> {{ image.ports }}</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Maintainer Info</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        <li><b>First Name:</b> {{ image.firstName }}</li>
+                        <li><b>Last Name:</b> {{ image.lastName }}</li>
+                        <li><b>Email:</b> {{ image.email }}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endcache %}
 {% endblock %}

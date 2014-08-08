@@ -5,7 +5,7 @@
 {% block title %}Add - Minecraft OS Manager{% endblock %}
 
 {% block body %}
-    <form enctype="multipart/form-data" method="post" action=".">
+    <form enctype="multipart/form-data" method="post" action="./">
         {% csrf_token %}
         <table border="0">
             {{ form.as_table }}

@@ -5,43 +5,61 @@
 {% block title %}List Of Your OS Images - Minecraft OS Manager{% endblock %}
 
 {% block body %}
-    <h1>User Images</h1>
-    <table border="1">
-        <tr>
-            <td><b>OS Image Name</b></td>
-            <td><b>Image ID</b></td>
-            <td><b>Docker Name</b></td>
-            <td><b>Repo</b></td>
-            <td><b>Tag</b></td>
-        </tr>
-        {% for image in userImages %}
-            <tr>
-                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.humanName }}</a></td>
-                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.imageID }}</a></td>
-                <td>{{ image.dockerName }}</td>
-                <td>{{ image.repo }}</td>
-                <td>{{ image.tag }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-
-    <h1>Base Images</h1>
-    <table border="1">
-        <tr>
-            <td><b>OS Image Name</b></td>
-            <td><b>Image ID</b></td>
-            <td><b>Docker Name</b></td>
-            <td><b>Repo</b></td>
-            <td><b>Tag</b></td>
-        </tr>
-        {% for image in baseImages %}
-            <tr>
-                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.humanName }}</a></td>
-                <td><a href="{% url 'DockerImageEdit' image.humanName %}">{{ image.imageID }}</a></td>
-                <td>{{ image.dockerName }}</td>
-                <td>{{ image.repo }}</td>
-                <td>{{ image.tag }}</td>
-            </tr>
-        {% endfor %}
-    </table>
+    {% cache 5 MCOSListImagesBody1 user.id %}
+        <div class="newsbox">
+            <h1>Docker Images</h1>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">User Images</h2>
+                    <span></span>
+                </div>
+                <div class="News">
+                    <table border="1">
+                        <tr>
+                            <td><b>OS Image Name</b></td>
+                            <td><b>Image ID</b></td>
+                            <td><b>Docker Name</b></td>
+                            <td><b>Repo</b></td>
+                            <td><b>Tag</b></td>
+                        </tr>
+                        {% for image in userImages %}
+                            <tr>
+                                <td><a href="{% url 'DockerImageEdit' image.get_id %}">{{ image.humanName }}</a></td>
+                                <td><a href="{% url 'DockerImageEdit' image.get_id %}">{{ image.imageID }}</a></td>
+                                <td>{{ image.dockerName }}</td>
+                                <td>{{ image.repo }}</td>
+                                <td>{{ image.tag }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
+                    <h2 class="NewsTitle">Base Images</h2>
+                    <span></span>
+                </div>
+                <div class="News">
+                    <table border="1">
+                        <tr>
+                            <td><b>OS Image Name</b></td>
+                            <td><b>Image ID</b></td>
+                            <td><b>Docker Name</b></td>
+                            <td><b>Repo</b></td>
+                            <td><b>Tag</b></td>
+                        </tr>
+                        {% for image in baseImages %}
+                            <tr>
+                                <td><a href="{% url 'DockerImageEdit' image.get_id %}">{{ image.humanName }}</a></td>
+                                <td><a href="{% url 'DockerImageEdit' image.get_id %}">{{ image.imageID }}</a></td>
+                                <td>{{ image.dockerName }}</td>
+                                <td>{{ image.repo }}</td>
+                                <td>{{ image.tag }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endcache %}
 {% endblock %}

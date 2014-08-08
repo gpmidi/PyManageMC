@@ -34,8 +34,8 @@ from django.conf.urls import patterns, include, url
 
 
 urlpatterns = patterns('mcdocker.views',  # /mcOS/...
-    url(r'^images(?:/)?$', 'dockerImageIndex', name='DockerImageIndex'),
-    url(r'^image/([a-zA-Z0-9_\-]+)(?:/)?$', 'dockerImageEdit', name='DockerImageEdit'),
-    url(r'^newimage(?:/)?$', 'dockerImageCreate', name='DockerImageCreate'),
-    url(r'^newbaseimage(?:/)?$', 'dockerBaseImageCreate', name='DockerBaseImageCreate'),
+    url(r'^images/$', 'dockerImageIndex', name='DockerImageIndex'),
+    url(r'^image/([a-zA-Z0-9_\-]+)/$', 'dockerImageEdit', name='DockerImageEdit'),
+    url(r'^newimage/$', 'dockerImageCreate', name='DockerImageCreate'),
+    url(r'^newbaseimage/$', 'dockerBaseImageCreate', name='DockerBaseImageCreate'),
 )
