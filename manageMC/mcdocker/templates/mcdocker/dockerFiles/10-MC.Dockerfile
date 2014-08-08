@@ -1,10 +1,15 @@
 {% autoescape off %}
 FROM {{ image.parent }}
-MAINTAINER {{ image.firstName }} {{ image.lastName }}, {{ image.email }}
+MAINTAINER {{ image.firstName }} {{ image.lastName }} <{{ image.email }}>
 
 # Image Human Name: {{ image.humanName }}
 # Image Type: {{ image.imageType }}
 # Image Name: {{ image.getFullDockerName() }}
+
+ENV MC_IMAGE_NAME "{{ image.humanName }}"
+ENV MC_IMAGE_TYPE "{{ image.imageType }}"
+ENV MC_IMAGE_DOCKER_NAME "{{ image.getFullDockerName() }}"
+ENV MC_IMAGE_DOCKER_PARENT "{{ image.parent }}"
 
 {# Don't include spaces or other formatting #}
 {% if image.description %}
