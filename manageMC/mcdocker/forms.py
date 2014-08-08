@@ -30,12 +30,13 @@ import os, os.path, sys  # @UnusedImport
 # External
 from django import forms
 from django.core.validators import *
+from couchdbkit.ext.django.forms  import DocumentForm
 
 # Ours
 from minecraft.models import *  # @UnusedWildImport
 from mcdocker.models import *  # @UnusedWildImport
 from mcdocker.tasks import *  # @UnusedWildImport
-from mcdocker.models import _getAdmin
+from mcdocker.models import _getAdmin, mkPasswordFunc
 
 
 class BaseDockerInstanceForm(forms.Form):
@@ -43,11 +44,12 @@ class BaseDockerInstanceForm(forms.Form):
     """
     slug = forms.SlugField(
                             required=True,
-                            label='FE Image Name',
+                            label='Image Tag',
                             validators=[
                                          validate_slug,
                                          MaxLengthValidator(64),
-                                         MinLengthValidator(8),
+                                         MinLengthValidator(4),
+                                         # FIXME: Add in
                                          ],
                             help_text='Computer friendly name for this image',
                             )
@@ -59,9 +61,9 @@ class BaseDockerInstanceForm(forms.Form):
                                 max_length=128,
                                 )
     description = forms.CharField(
-                                required=True,
-                                label='Human Name',
-                                help_text='Human friendly name for this image',
+                                required=False,
+                                label='Description',
+                                help_text="If you don't know what a description is you're a fucking idiot",
                                 initial='',
                                 min_length=0,
                                 max_length=8192,
@@ -79,17 +81,6 @@ class BaseDockerInstanceForm(forms.Form):
                            label='Docker CPU Share',
                            help_text='Relative CPU share',
                            )
-    dockerName = forms.SlugField(
-                            required=True,
-                            label='Docker Image Name',
-                            validators=[
-                                         validate_slug,
-                                         MaxLengthValidator(64),
-                                         MinLengthValidator(4),
-                                         RegexValidator(r'^[a-zA-Z0-9.\-]+$'),
-                                         ],
-                            help_text='Computer friendly name for this docker image',
-                            )
     dockerIndexer = forms.CharField(
                             required=False,
                             label='Docker Indexer',
@@ -111,7 +102,17 @@ class BaseDockerInstanceForm(forms.Form):
                                          ],
                             help_text='Docker repo image name',
                             )
-
+    dockerName = forms.SlugField(
+                            required=True,
+                            label='Docker Image Name',
+                            validators=[
+                                         validate_slug,
+                                         MaxLengthValidator(64),
+                                         MinLengthValidator(4),
+                                         RegexValidator(r'^[a-zA-Z0-9.\-]+$'),
+                                         ],
+                            help_text='Computer friendly name for this docker image',
+                            )
     tag = forms.SlugField(
                             required=True,
                             label='Docker Image Tag',
@@ -157,32 +158,32 @@ class BaseDockerInstanceForm(forms.Form):
                                       MaxValueValidator(5000),
                                       ],
                           )
-    minecraftUserPasswd = forms.CharField(
-                          validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
-                                      MaxLengthValidator(128),
-                                      MinLengthValidator(8),
-                                      ],
-                          min_length=8,
-                          max_length=128,
-                          label="Minecraft Shell User's Password",
-                          required=False,
-                          initial=None,
-                          help_text="The Minecraft shell user's password",
-                          )
-    rootUserPasswd = forms.CharField(
-                          validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
-                                      MaxLengthValidator(128),
-                                      MinLengthValidator(8),
-                                      ],
-                          min_length=8,
-                          max_length=128,
-                          label="Root Shell User's Password",
-                          required=False,
-                          initial=None,
-                          help_text="The Root shell user's password",
-                          )
+#     minecraftUserPasswd = forms.CharField(
+#                           validators=[
+#                                       RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
+#                                       MaxLengthValidator(128),
+#                                       MinLengthValidator(8),
+#                                       ],
+#                           min_length=8,
+#                           max_length=128,
+#                           label="Minecraft Shell User's Password",
+#                           required=False,
+#                           initial=None,
+#                           help_text="The Minecraft shell user's password",
+#                           )
+#     rootUserPasswd = forms.CharField(
+#                           validators=[
+#                                       RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
+#                                       MaxLengthValidator(128),
+#                                       MinLengthValidator(8),
+#                                       ],
+#                           min_length=8,
+#                           max_length=128,
+#                           label="Root Shell User's Password",
+#                           required=False,
+#                           initial=None,
+#                           help_text="The Root shell user's password",
+#                           )
     supervisordUser = forms.CharField(
                           validators=[
                                       RegexValidator(r'^[a-zA-Z0-9]+$'),
@@ -196,33 +197,33 @@ class BaseDockerInstanceForm(forms.Form):
                           initial='admin',
                           help_text="The Root shell user's password",
                           )
-    supervisordPasswd = forms.CharField(
-                          validators=[
-                                      RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
-                                      MaxLengthValidator(512),
-                                      MinLengthValidator(8),
-                                      ],
-                          min_length=8,
-                          max_length=128,
-                          label="Supervisord's Management Password",
-                          required=True,
-                          initial=None,
-                          help_text="Supervisord's Management Password Or Hash For Config. Warning: This password is stored as-is in a file readable by all users in the Docker instance. ",
-                          )
-    # TODO: Need a better password storage system than a raw DB
-    realSupervisordPasswd = forms.CharField(
-                          validators=[
-                                      RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$'),
-                                      MaxLengthValidator(512),
-                                      MinLengthValidator(8),
-                                      ],
-                          min_length=8,
-                          max_length=512,
-                          label="Supervisord's Management Password",
-                          required=False,
-                          initial=None,
-                          help_text="Supervisord's actual management password",
-                          )
+#     supervisordPasswd = forms.CharField(
+#                           validators=[
+#                                       RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'),
+#                                       MaxLengthValidator(512),
+#                                       MinLengthValidator(8),
+#                                       ],
+#                           min_length=8,
+#                           max_length=128,
+#                           label="Supervisord's Management Password",
+#                           required=True,
+#                           initial=None,
+#                           help_text="Supervisord's Management Password Or Hash For Config. Warning: This password is stored as-is in a file readable by all users in the Docker instance. ",
+#                           )
+#     # TODO: Need a better password storage system than a raw DB
+#     realSupervisordPasswd = forms.CharField(
+#                           validators=[
+#                                       RegexValidator(r'^(\{[a-zA-Z0-9]+\})?[a-zA-Z0-9]+$'),
+#                                       MaxLengthValidator(512),
+#                                       MinLengthValidator(8),
+#                                       ],
+#                           min_length=8,
+#                           max_length=512,
+#                           label="Supervisord's Management Password",
+#                           required=False,
+#                           initial=None,
+#                           help_text="Supervisord's actual management password",
+#                           )
     supervisordAutoRestart = forms.BooleanField(
                                                 required=True,
                                                 initial=True,
@@ -236,7 +237,7 @@ class BaseDockerInstanceForm(forms.Form):
     supervisordStartTimeSeconds = forms.IntegerField(
                            required=True,
                            initial=1000,
-                           label='Minecraft Shell UID',
+                           label='Max Minecraft Start Time',
                            help_text="Time to wait for Minecraft to start in seconds",
                            validators=[
                                       MinValueValidator(1),
@@ -286,7 +287,7 @@ class BaseDockerInstanceForm(forms.Form):
                                 )
     lastName = forms.CharField(
                                 required=True,
-                                initial=_getAdmin()[0],
+                                initial=_getAdmin()[1],
                                 label="Docker Maintainer's Last Name",
                                 help_text="The last name of the person who maintains this Docker container",
                                 validators=[RegexValidator(r'^[a-zA-Z0-9 \-_.]+$'), ],
@@ -295,89 +296,86 @@ class BaseDockerInstanceForm(forms.Form):
                           validators=[EmailValidator, ],
                           required=True,
                           initial=_getAdmin()[2],
-                          verbose_name="Docker Maintainer's Email Address",
+                          label="Docker Maintainer's Email Address",
                           help_text="The email address of the person who maintains this Docker container",
                           )
-    volumes = DictProperty(
-                           validators=[],
-                           name='volumes',
-                           required=True,
-                           initial=settings.MINECRAFT_BASE_VOLUME_TYPES,
-                           verbose_name="Volumes To Export",
-                           )
-    # Fixed port mappings to export
-    # None==automatic random port
-    ports = DictProperty(
-           validators=[],
-           name='ports',
-           required=True,
-           initial={
-            str(settings.MINECRAFT_DEFAULT_PORT_SSH):('0.0.0.0', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):('127.0.0.1', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):('0.0.0.0', None),
-            str(settings.MINECRAFT_DEFAULT_PORT_RCON):('127.0.0.1', None),
-            '25580':('127.0.0.1', None),
-            '25581':('127.0.0.1', None),
-            '25582':('127.0.0.1', None),
-            '25583':('127.0.0.1', None),
-            '25584':('127.0.0.1', None),
-            '25585':('127.0.0.1', None),
-            '25586':('127.0.0.1', None),
-            '25587':('127.0.0.1', None),
-            '25588':('127.0.0.1', None),
-            '25589':('127.0.0.1', None),
-            },
-           verbose_name="Ports To Export",
-           )
-
-    # Minecraft server's java info
-    javaArgs = StringListProperty(
-                          validators=[ ],
-                          name="javaArgs",
-                          required=True,
-                          initial=[
-                                   '-XX:+UseConcMarkSweepGC',
-                                   '-XX:+CMSIncrementalPacing',
-                                   '-XX:+AggressiveOpts',
-                                   ],
-                          verbose_name="Minecraft Server Args",
-                          )
-    javaBin = StringProperty(
-                          validators=[ ],
-                          name="javaBin",
-                          required=True,
-                          initial='/usr/bin/java',
-                          verbose_name="Java Binary",
-                          )
-    javaMaxMemMB = IntegerProperty(
+#     volumes = DictProperty(
+#                            validators=[],
+#                            name='volumes',
+#                            required=True,
+#                            initial=settings.MINECRAFT_BASE_VOLUME_TYPES,
+#                            label="Volumes To Export",
+#                            )
+#     # Fixed port mappings to export
+#     # None==automatic random port
+#     ports = DictProperty(
+#            validators=[],
+#            name='ports',
+#            required=True,
+#            initial={
+#             str(settings.MINECRAFT_DEFAULT_PORT_SSH):('0.0.0.0', None),
+#             str(settings.MINECRAFT_DEFAULT_PORT_SUPVD):('127.0.0.1', None),
+#             str(settings.MINECRAFT_DEFAULT_PORT_CONTAINER):('0.0.0.0', None),
+#             str(settings.MINECRAFT_DEFAULT_PORT_RCON):('127.0.0.1', None),
+#             '25580':('127.0.0.1', None),
+#             '25581':('127.0.0.1', None),
+#             '25582':('127.0.0.1', None),
+#             '25583':('127.0.0.1', None),
+#             '25584':('127.0.0.1', None),
+#             '25585':('127.0.0.1', None),
+#             '25586':('127.0.0.1', None),
+#             '25587':('127.0.0.1', None),
+#             '25588':('127.0.0.1', None),
+#             '25589':('127.0.0.1', None),
+#             },
+#            label="Ports To Export",
+#            )
+#
+#     # Minecraft server's java info
+#     javaArgs = StringListProperty(
+#                           validators=[ ],
+#                           name="javaArgs",
+#                           required=True,
+#                           initial=[
+#                                    '-XX:+UseConcMarkSweepGC',
+#                                    '-XX:+CMSIncrementalPacing',
+#                                    '-XX:+AggressiveOpts',
+#                                    ],
+#                           label="Minecraft Server Args",
+#                           )
+#     javaBin = StringProperty(
+#                           validators=[ ],
+#                           name="javaBin",
+#                           required=True,
+#                           initial='/usr/bin/java',
+#                           label="Java Binary",
+#                           )
+    javaMaxMemMB = forms.IntegerField(
                           validators=[
                                       MinValueValidator(128),
                                       MaxValueValidator(32 * 1024),
                                       ],
-                          name="javaMaxMemMB",
                           required=True,
                           initial=512,
-                          verbose_name="Java Max Heap (MB) For Minecraft",
+                          label="Java Max Heap (MB) For Minecraft",
                           )
-    javaInitMemMB = IntegerProperty(
+    javaInitMemMB = forms.IntegerField(
                           validators=[
                                       MinValueValidator(128),
                                       MaxValueValidator(32 * 1024),
                                       ],
-                          name="javaInitMemMB",
                           required=True,
                           initial=64,
-                          verbose_name="Java Initial Heap (MB) For Minecraft",
+                          label="Java Initial Heap (MB) For Minecraft",
                           )
-    javaGCThreads = IntegerProperty(
+    javaGCThreads = forms.IntegerField(
                           validators=[
                                       MinValueValidator(1),
                                       MaxValueValidator(128),
                                       ],
-                          name="javaGCThreads",
                           required=True,
                           initial=2,
-                          verbose_name="Java GC Thread Count For Minecraft",
+                          label="Java GC Thread Count For Minecraft",
                           )
 
 

@@ -26,10 +26,11 @@ log = logging.getLogger('mcdocker.views')
 
 # Built-in
 import os, os.path, sys  # @UnusedImport
+import urllib
 
 # External
 from django.core.exceptions import ObjectDoesNotExist  # @UnusedImport
-from django.shortcuts import render_to_response, get_object_or_404, render  # @UnusedImport
+from django.shortcuts import render_to_response, get_object_or_404, render, redirect  # @UnusedImport
 from django.db.models import Q  # @UnusedImport
 from django.template import RequestContext  # @UnusedImport
 from django.contrib.auth.models import AnonymousUser  # @UnusedImport
@@ -37,12 +38,13 @@ from django.views.decorators.cache import cache_page  # @UnusedImport
 from django.core.paginator import Paginator, EmptyPage, InvalidPage  # @UnusedImport
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import Http404
-from couchdbkit.exceptions import ResourceNotFound
+from couchdbkit.exceptions import ResourceNotFound  # @UnusedImport
 
 # Ours
 from minecraft.models import *  # @UnusedWildImport
 from mcdocker.models import *  # @UnusedWildImport
 from mcdocker.tasks import *  # @UnusedWildImport
+from mcdocker.forms import *  # @UnusedWildImport
 
 
 @login_required
@@ -82,8 +84,18 @@ def dockerImageEdit(req, dockerImageName):
 @permission_required('mcdocker.add_dockerimage')
 def dockerImageCreate(req):
     """ Docker Image Add """
+    if req.method == 'POST':
+        form = BaseDockerInstanceForm(req.POST)
+        if form.is_valid():
+            di = DockerImage(
+                             _id=form.slug,
+                             humanName=form.humanName,
 
-    form = None
+                             )
+            # model = form.save()
+            return redirect('dockerImageEdit', di._id)
+    else:
+        form = BaseDockerInstanceForm()
 
     return render_to_response(
                               'mcdocker/dockerMgmt/add.djhtml',
@@ -94,6 +106,63 @@ def dockerImageCreate(req):
                               )
 
 
+@login_required
+@permission_required('mcdocker.view_dockerimage')
+@permission_required('mcdocker.add_dockerimage')
+@permission_required('mcdocker.add_basedockerimage')
+def dockerBaseImageCreate(req):
+    """ Docker Image Add """
+    if req.method == 'POST':
+        form = BaseDockerInstanceForm(req.POST)
+        if form.is_valid():
+            # TODO: Catch model validation errors and pass to user as something friendly
+            di = DockerImage(
+                             _id=form.slug,
+                             humanName=form.humanName,
+                             description=form.description,
+                             imageType='BaseImage',
+                             imageID=None,
+                             # TODO: Stop hard coding this
+                             parent='ubuntu:14.04',
+                             dockerMemoryLimitMB=form.dockerMemoryLimitMB,
+                             dockerCPUShare=form.dockerCPUShare,
+                             dockerName=form.dockerName,
+                             dockerIndexer=form.dockerIndexer,
+                             repo=form.repo,
+                             tag=form.tag,
+                             user=form.user,
+                             uid=form.uid,
+                             gid=form.gid,
+                             minecraftUserPasswd=None,
+                             rootUserPasswd=None,
+                             supervisordUser=form.supervisordUser,
+                             supervisordPasswd=None,
+                             supervisordAutoRestart=form.supervisordAutoRestart,
+                             supervisordAutoStart=form.supervisordAutoStart,
+                             supervisordStartTimeSeconds=form.supervisordStartTimeSeconds,
+                             proxy=form.proxy,
+                             extraPackages=map(lambda x: x.rstrip(), form.extraPackages.splitlines()),
+                             sshKeysRoot=map(lambda x: x.rstrip(), form.sshKeysRoot.splitlines()),
+                             sshKeysMinecraft=map(lambda x: x.rstrip(), form.sshKeysMinecraft.splitlines()),
+                             firstName=form.firstName,
+                             lastName=form.lastName,
+                             email=form.email,
+                             javaMaxMemMB=form.javaMaxMemMB,
+                             javaInitMemMB=form.javaInitMemMB,
+                             javaGCThreads=form.javaGCThreads,
+                             )
+            di.save()
+            return redirect('dockerImageEdit', di._id)
+    else:
+        form = BaseDockerInstanceForm()
+
+    return render_to_response(
+                              'mcdocker/dockerMgmt/add.djhtml',
+                              dict(
+                                   form=form,
+                                   ),
+                              context_instance=RequestContext(req),
+                              )
 
 
 

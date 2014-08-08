@@ -117,7 +117,7 @@ class DockerImage(Document):
     imageID = StringProperty(
                           validators=[RegexValidator(r'^[a-f0-9]+$', message='Invalid Docker Image ID'), ],
                           name="dockerImageID",
-                          required=True,
+                          required=False,
                           default=None,
                           verbose_name="Docker Image ID",
                           )
@@ -226,6 +226,7 @@ class DockerImage(Document):
                           default=1000,
                           verbose_name="Minecraft Shell GID",
                           )
+    # TODO: Add at least some encryption for these passwords
     minecraftUserPasswd = StringProperty(
                           validators=[
                                       RegexValidator(r'^[a-zA-Z0-9 \-_.]+$', message='Invalid Minecraft user password'),

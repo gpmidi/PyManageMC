@@ -17,6 +17,7 @@
         <ul class="nav">
             <li>Minecraft+Docker</li>
             <li><a href="{% url 'DockerImageIndex' %}">Images</a></li>
+            <li><a href="{% url 'DockerBaseImageCreate' %}">New Base Image</a></li>
             <li><a href="{% url 'DockerImageCreate' %}">New Image</a></li>
         </ul>
     {% endcache %}
