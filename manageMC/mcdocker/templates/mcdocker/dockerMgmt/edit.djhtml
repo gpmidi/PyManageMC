@@ -28,9 +28,9 @@
                 </div>
                 <div class="News">
                     {{ image.description|linebreaksbr }}
-                    {% if not image.description %}
+                    {% ifequal image.description "" %}
                         [[ Blank ]]
-                    {% endif %}
+                    {% endifequal %}
                 </div>
             </div>
             <div class="newspost">

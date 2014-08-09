@@ -78,7 +78,6 @@ def _validateSSHKeyList(value):
 
 class DockerImage(Document):
     """ """
-    # TODO: This really isn't a human name, it's a mixed-use name
     humanName = StringProperty(
                           validators=[],
                           name="humanName",
@@ -103,7 +102,7 @@ class DockerImage(Document):
                    # user images.
                    ('BaseImage', 'Base Image'),
                    # Visible to users and usable for running Minecraft
-                   ('UserImage', 'UserImage'),
+                   ('UserImage', 'User Image'),
                    # ('',''),
                    )
     imageType = StringProperty(
@@ -121,7 +120,6 @@ class DockerImage(Document):
                           default=None,
                           verbose_name="Docker Image ID",
                           )
-
     parent = StringProperty(
                           validators=[
                               RegexValidator(
@@ -131,6 +129,7 @@ class DockerImage(Document):
                               ],
                           name="dockerParent",
                           required=True,
+                          # TODO: Move default to settings
                           default="ubuntu:14.04",
                           verbose_name="Docker Image Parent Image",
                           )
@@ -140,8 +139,8 @@ class DockerImage(Document):
                                       MaxValueValidator(1024 * 32),
                                       ],
                           name="dockerMemoryLimitMB",
-                          required=True,
-                          default=512,
+                          required=False,
+                          default=768,
                           verbose_name="Max Docker Memory",
                           )
     dockerCPUShare = IntegerProperty(
@@ -150,8 +149,8 @@ class DockerImage(Document):
                                       MaxValueValidator(1024 * 1024),
                                       ],
                           name="dockerCPUShare",
-                          required=True,
-                          default=64,
+                          required=False,
+                          default=16,
                           verbose_name="Docker CPU Share",
                           )
 
@@ -324,14 +323,14 @@ class DockerImage(Document):
     sshKeysRoot = StringListProperty(
                           validators=[_validateSSHKeyList, ],
                           name="sshKeysRoot",
-                          required=True,
+                          required=False,
                           default=[],
                           verbose_name="Root's Authorized Keys",
                           )
     sshKeysMinecraft = StringListProperty(
                           validators=[_validateSSHKeyList, ],
                           name="sshKeysMinecraft",
-                          required=True,
+                          required=False,
                           default=[],
                           verbose_name="Minecraft User's Authorized Keys",
                           )

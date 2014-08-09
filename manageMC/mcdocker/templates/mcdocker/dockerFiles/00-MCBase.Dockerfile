@@ -36,11 +36,11 @@ RUN  apt-get update \
 
 # Various bits of software we'll need
 RUN apt-get install -y \
-  build-essential git python python-dev \
+  build-essential git python python-dev screen \
   python-setuptools python-pip wget curl libssl-dev \
   openjdk-7-jre-headless rdiff-backup python-openssl \
-  supervisor logrotate cron man openssh-server vim \
-  screen
+  supervisor logrotate cron man openssh-server vim
+
 
 {% if image.extraPackages %}
     # User defined packages

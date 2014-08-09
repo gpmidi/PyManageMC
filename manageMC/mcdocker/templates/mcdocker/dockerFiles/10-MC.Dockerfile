@@ -32,10 +32,10 @@ ONBUILD RUN umask 0022
 {% endif %}
 
 # Create a user for MC to run as
-RUN  groupadd --gid {{ image.gid }} {{ image.username }} \
+RUN  groupadd --gid {{ image.gid }} {{ image.user }} \
   && useradd --home-dir "/var/lib/minecraft" -m \
      --gid {{ image.gid }} --uid {{ image.uid }} \
-     {{ image.username }}
+     {{ image.user }}
 
 RUN  mkdir -p /var/log/supervisor \
   && chmod 700 /var/log/supervisor/ \
