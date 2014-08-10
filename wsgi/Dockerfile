@@ -34,11 +34,11 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   git python python-dev python-psycopg2 python-django-oauth-plus \
   python-setuptools sqlite3 python-pip python-django python-django-south \
   python-openstack-auth python-django-auth-openid python-django-celery \
-  python-django-celery-doc python-amqp amqp-tools python-librabbitmq \
+  python-django-celery-doc python-amqp amqp-tools postgresql-client \
   librabbitmq-dev librabbitmq1 redis-tools python-redis libmemcached-tools \
   syslog-ng-mod-redis python-couchdb python-couchdbkit python-dev \
-  python-bs4 ipython python-configobj python-openid python-requests-oauthlib \
-  postgresql-client
+  python-bs4 ipython python-configobj python-openid python-requests-oauthlib
+
 
 # Config Files
 ADD configs /root/configs.pymc/

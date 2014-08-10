@@ -197,12 +197,15 @@ def buildImage(dockerImageID):
         logs = ''
         image = None
         for line in res:
-            log.debug("IO: %r", line.rstrip())
-            d = json.loads(line)
-            logs += d['stream']
-            m = RE_MATCH_BUILD_OK.match(d['stream'])
-            if m:
-                image = m.group(1)
+            try:
+                d = json.loads(line)
+                log.debug("IO: %s", d['stream'])
+                logs += d['stream']
+                m = RE_MATCH_BUILD_OK.match(d['stream'])
+                if m:
+                    image = m.group(1)
+            except Exception, e:
+                log.exception("IO: %r", line.rstrip())
 
         if image is None:
             log.warn("Failed to build %r", di._id)

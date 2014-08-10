@@ -116,7 +116,7 @@ class MinecraftServer(Document):
                           )
     # User friendly info
     humanName = StringProperty(
-                          validators=[validate_slug, ],
+                          validators=[],
                           name="humanName",
                           required=True,
                           default=None,
