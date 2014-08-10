@@ -83,3 +83,18 @@ memcached1:
     - "5014:10050"
   expose:
     - "8014:11211"
+worker0:
+  build: worker
+  hostname: worker0
+  domainname: mcd.gpmidi.net
+  ports:
+    - "2215:22"
+    - "5015:10050"
+  volumes:
+    - /home/pymcdev/vols/worker0_pymc:/var/lib/pymc
+  links:
+    - rabbitmq0
+    - memcached0
+    - memcached1
+    - pgsql0
+    - couchdb0

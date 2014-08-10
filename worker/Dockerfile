@@ -7,6 +7,7 @@ ONBUILD RUN umask 0022
 
 # Set correct environment variables.
 ENV HOME /root
+# TODO: Move this from perm env var to per-apt command so that it's not present after docker build
 ENV DEBIAN_FRONTEND noninteractive
 
 # Regenerate SSH host keys. baseimage-docker does not contain any, so you
@@ -81,4 +82,4 @@ VOLUME ["/var/lib/pymc/"]
 # Use baseimage-docker's init system.
 CMD ["/sbin/my_init"]
 
-EXPOSE 22 10050 32323
+EXPOSE 22 10050

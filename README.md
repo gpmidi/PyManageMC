@@ -57,3 +57,5 @@ License
 
 PyManageMC: GPLv2
 Bootstrap: Apache License v2.0
+Dajax(ice): FIXME
+jQuery: FIXME
