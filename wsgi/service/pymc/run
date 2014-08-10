@@ -1,6 +1,13 @@
 #!/bin/sh
 set -e
 
+echo "Syncing DB"
+/sbin/setuser pymc /usr/bin/python /var/lib/pymc/manageMC/manage.py syncdb --noinput
+/bin/chown -R pymc:pymc /var/lib/pymc/
+
+echo "Collecting Static"
+/sbin/setuser pymc /usr/bin/python /var/lib/pymc/manageMC/manage.py collectstatic --noinput
+
 echo "Starting uwsgi"
 exec /sbin/setuser pymc /usr/bin/uwsgi /var/lib/pymc/uwsgi.ini \
         >> /var/lib/pymc/pymc.io.log 2>&1
