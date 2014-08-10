@@ -92,6 +92,7 @@ worker0:
     - "5015:10050"
   volumes:
     - /home/pymcdev/vols/worker0_pymc:/var/lib/pymc
+    - /var/run/docker.sock:/var/run/docker.sock
   links:
     - rabbitmq0
     - memcached0

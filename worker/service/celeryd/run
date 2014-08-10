@@ -2,10 +2,12 @@
 set -e
 echo "Syncing DB"
 /sbin/setuser pymc /usr/bin/python /var/lib/pymc/manageMC/manage.py syncdb --noinput
+/bin/chown -R pymc:pymc /var/lib/pymc/
 
 echo "Starting Celery Worker"
 exec /sbin/setuser pymc /usr/bin/python /var/lib/pymc/manageMC/manage.py \
     celery worker --no-color --concurrency=4 --loglevel=DEBUG --beat \
     --statedb=/var/lib/pymc/.celery.state.db --events --autoreload \
     --logfile=/var/lib/pymc/celery.log --heartbeat-interval=1 \
+    --schedule=/var/lib/pymc/cronsched.db \
         >> /var/lib/pymc/celery.io.log 2>&1

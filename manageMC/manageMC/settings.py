@@ -397,7 +397,7 @@ CELERY_DISABLE_RATE_LIMITS = True
 
 CELERYBEAT_SCHEDULE = {
     'archive-minecraft-system-logs': {
-        'task': 'mclogs.archiveAllLogs',
+        'task': 'mclogs.tasks.archiveAllLogs',
         'schedule': timedelta(minutes=15),
         'args': (),
     },

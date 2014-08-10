@@ -35,11 +35,10 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   git python python-dev python-psycopg2 python-django-oauth-plus \
   python-setuptools sqlite3 python-pip python-django python-django-south \
   python-openstack-auth python-django-auth-openid python-django-celery \
-  python-django-celery-doc python-amqp amqp-tools python-librabbitmq \
+  python-django-celery-doc python-amqp amqp-tools postgresql-client \
   librabbitmq-dev librabbitmq1 redis-tools python-redis libmemcached-tools \
   syslog-ng-mod-redis python-couchdb python-couchdbkit python-dev \
-  python-bs4 ipython python-configobj python-openid python-requests-oauthlib \
-  postgresql-client
+  python-bs4 ipython python-configobj python-openid python-requests-oauthlib
 
 # Config Files
 ADD configs /root/configs.pymc/
@@ -68,9 +67,9 @@ RUN  chmod -R 750 /root/configs.pymc/ \
   && echo "Done with configs"
 
 # Install Python packages
-RUN  pip install --upgrade django-sendfile django celery python-social-auth \
+RUN  pip install --upgrade django-sendfile django celery[librabbitmq] python-social-auth \
   django_couchdb_utils couchdbkit couchdb redis amqp south uwsgi billiard \
-  django-celery docker-py requests passlib
+  django-celery docker-py requests passlib librabbitmq
 
 
 # Clean up APT when done.
