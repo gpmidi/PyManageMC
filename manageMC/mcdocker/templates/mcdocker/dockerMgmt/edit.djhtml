@@ -15,9 +15,19 @@
                 </div>
                 <div class="News">
                     <ul>
-                        {% if image.imageID %}
-                        {% else %}
+                        {% if image.buildStatus == "NotStarted" %}
                             <li><a href="{% url "DockerImageBuild" image.get_id %}">Build Image</a></li>
+                        {% elif image.buildStatus == "Started" %}
+                            <li><b>Build Status: </b>Start Pending</li>
+                        {% elif image.buildStatus == "InProgress" %}
+                            <li><b>Build Status: </b>Running</li>
+                        {% elif image.buildStatus == "Done" %}
+                            <li><b>Build Status: </b>Successful</li>
+                        {% elif image.buildStatus == "Failed" %}
+                            <li><b>Build Status: </b>Build Error</li>
+                        {% else %}
+                            {# Shouldn't ever get here #}
+                            <li><b>Build Status: </b>Unknown Error</li>
                         {% endif %}
                     </ul>
                 </div>
