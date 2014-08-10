@@ -19,6 +19,10 @@ Created on May 4, 2012
 
 @author: Paulson McIntyre (GpMidi) <paul@gpmidi.net>
 '''
+# Logging
+import logging
+log = logging.getLogger('minecraft.forms.EditServerForm')
+
 from django.forms import ModelForm, Form
 from django import forms
 from django.core import validators
@@ -35,9 +39,10 @@ from mcdocker.models import DockerImage
 def _getImages():
     ret = []
     for img in DockerImage.view('mcdocker/userOSImages').all():
+        log.debug("Found image %r", img)
         ret.append((
-                    img['id'],
-                    '%(humanName)s | %(dockerName)s' % img['value'],
+                    img._id,
+                    '%s | %s' % (img.humanName, img.dockerName),
                     ))
     return ret
 

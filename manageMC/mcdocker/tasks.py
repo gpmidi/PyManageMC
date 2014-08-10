@@ -69,83 +69,94 @@ def addFile(tf, filename, template, context):
 @task(expires=60 * 60)
 def buildImage(dockerImageID):
     di = DockerImage.get(dockerImageID)
-    if di.imageType == 'BaseImage':
-        templateName = '00-MCBase.Dockerfile'
-    elif di.imageType == 'UserImage':
-        templateName = '10-MC.Dockerfile'
-    else:
-        raise ValueError("%r is not a valid docker image type" % di.imageType)
+    di.buildStatus = 'InProgress'
+    di.save()
+    try:
+        if di.imageType == 'BaseImage':
+            templateName = '00-MCBase.Dockerfile'
+        elif di.imageType == 'UserImage':
+            templateName = '10-MC.Dockerfile'
+        else:
+            raise ValueError("%r is not a valid docker image type" % di.imageType)
 
-    tarFile = StringIO()
-    tf = tarfile.open(mode='w:gz', fileobj=tarFile)
+        tarFile = StringIO()
+        tf = tarfile.open(mode='w:gz', fileobj=tarFile)
 
-    addFile(
-            tf=tf,
-            filename="/Dockerfile",
-            template="/mcdocker/dockerFiles/" + templateName,
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/logrotate.d/supervisord.conf",
-            template="/mcdocker/configs/logrotate.d/supervisord.conf",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/supervisord.d/cron.conf",
-            template="/mcdocker/configs/supervisord.d/cron.conf",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/supervisord.d/minecraft.conf",
-            template="/mcdocker/configs/supervisord.d/minecraft.conf",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/supervisord.d/sshd.conf",
-            template="/mcdocker/configs/supervisord.d/sshd.conf",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/minecraft.authorized_keys",
-            template="/mcdocker/configs/minecraft.authorized_keys",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/root.authorized_keys",
-            template="/mcdocker/configs/root.authorized_keys",
-            context=dict(image=di),
-            )
-    addFile(
-            tf=tf,
-            filename="/supervisord.conf",
-            template="/mcdocker/configs/supervisord.conf",
-            context=dict(image=di),
-            )
+        addFile(
+                tf=tf,
+                filename="/Dockerfile",
+                template="/mcdocker/dockerFiles/" + templateName,
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/logrotate.d/supervisord.conf",
+                template="/mcdocker/configs/logrotate.d/supervisord.conf",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/supervisord.d/cron.conf",
+                template="/mcdocker/configs/supervisord.d/cron.conf",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/supervisord.d/minecraft.conf",
+                template="/mcdocker/configs/supervisord.d/minecraft.conf",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/supervisord.d/sshd.conf",
+                template="/mcdocker/configs/supervisord.d/sshd.conf",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/minecraft.authorized_keys",
+                template="/mcdocker/configs/minecraft.authorized_keys",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/root.authorized_keys",
+                template="/mcdocker/configs/root.authorized_keys",
+                context=dict(image=di),
+                )
+        addFile(
+                tf=tf,
+                filename="/supervisord.conf",
+                template="/mcdocker/configs/supervisord.conf",
+                context=dict(image=di),
+                )
 
-    tf.close()
+        tf.close()
 
-    client = getClient()
+        client = getClient()
 
-    image, logs = client.build(
-                 path=None,
-                 tag=di.getFullDockerName(),
-                 quiet=True,
-                 fileobj=tarFile,
-                 nocache=False,
-                 rm=False,
-                 stream=False,
-                 )
+        image, logs = client.build(
+                     path=None,
+                     tag=di.getFullDockerName(),
+                     quiet=True,
+                     fileobj=tarFile,
+                     nocache=False,
+                     rm=False,
+                     stream=False,
+                     )
 
-    log.debug("Built image %r", image)
-    log.debug("Logs for %r: %r", image, logs)
+        log.debug("Built image %r", image)
+        log.debug("Logs for %r: %r", image, logs)
 
-    return image
+        di.buildStatus = 'Done'
+        di.save()
+
+        return image
+    except Exception, e:
+        # TODO: Move this to a build workflow
+        log.exception("Failed to build %r with %r", di._id, e)
+        di.buildStatus = 'Failed'
+        di.save()
 
 
 @task(expires=60 * 60 * 24)

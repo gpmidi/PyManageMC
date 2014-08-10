@@ -49,6 +49,24 @@ from mcdocker.forms import *  # @UnusedWildImport
 
 @login_required
 @permission_required('mcdocker.view_dockerimage')
+@permission_required('mcdocker.change_dockerimage')
+def dockerImageBuild(req, dockerImageName):
+    """ Docker Image Change """
+    try:
+        di = DockerImage.get(dockerImageName)
+        di.buildStatus = 'Started'
+        di.save()
+
+        job = buildImage.delay(di._id)
+        log.debug("Started build %r for %r", job, di._id)
+
+        return redirect('DockerImageEdit', di._id)
+    except ResourceNotFound:
+        raise Http404("Couldn't find an image named %r" % dockerImageName)
+
+
+@login_required
+@permission_required('mcdocker.view_dockerimage')
 def dockerImageIndex(req):
     """ Docker Image index """
     return render_to_response(
@@ -90,7 +108,7 @@ def dockerImageCreate(req):
             di = DockerImage(
                              _id=form.cleaned_data['itag'],
                              humanName=form.cleaned_data['humanName'],
-                             description=form.cleaned_data['description'],
+                             humanDescription=form.cleaned_data['description'],
                              imageType='UserImage',
                              imageID=None,
                              parent=form.cleaned_data['baseImage'],
@@ -144,7 +162,7 @@ def dockerBaseImageCreate(req):
             di = DockerImage(
                              _id=form.cleaned_data['itag'],
                              humanName=form.cleaned_data['humanName'],
-                             description=form.cleaned_data['description'],
+                             humanDescription=form.cleaned_data['description'],
                              imageType='BaseImage',
                              imageID=None,
                              # TODO: Stop hard coding this

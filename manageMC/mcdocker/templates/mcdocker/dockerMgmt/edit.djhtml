@@ -10,6 +10,20 @@
             <h1>{{ image.imageType }}</h1>
             <div class="newspost">
                 <div class="newsheader">
+                    <h2 class="NewsTitle">Actions</h2>
+                    <span>{{ image.humanName }}</span>
+                </div>
+                <div class="News">
+                    <ul>
+                        {% if image.imageID %}
+                        {% else %}
+                            <li><a href="{% url "DockerImageBuild" image.get_id %}">Build Image</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            <div class="newspost">
+                <div class="newsheader">
                     <h2 class="NewsTitle">Basic</h2>
                     <span>{{ image.humanName }}</span>
                 </div>

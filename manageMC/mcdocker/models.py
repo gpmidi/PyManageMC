@@ -97,6 +97,21 @@ class DockerImage(Document):
         """ Return description as list of lines without trailing newlines """
         return map(lambda x: x.rstrip(), self.description.splitlines())
 
+    IMAGE_BUILD_STATUS = (
+                          ('NotStarted', 'Not Started'),
+                          ('Started', 'Started'),
+                          ('InProgress', 'In Progress'),
+                          ('Done', 'Done'),
+                          ('Failed', 'Failed'),
+                          )
+    buildStatus = StringProperty(
+                          validators=[],
+                          name="buildStatus",
+                          required=True,
+                          choices=IMAGE_BUILD_STATUS,
+                          default='NotStarted',
+                          verbose_name="Build Status",
+                          )
     IMAGE_TYPES = (
                    # Not directly used; used as a platform for building other
                    # user images.
