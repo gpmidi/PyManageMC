@@ -50,19 +50,14 @@ from mcdocker.forms import *  # @UnusedWildImport
 @login_required
 @permission_required('mcdocker.view_dockerimage')
 @permission_required('mcdocker.change_dockerimage')
-def dockerImageBuild(req, dockerImageName):
+def dockerImageBuild(req, dockerImageId):
     """ Docker Image Change """
     try:
-        di = DockerImage.get(dockerImageName)
-        di.buildStatus = 'Started'
-        di.save()
-
-        job = buildImage.delay(di._id)
-        log.debug("Started build %r for %r", job, di._id)
-
+        di = DockerImage.get(dockerImageId)
+        job = doBuildImage(di=di)
         return redirect('DockerImageEdit', di._id)
     except ResourceNotFound:
-        raise Http404("Couldn't find an image named %r" % dockerImageName)
+        raise Http404("Couldn't find an image with id %r" % dockerImageId)
 
 
 @login_required

@@ -97,7 +97,7 @@ def archiveAllLogs():
     """ Check all servers for any log files that have been rotated out
     @return: Number of log files loaded
     """
-    for serverId in MinecraftServer.view('minecraft/serversAll'):
+    for serverId in MinecraftServer.view('minecraft/serversAll').all():
         archiveLogs.delay(serverId=serverId)
 
 

@@ -4,11 +4,11 @@ MAINTAINER {{ image.firstName }} {{ image.lastName }} <{{ image.email }}>
 
 # Image Name: {{ image.humanName }}
 # Image Type: {{ image.imageType }}
-# Image Docker Name: {{ image.getFullDockerName() }}
+# Image Docker Name: {{ image.getFullDockerName }}
 
 ENV BASE_IMAGE_NAME "{{ image.humanName }}"
 ENV BASE_IMAGE_TYPE "{{ image.imageType }}"
-ENV BASE_IMAGE_DOCKER_NAME "{{ image.getFullDockerName() }}"
+ENV BASE_IMAGE_DOCKER_NAME "{{ image.getFullDockerName }}"
 ENV BASE_IMAGE_DOCKER_PARENT "{{ image.parent }}"
 
 {# Don't include spaces or other formatting #}

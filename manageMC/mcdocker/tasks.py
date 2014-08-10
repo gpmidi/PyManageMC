@@ -29,9 +29,11 @@ import os, os.path, sys  # @UnusedImport
 from StringIO import StringIO
 import tarfile
 import xmlrpclib
+import tempfile
 
 # External
 from celery.task import task  # @UnresolvedImport
+from celery.result import AsyncResult  # @UnresolvedImport
 import docker
 from django.conf import settings  # @UnusedImport
 from django.template.loader import render_to_string
@@ -52,34 +54,76 @@ def getClient():
 
 
 def addFile(tf, filename, template, context):
+    log.debug("Going to render %r", template)
     rs = render_to_string(template, context,)
+
+    newFile = StringIO()
+    newFile.write(rs)
 
     tarInfo = tarfile.TarInfo(filename)
     tarInfo.size = len(rs)
     tarInfo.mode = 0700
     tarInfo.uid = 0
     tarInfo.gid = 0
+    tarInfo.name = filename
+    newFile.name = filename
 
-    newFile = StringIO()
-    newFile.write(rs)
+    newFile.seek(0)
 
     tf.addfile(tarInfo, newFile)
 
+
+@task(expires=60 * 60 * 24 * 7 * 6)  # 6 weeks
+def doBuildImageError(uuid, dockerImageId):
+    log.debug(
+              "Build task %r for image %r failed",
+              uuid,
+              dockerImageId,
+              )
+    di = DockerImage.get(dockerImageId)
+    di.buildStatus = 'Failed'
+    di.save()
+
+
+def doBuildImage(di):
+    """ Shortcut to kicking off a build """
+    dockerImageId = di._id
+
+    if di.buildStatus not in ['NotStarted', 'Failed']:
+        raise ValueError("%r is not a valid build status to start a build from" % di.buildStatus)
+
+    di.buildStatus = 'Started'
+    di.save()
+
+    errorh = doBuildImageError.s(dockerImageId=dockerImageId)
+    job = buildImage.apply_async(
+                                 (di._id,),
+                                 link_error=errorh,
+                                 )
+    log.debug("Started build %r for %r", job, di._id)
+    return job
+
+
+RE_MATCH_BUILD_OK = re.compile(r'.*Successfully built ([0-9a-f]+)', re.DOTALL)
 
 @task(expires=60 * 60)
 def buildImage(dockerImageID):
     di = DockerImage.get(dockerImageID)
     di.buildStatus = 'InProgress'
     di.save()
-    try:
-        if di.imageType == 'BaseImage':
-            templateName = '00-MCBase.Dockerfile'
-        elif di.imageType == 'UserImage':
-            templateName = '10-MC.Dockerfile'
-        else:
-            raise ValueError("%r is not a valid docker image type" % di.imageType)
 
-        tarFile = StringIO()
+    if di.imageType == 'BaseImage':
+        templateName = '00-MCBase.Dockerfile'
+    elif di.imageType == 'UserImage':
+        templateName = '10-MC.Dockerfile'
+    else:
+        raise ValueError("%r is not a valid docker image type" % di.imageType)
+
+    with tempfile.TemporaryFile(
+                                mode='w+b',
+                                prefix='buildImage-',
+                                suffix='.tmp',
+                                ) as tarFile:
         tf = tarfile.open(mode='w:gz', fileobj=tarFile)
 
         addFile(
@@ -131,32 +175,45 @@ def buildImage(dockerImageID):
                 context=dict(image=di),
                 )
 
+        log.debug("Done adding files")
         tf.close()
+        tarFile.seek(0)
 
+        log.debug("Setting up docker client")
         client = getClient()
 
-        image, logs = client.build(
+        log.debug("Starting docker build")
+        res = client.build(
                      path=None,
                      tag=di.getFullDockerName(),
-                     quiet=True,
+                     quiet=False,
                      fileobj=tarFile,
                      nocache=False,
                      rm=False,
                      stream=False,
+                     custom_context=True,
+                     encoding='gzip',
                      )
+        logs = ''
+        image = None
+        for line in res:
+            log.debug("IO: %r", line.rstrip())
+            d = json.loads(line)
+            logs += d['stream']
+            m = RE_MATCH_BUILD_OK.match(d['stream'])
+            if m:
+                image = m.group(1)
 
-        log.debug("Built image %r", image)
-        log.debug("Logs for %r: %r", image, logs)
+        if image is None:
+            log.warn("Failed to build %r", di._id)
+        else:
+            log.debug("Built image %r", image)
 
         di.buildStatus = 'Done'
+        di.imageID = image
         di.save()
 
         return image
-    except Exception, e:
-        # TODO: Move this to a build workflow
-        log.exception("Failed to build %r with %r", di._id, e)
-        di.buildStatus = 'Failed'
-        di.save()
 
 
 @task(expires=60 * 60 * 24)

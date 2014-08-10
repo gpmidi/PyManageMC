@@ -25,6 +25,7 @@
                             <li><b>Build Status: </b>Successful</li>
                         {% elif image.buildStatus == "Failed" %}
                             <li><b>Build Status: </b>Build Error</li>
+                            <li><a href="{% url "DockerImageBuild" image.get_id %}">Retry Image Build</a></li>
                         {% else %}
                             {# Shouldn't ever get here #}
                             <li><b>Build Status: </b>Unknown Error</li>
