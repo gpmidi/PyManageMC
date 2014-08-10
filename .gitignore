@@ -15,3 +15,4 @@ local_settings.py
 /.bash_history
 /cronsched.db
 /.celery.state.db
+/celerybeat-schedule

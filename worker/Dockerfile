@@ -40,6 +40,10 @@ RUN  apt-get install -y python-django-dajax python-django-dajaxice \
   syslog-ng-mod-redis python-couchdb python-couchdbkit python-dev \
   python-bs4 ipython python-configobj python-openid python-requests-oauthlib
 
+# Make looking at logs easier
+RUN  /bin/ln -s /var/lib/pymc/celery.io.log /var/log/celery.io.log \
+  && /bin/ln -s /var/lib/pymc/celery.log /var/log/celery.log
+
 # Config Files
 ADD configs /root/configs.pymc/
 ADD service /root/service.pymc/
