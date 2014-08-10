@@ -13,3 +13,5 @@ local_settings.py
 .viminfo
 /.ipython
 /.bash_history
+/cronsched.db
+/.celery.state.db
