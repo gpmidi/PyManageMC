@@ -129,12 +129,15 @@ def server_say(req, server_pk, message, cleared=False):
 @login_required()
 def server_status(request, server_pk):
     """ Get updated status """
-    res = status.delay(server_pk)
-    res.wait()
-    if res.get():
-        ret = "Online"
-    else:
-        ret = "Offline"
+    try:
+        res = status.delay(server_pk)
+        res.wait()
+        if res.get():
+            ret = "Online"
+        else:
+            ret = "Offline"
+    except Exception, e:
+        ret = 'Unknown'
     dajax = Dajax()
     dajax.assign('input#servermessage', 'value', ret)
     return dajax.json()

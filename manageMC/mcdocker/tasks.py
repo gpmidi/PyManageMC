@@ -199,7 +199,7 @@ def buildImage(dockerImageID):
         for line in res:
             try:
                 d = json.loads(line)
-                log.debug("IO: %s", d['stream'])
+                log.debug("IO: %s", d['stream'].rstrip())
                 logs += d['stream']
                 m = RE_MATCH_BUILD_OK.match(d['stream'])
                 if m:
@@ -221,6 +221,8 @@ def buildImage(dockerImageID):
 
 @task(expires=60 * 60 * 24)
 def inspectDockerContainer(containerID, client=None):
+    log.debug("Inspecting docker container %r", containerID)
+    assert containerID, 'Expected containerID %r to be valid' % containerID
     if client is None:
         client = getClient()
     return client.inspect_image(containerID)
@@ -228,6 +230,8 @@ def inspectDockerContainer(containerID, client=None):
 
 @task(expires=60 * 60 * 24)
 def inspectDockerImage(imageID, client=None):
+    log.debug("Inspecting docker image %r", imageID)
+    assert imageID, 'Expected imageID %r to be valid' % imageID
     if client is None:
         client = getClient()
     return client.inspect_image(imageID)
@@ -302,7 +306,7 @@ def createStartContainer(serverId, client=None):
     log.debug("Going to start %r", server.name)
     results = client.start(
                            server.name,
-                           binds=server.getVolumeLocations(doCreate=True),
+                           binds=server.getVolumeLocations(),
                            port_bindings=image.ports,
                            publish_all_ports=True,
                            links=None,

@@ -59,5 +59,22 @@ RUN  chown -R root:root /root \
   && chmod -R 644 /etc/supervisor/ /etc/logrotate.d/ \
   && chmod 755 /etc/supervisor/ /etc/logrotate.d /etc/supervisor/conf.d
 
+# 22=ssh
+# 9001=supervisord
+# 25565=Minecraft
+# 25575=Minecraft Mgmt
+# 25580-25589=Random use ports
+EXPOSE 22 9001 25565 25575 25580 25581 25582 25583 25584 25585 25586 25587 25588 25589
+
+VOLUME ["/var/lib/minecraft","/var/log","/etc/ssh"]
+
+CMD [ \
+    "/usr/sbin/supervisord", \
+    "--nodaemon", \
+    "--logfile=/var/log/supervisord.log", \
+    "--loglevel=warn", \
+    "--logfile_maxbytes=1GB", \
+    "--logfile_backups=0" \
+    ]
 
 {% endautoescape %}

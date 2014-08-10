@@ -170,6 +170,9 @@ class NewDockerInstanceForm(forms.Form):
     baseImage = forms.ChoiceField(
                                   required=True,
                                   label='Base Image',
+                                  # FIXME: Make this dynamic
+                                  # Right now it's stuck with old after new one
+                                  # added due to the choices not being refreshed
                                   choices=map(
                                                 lambda x: (x['_id'], x['humanName']),
                                                 DockerImage.view('mcdocker/baseOSImages').all(),

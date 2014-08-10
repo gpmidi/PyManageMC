@@ -140,7 +140,7 @@ def start(serverPK):
     # Server interaction object
     server = stype(mcServer=mcServer)
 
-    return server.localStartServer()
+    return server.startServer()
 
 
 @task(expires=60 * 60 * 24)
@@ -205,19 +205,22 @@ def say(serverPK, msg):
     return server.localSay(msg=msg)
 
 
-@task(expires=60 * 60 * 24)
+@task(expires=20)
 def status(serverPK):
-    """ Start a server """
-    # Get model objects
-    mcServer = MinecraftServer.get(serverPK)
-    # Get the class type that is the right type
-    stype = getServerFromModel(mcServer=mcServer)
-    # Server interaction object
-    server = stype(mcServer=mcServer)
-
+    """ Get the status of a server """
     try:
+        # Get model objects
+        mcServer = MinecraftServer.get(serverPK)
+        # Get the class type that is the right type
+        stype = getServerFromModel(mcServer=mcServer)
+        # Server interaction object
+        server = stype(mcServer=mcServer)
         return server.minecraftProcState
     except RuntimeError as e:
+        log.debug("Failed to get server status for %r with %r", serverPK, e)
+        return False
+    except Exception as e:
+        log.debug("Failed to get server status for %r with %r", serverPK, e)
         return False
 
 

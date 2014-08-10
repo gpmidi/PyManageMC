@@ -271,8 +271,16 @@ class ServerType(object):
     @property
     def containerInfo(self):
         from mcdocker.tasks import inspectDockerContainer
-        return inspectDockerContainer.delay(
-                containerID=self.mcServer.container).get()
+#         return inspectDockerContainer.delay(
+#                 containerID=self.mcServer.container).get()
+        return inspectDockerContainer(containerID=self.mcServer.container)
+
+    @property
+    def imageInfo(self):
+        from mcdocker.tasks import inspectDockerImage
+#         return inspectDockerContainer.delay(
+#                 containerID=self.mcServer.container).get()
+        return inspectDockerImage(imageID=self.image.imageID)
 
     def getPortMappings(self):
         """ Return raw port bindings for this instance
@@ -714,6 +722,8 @@ class ServerType(object):
         @return: True=Start OK, False=Start Failed
         """
         self.log.info("Going to start %r", self)
+        from mcdocker.tasks import createStartContainer
+        createStartContainer(self.pk)
         return self.supervisordProxy.supervisor.startProcess('minecraft', wait)
 
     def killServer(self, wait=True):
