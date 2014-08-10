@@ -30,6 +30,10 @@ framework.
 
 """
 import os, sys
+import logging
+
+djx = logging.getLogger('dajaxice')
+djx.propagate = True
 
 # Calculate the path based on the location of the WSGI script.
 settingsdir = os.path.dirname(__file__)

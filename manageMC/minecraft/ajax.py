@@ -125,9 +125,9 @@ def server_say(req, server_pk, message, cleared=False):
     return dajax.json()
 
 
-@dajaxice_register
-@login_required
-def server_status(req, server_pk):
+@dajaxice_register()
+@login_required()
+def server_status(request, server_pk):
     """ Get updated status """
     res = status.delay(server_pk)
     res.wait()
