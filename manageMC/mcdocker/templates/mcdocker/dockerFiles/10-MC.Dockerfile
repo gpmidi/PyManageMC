@@ -69,7 +69,7 @@ EXPOSE 22 9001 25565 25575 25580 25581 25582 25583 25584 25585 25586 25587 25588
 VOLUME ["/var/lib/minecraft","/var/log","/etc/ssh"]
 
 CMD [ \
-    "/usr/sbin/supervisord", \
+    "/usr/bin/supervisord", \
     "--nodaemon", \
     "--logfile=/var/log/supervisord.log", \
     "--loglevel=warn", \

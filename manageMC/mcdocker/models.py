@@ -129,7 +129,7 @@ class DockerImage(Document):
                           verbose_name="Image Type",
                           )
     imageID = StringProperty(
-                          validators=[RegexValidator(r'^[a-f0-9]+$', message='Invalid Docker Image ID'), ],
+                          validators=[ ],  # RegexValidator(r'^[a-f0-9]+$', message='Invalid Docker Image ID'),
                           name="dockerImageID",
                           required=False,
                           default=None,

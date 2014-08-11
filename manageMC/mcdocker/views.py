@@ -106,7 +106,7 @@ def dockerImageCreate(req):
                              humanDescription=form.cleaned_data['description'],
                              imageType='UserImage',
                              imageID=None,
-                             parent=form.cleaned_data['baseImage'],
+                             dockerParent=form.cleaned_data['baseImage'],
                              dockerMemoryLimitMB=form.cleaned_data['dockerMemoryLimitMB'],
                              dockerCPUShare=form.cleaned_data['dockerCPUShare'],
                              dockerName=form.cleaned_data['dockerName'],
@@ -161,7 +161,7 @@ def dockerBaseImageCreate(req):
                              imageType='BaseImage',
                              imageID=None,
                              # TODO: Stop hard coding this
-                             parent='ubuntu:14.04',
+                             dockerParent='ubuntu:14.04',
                              dockerName=form.cleaned_data['dockerName'],
                              dockerIndexer=form.cleaned_data['dockerIndexer'],
                              repo=form.cleaned_data['repo'],

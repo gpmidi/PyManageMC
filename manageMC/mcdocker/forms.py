@@ -174,7 +174,7 @@ class NewDockerInstanceForm(forms.Form):
                                   # Right now it's stuck with old after new one
                                   # added due to the choices not being refreshed
                                   choices=map(
-                                                lambda x: (x['_id'], x['humanName']),
+                                                lambda x: (x['imageID'], x['humanName']),
                                                 DockerImage.view('mcdocker/baseOSImages').all(),
                                                 ),
                                   help_text="The Docker image to base this image on",

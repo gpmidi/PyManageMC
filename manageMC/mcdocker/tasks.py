@@ -199,11 +199,14 @@ def buildImage(dockerImageID):
         for line in res:
             try:
                 d = json.loads(line)
-                log.debug("IO: %s", d['stream'].rstrip())
-                logs += d['stream']
-                m = RE_MATCH_BUILD_OK.match(d['stream'])
-                if m:
-                    image = m.group(1)
+                if 'stream' in d:
+                    log.debug("IO: %s", d['stream'].rstrip())
+                    logs += d['stream']
+                    m = RE_MATCH_BUILD_OK.match(d['stream'])
+                    if m:
+                        image = m.group(1)
+                else:
+                    log.debug("IO: %r", line.rstrip())
             except Exception, e:
                 log.exception("IO: %r", line.rstrip())
 
@@ -280,17 +283,16 @@ def createStartContainer(serverId, client=None):
 
 
     # Create the container
-    log.debug("Going to create container named %r", server.name)
-    results = client.create_container(
-                            image.imageID,
+    log.debug("Going to create container %r named %r", image.imageID, server.name)
+    kw = dict(image=image.imageID,
                             detach=True,
                             mem_limit="%dm" % image.dockerMemoryLimitMB,
-                            hostname=image.humanName,
+                            hostname=image.name,
                             dns=None,
                             cpu_shares=image.dockerCPUShare,
                             name=server.name,
                             environment=env,
-                            command=None,
+                            command="/usr/bin/supervisord --nodaemon --logfile=/var/log/supervisord.log --loglevel=warn --logfile_maxbytes=1GB --logfile_backups=0",
                             user=None,
                             ports=image.ports.keys(),
                             volumes=server.getImage().volumes.values(),
@@ -299,7 +301,10 @@ def createStartContainer(serverId, client=None):
                             volumes_from=None,
                             network_disabled=False,
                             entrypoint=None,
-                            working_dir=None,
+                            working_dir=None,)
+    log.warn("Running with %r", kw)
+    results = client.create_container(
+                            **kw
                             )
     log.debug("Results: %r", results)
 
